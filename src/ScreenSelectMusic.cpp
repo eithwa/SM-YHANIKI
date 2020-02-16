@@ -27,6 +27,8 @@
 #include "NetworkSyncManager.h"
 
 const int NUM_SCORE_DIGITS	=	9;
+const ScreenMessage SM_BackFromSelectSongs	        = ScreenMessage(SM_User+8);
+const ScreenMessage SM_EscFromSelectSongs	        = ScreenMessage(SM_User+10);
 
 #define FOV									THEME->GetMetricF(m_sName,"FOV")
 #define FOV_CENTER_X						THEME->GetMetricF(m_sName,"FOVCenterX")
@@ -728,18 +730,6 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 {
 //	LOG->Trace( "ScreenSelectMusic::Input()" );
 
-	// debugging?
-	// I just like being able to see untransliterated titles occasionally.
-	if( DeviceI.device == DEVICE_KEYBOARD && DeviceI.button == KEY_F9 )
-	{
-		if( type != IET_FIRST_PRESS ) return;
-		PREFSMAN->m_bShowNative ^= 1;
-		m_MusicWheel.RebuildMusicWheelItems();
-		m_CourseContentsFrame.SetFromGameState();
-		return;
-	}
-
-	if( !GameI.IsValid() )		return;		// don't care
 	//================for ScreenNetSelectMusic===========
 	bool bHoldingCtrl = 
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)) ||
@@ -759,10 +749,93 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		NSMAN->m_sMainTitle = pSong->GetTranslitMainTitle();
 		NSMAN->m_sSubTitle = pSong->GetTranslitSubTitle();
 		NSMAN->m_iSelectMode = 2; //Command for user selecting song
-		SCREENMAN->PopTopScreen();
+		// SCREENMAN->PopTopScreen();
+		SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" );
+		SCREENMAN->SendMessageToTopScreen( SM_BackFromSelectSongs );
 		return;
 	}
 	//==================================================
+	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F5));
+	if(bHoldingF5
+	   && bHoldingCtrl
+	   )
+	{
+		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
+		{
+			Song* pSong = m_MusicWheel.GetSelectedSong();
+			GAMESTATE->m_pCurSong=pSong;
+			GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
+			GAMESTATE->m_pPreferredSong=pSong;
+			FOREACH_HumanPlayer( pn )
+			{
+				Profile* pProfile = PROFILEMAN->GetProfile(pn);
+				if( GAMESTATE->m_pPreferredSong )
+					pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
+				if( GAMESTATE->m_pPreferredCourse )
+					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+			}
+		}
+		else
+		{
+			GAMESTATE->m_pCurSong = NULL;
+			GAMESTATE->m_pPreferredSong = NULL;
+		}
+
+		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
+		LOG->Info("Reload package group");
+		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
+		return;
+	}
+	if(DeviceI.button==KEY_F5)
+	{
+		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
+		{
+			Song* pSong = m_MusicWheel.GetSelectedSong();
+			GAMESTATE->m_pCurSong=pSong;
+			// GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
+			GAMESTATE->m_pPreferredSong=pSong;
+			FOREACH_HumanPlayer( pn )
+			{
+				Profile* pProfile = PROFILEMAN->GetProfile(pn);
+				if( GAMESTATE->m_pPreferredSong )
+					pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
+				if( GAMESTATE->m_pPreferredCourse )
+					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+			}
+		}
+		else
+		{
+			GAMESTATE->m_pCurSong = NULL;
+			GAMESTATE->m_pPreferredSong = NULL;
+		}
+		// LOG->Info("GAMESTATE->m_pCurSongGroup %s",GAMESTATE->m_pCurSongGroup.c_str());
+		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
+		LOG->Info("fast Reload music");
+		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
+		return;
+	}
+	if(DeviceI.button==KEY_F2 && m_MusicWheel.GetSelectedType()==TYPE_SONG)
+	{
+		Song* pSong = m_MusicWheel.GetSelectedSong();
+		GAMESTATE->m_pCurSong=pSong;
+		SONGMAN->RevertFromDisk( GAMESTATE->m_pCurSong );
+		SCREENMAN->SetNewScreen( "ScreenSelectMusic" );
+		return;
+	}
+	// debugging?
+	// I just like being able to see untransliterated titles occasionally.
+	if( DeviceI.device == DEVICE_KEYBOARD && DeviceI.button == KEY_F9 )
+	{
+		if( type != IET_FIRST_PRESS ) return;
+		PREFSMAN->m_bShowNative ^= 1;
+		m_MusicWheel.RebuildMusicWheelItems();
+		m_CourseContentsFrame.SetFromGameState();
+		return;
+	}
+
+	if( !GameI.IsValid() )		return;		// don't care
+	
+
 	/* XXX: What's the difference between this and StyleI.player? */
 	/* StyleI won't be valid if it's a menu button that's pressed.  
 	 * There's got to be a better way of doing this.  -Chris */
@@ -875,7 +948,10 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		{
 			if(GAMESTATE->m_bEditing)
 			{
-				SCREENMAN->PopTopScreen();
+				// SCREENMAN->PopTopScreen();
+				GAMESTATE->m_bEditing=false;
+				SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" );
+				SCREENMAN->SendMessageToTopScreen( SM_EscFromSelectSongs );
 			}
 			else
 			{
@@ -1125,135 +1201,138 @@ void ScreenSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 
 void ScreenSelectMusic::MenuStart( PlayerNumber pn )
 {
-	if(!GAMESTATE->m_bEditing || NSMAN->useSMserver )//for net mode dont start
+	if(GAMESTATE->m_bEditing && NSMAN->useSMserver )//for net mode dont start
 	{
-		// this needs to check whether valid Steps are selected!
-		bool bResult = m_MusicWheel.Select();
-
-		/* If false, we don't have a selection just yet. */
-		if( !bResult )
+		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
 			return;
-
-		// a song was selected
-		switch( m_MusicWheel.GetSelectedType() )
-		{
-		case TYPE_SONG:
-		case TYPE_PORTAL:
-			{
-				const bool bIsNew = PROFILEMAN->IsSongNew( m_MusicWheel.GetSelectedSong() );
-				bool bIsHard = false;
-				FOREACH_HumanPlayer( p )
-				{
-					if( GAMESTATE->m_pCurSteps[p]  &&  GAMESTATE->m_pCurSteps[p]->GetMeter() >= 10 )
-						bIsHard = true;
-				}
-
-				/* See if this song is a repeat.  If we're in event mode, only check the last five songs. */
-				bool bIsRepeat = false;
-				int i = 0;
-				if( PREFSMAN->m_bEventMode )
-					i = max( 0, int(g_vPlayedStageStats.size())-5 );
-				for( ; i < (int)g_vPlayedStageStats.size(); ++i )
-					if( g_vPlayedStageStats[i].vpSongs.back() == m_MusicWheel.GetSelectedSong() )
-						bIsRepeat = true;
-
-				/* Don't complain about repeats if the user didn't get to pick. */
-				if( GAMESTATE->IsExtraStage() && !PREFSMAN->m_bPickExtraStage )
-					bIsRepeat = false;
-
-				if( bIsRepeat )
-					SOUND->PlayOnceFromAnnouncer( "select music comment repeat" );
-				else if( bIsNew )
-					SOUND->PlayOnceFromAnnouncer( "select music comment new" );
-				else if( bIsHard )
-					SOUND->PlayOnceFromAnnouncer( "select music comment hard" );
-				else
-					SOUND->PlayOnceFromAnnouncer( "select music comment general" );
-
-				m_bMadeChoice = true;
-
-				/* If we're in event mode, we may have just played a course (putting us
-				* in course mode).  Make sure we're in a single song mode. */
-				if( GAMESTATE->IsCourseMode() )
-					GAMESTATE->m_PlayMode = PLAY_MODE_REGULAR;
-			}
-			break;
-
-		case TYPE_COURSE:
-			{
-				SOUND->PlayOnceFromAnnouncer( "select course comment general" );
-
-				Course *pCourse = m_MusicWheel.GetSelectedCourse();
-				ASSERT( pCourse );
-				GAMESTATE->m_PlayMode = pCourse->GetPlayMode();
-
-				// apply #LIVES
-				if( pCourse->m_iLives != -1 )
-				{
-					GAMESTATE->m_SongOptions.m_LifeType = SongOptions::LIFE_BATTERY;
-					GAMESTATE->m_SongOptions.m_iBatteryLives = pCourse->m_iLives;
-				}
-
-				m_bMadeChoice = true;
-			}
-			break;
-		case TYPE_SECTION:
-		case TYPE_ROULETTE:
-		case TYPE_RANDOM:
-		case TYPE_SORT:
-			break;
-		default:
-			ASSERT(0);
-		}
-
-		if( m_bMadeChoice )
-		{
-			TweenOffScreen();
-			SCREENMAN->PlayStartSound();
-
-			if( !GAMESTATE->IsExtraStage()  &&  !GAMESTATE->IsExtraStage2() )
-			{
-	//			float fShowSeconds = m_Out.GetLengthSeconds();
-
-				// show "hold START for options"
-				m_sprOptionsMessage.SetDiffuse( RageColor(1,1,1,1) );	// visible
-				SET_XY_AND_ON_COMMAND( m_sprOptionsMessage );
-
-				m_bAllowOptionsMenu = true;
-				/* Don't accept a held START for a little while, so it's not
-				* hit accidentally.  Accept an initial START right away, though,
-				* so we don't ignore deliberate fast presses (which would be
-				* annoying). */
-				this->PostScreenMessage( SM_AllowOptionsMenuRepeat, 0.5f );
-			}
-
-			/* If we're currently waiting on song assets, abort all except the music and
-			* start the music, so if we make a choice quickly before background requests
-			* come through, the music will still start. */
-			g_bCDTitleWaiting = g_bBannerWaiting = false;
-			m_BackgroundLoader.Abort();
-			CheckBackgroundRequests();
-
-			StartTransitioning( SM_BeginFadingOut );
-		}
-
-		if( GAMESTATE->IsExtraStage() && PREFSMAN->m_bPickExtraStage )
-		{
-			/* Check if user selected the real extra stage. */
-			Song* pSong;
-			Steps* pSteps;
-			PlayerOptions po;
-			SongOptions so;
-			SONGMAN->GetExtraStageInfo( false, GAMESTATE->GetCurrentStyle(), pSong, pSteps, po, so );
-			ASSERT(pSong);
-			
-			/* Enable 2nd extra stage if user chose the correct song */
-			if( m_MusicWheel.GetSelectedSong() == pSong )
-				GAMESTATE->m_bAllow2ndExtraStage = true;
-			else
-				GAMESTATE->m_bAllow2ndExtraStage = false;
-		}
 	}
+	// this needs to check whether valid Steps are selected!
+	bool bResult = m_MusicWheel.Select();
+
+	/* If false, we don't have a selection just yet. */
+	if( !bResult )
+		return;
+
+	// a song was selected
+	switch( m_MusicWheel.GetSelectedType() )
+	{
+	case TYPE_SONG:
+	case TYPE_PORTAL:
+		{
+			const bool bIsNew = PROFILEMAN->IsSongNew( m_MusicWheel.GetSelectedSong() );
+			bool bIsHard = false;
+			FOREACH_HumanPlayer( p )
+			{
+				if( GAMESTATE->m_pCurSteps[p]  &&  GAMESTATE->m_pCurSteps[p]->GetMeter() >= 10 )
+					bIsHard = true;
+			}
+
+			/* See if this song is a repeat.  If we're in event mode, only check the last five songs. */
+			bool bIsRepeat = false;
+			int i = 0;
+			if( PREFSMAN->m_bEventMode )
+				i = max( 0, int(g_vPlayedStageStats.size())-5 );
+			for( ; i < (int)g_vPlayedStageStats.size(); ++i )
+				if( g_vPlayedStageStats[i].vpSongs.back() == m_MusicWheel.GetSelectedSong() )
+					bIsRepeat = true;
+
+			/* Don't complain about repeats if the user didn't get to pick. */
+			if( GAMESTATE->IsExtraStage() && !PREFSMAN->m_bPickExtraStage )
+				bIsRepeat = false;
+
+			if( bIsRepeat )
+				SOUND->PlayOnceFromAnnouncer( "select music comment repeat" );
+			else if( bIsNew )
+				SOUND->PlayOnceFromAnnouncer( "select music comment new" );
+			else if( bIsHard )
+				SOUND->PlayOnceFromAnnouncer( "select music comment hard" );
+			else
+				SOUND->PlayOnceFromAnnouncer( "select music comment general" );
+
+			m_bMadeChoice = true;
+
+			/* If we're in event mode, we may have just played a course (putting us
+			* in course mode).  Make sure we're in a single song mode. */
+			if( GAMESTATE->IsCourseMode() )
+				GAMESTATE->m_PlayMode = PLAY_MODE_REGULAR;
+		}
+		break;
+
+	case TYPE_COURSE:
+		{
+			SOUND->PlayOnceFromAnnouncer( "select course comment general" );
+
+			Course *pCourse = m_MusicWheel.GetSelectedCourse();
+			ASSERT( pCourse );
+			GAMESTATE->m_PlayMode = pCourse->GetPlayMode();
+
+			// apply #LIVES
+			if( pCourse->m_iLives != -1 )
+			{
+				GAMESTATE->m_SongOptions.m_LifeType = SongOptions::LIFE_BATTERY;
+				GAMESTATE->m_SongOptions.m_iBatteryLives = pCourse->m_iLives;
+			}
+
+			m_bMadeChoice = true;
+		}
+		break;
+	case TYPE_SECTION:
+	case TYPE_ROULETTE:
+	case TYPE_RANDOM:
+	case TYPE_SORT:
+		break;
+	default:
+		ASSERT(0);
+	}
+
+	if( m_bMadeChoice )
+	{
+		TweenOffScreen();
+		SCREENMAN->PlayStartSound();
+
+		if( !GAMESTATE->IsExtraStage()  &&  !GAMESTATE->IsExtraStage2() )
+		{
+//			float fShowSeconds = m_Out.GetLengthSeconds();
+
+			// show "hold START for options"
+			m_sprOptionsMessage.SetDiffuse( RageColor(1,1,1,1) );	// visible
+			SET_XY_AND_ON_COMMAND( m_sprOptionsMessage );
+
+			m_bAllowOptionsMenu = true;
+			/* Don't accept a held START for a little while, so it's not
+			* hit accidentally.  Accept an initial START right away, though,
+			* so we don't ignore deliberate fast presses (which would be
+			* annoying). */
+			this->PostScreenMessage( SM_AllowOptionsMenuRepeat, 0.5f );
+		}
+
+		/* If we're currently waiting on song assets, abort all except the music and
+		* start the music, so if we make a choice quickly before background requests
+		* come through, the music will still start. */
+		g_bCDTitleWaiting = g_bBannerWaiting = false;
+		m_BackgroundLoader.Abort();
+		CheckBackgroundRequests();
+
+		StartTransitioning( SM_BeginFadingOut );
+	}
+
+	if( GAMESTATE->IsExtraStage() && PREFSMAN->m_bPickExtraStage )
+	{
+		/* Check if user selected the real extra stage. */
+		Song* pSong;
+		Steps* pSteps;
+		PlayerOptions po;
+		SongOptions so;
+		SONGMAN->GetExtraStageInfo( false, GAMESTATE->GetCurrentStyle(), pSong, pSteps, po, so );
+		ASSERT(pSong);
+		
+		/* Enable 2nd extra stage if user chose the correct song */
+		if( m_MusicWheel.GetSelectedSong() == pSong )
+			GAMESTATE->m_bAllow2ndExtraStage = true;
+		else
+			GAMESTATE->m_bAllow2ndExtraStage = false;
+	}
+	
 }
 
 

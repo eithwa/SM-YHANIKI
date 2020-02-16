@@ -8,6 +8,8 @@
 #include "ThemeManager.h"
 #include "GameState.h"
 #include "NetworkSyncManager.h"
+#include "ProfileManager.h"
+#include "Song.h"
 
 #include "arch/LoadingWindow/LoadingWindow.h"
 
@@ -70,13 +72,76 @@ void ScreenReloadSongs::Update( float fDeltaTime )
 	if( m_iUpdates != 2 )
 		return;
 	ASSERT( !IsFirstUpdate() );
-	if(GAMESTATE->m_bEditing)
+	if(GAMESTATE->m_bfastLoadInScreenSelectMusic)//fast load in ScreenSelectMusic
+	{
+		if(GAMESTATE->m_pCurSongGroup=="")
+		{
+			LOG->Info("Fast reload all group");
+			SONGMAN->FastReload(m_LoadingWindow);
+		}
+		else
+		{
+			LOG->Info("Fast reload group %s",GAMESTATE->m_pCurSongGroup.c_str());
+			SONGMAN->FreeSongsFromGroup(GAMESTATE->m_pCurSongGroup);
+			SONGMAN->InitSongsFromDisk( m_LoadingWindow );
+		}
+		UNLOCKMAN->UpdateSongs();
+		//===========
+		// GAMESTATE->Reset();
+		GAMESTATE->m_pCurSong = NULL;
+		GAMESTATE->m_pPreferredSong = NULL;
+		FOREACH_PlayerNumber( p )
+			GAMESTATE->m_pCurSteps[p] = NULL;
+		GAMESTATE->m_pCurCourse = NULL;
+		GAMESTATE->m_pPreferredCourse = NULL;
+		FOREACH_HumanPlayer( pn )
+		{
+			Profile* pProfile = PROFILEMAN->GetProfile(pn);
+			if( GAMESTATE->m_pPreferredSong == NULL )
+				GAMESTATE->m_pPreferredSong = pProfile->m_lastSong.ToSong();
+			// if(GAMESTATE->m_pCurSongGroup!="" && GAMESTATE->m_pPreferredSong!=NULL)
+			// {
+			// 	GAMESTATE->m_pCurSongGroup = GAMESTATE->m_pPreferredSong->m_sGroupName;
+			// }
+			if( GAMESTATE->m_pPreferredCourse == NULL )
+				GAMESTATE->m_pPreferredCourse = pProfile->m_lastCourse.ToCourse();
+		}
+		//===========
+		GAMESTATE->m_pCurSongGroup="";
+		GAMESTATE->PlayersFinalized();
+		SCREENMAN->SetNewScreen( "ScreenSelectMusic" );
+		GAMESTATE->m_bfastLoadInScreenSelectMusic=false;
+		return;
+	}
+	else if(GAMESTATE->m_bEditing)//fast load
 	{
 		//fast reload
-		SONGMAN->InitSongsFromDisk( m_LoadingWindow );
+		if(GAMESTATE->m_bLoadPackConnect)
+		{
+			GAMESTATE->m_pCurSongGroup="connect";
+		}
+		//------------
+		if(GAMESTATE->m_pCurSongGroup=="")
+		{
+			SONGMAN->FastReload(m_LoadingWindow);
+		}
+		else
+		{
+			SONGMAN->FreeSongsFromGroup(GAMESTATE->m_pCurSongGroup);
+			SONGMAN->InitSongsFromDisk( m_LoadingWindow );
+		}
+		GAMESTATE->m_pCurSongGroup="";
+		// SONGMAN->FastReload(m_LoadingWindow);
+		// if(GAMESTATE->m_bLoadPackConnect)
+		// {
+		// 	GAMESTATE->m_pCurSongGroup="connect";
+		// }
+		// SONGMAN->FreeSongsFromGroup(GAMESTATE->m_pCurSongGroup);
+		// SONGMAN->InitSongsFromDisk( m_LoadingWindow );
 		UNLOCKMAN->UpdateSongs();
 		SCREENMAN->PopTopScreen();
-		GAMESTATE->m_bLoadPackConnect=false;
+		GAMESTATE->m_bLoadPackConnect=false;//GAMESTATE->m_bLoadPackConnect=true; only reload connect package
+		
 		// SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" );
 	}else
 	{
