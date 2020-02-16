@@ -18,11 +18,14 @@
 #include "StepsUtil.h"
 #include "RageUtil.h"
 #include "RageLog.h"
+
+#include "SongUtil.h"
 //==========
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+
 using namespace std;
 //===========
 
@@ -229,37 +232,60 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 
 	UpdateGroupsListPos();
 	UpdateSongsList();
-	
-	// if (GAMESTATE->m_pCurSong != NULL)
-	// 	for ( unsigned i = 0 ; i<m_vSongs.size() ; ++i )
-	// 		if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle())
-	// 			m_iSongNum = i;
-	// UpdateSongsListPos();
-
-	
-	unsigned i=0;
-	unsigned j=0;
-	bool find_song_flag = false;
-	if(GAMESTATE->m_pCurSong!=NULL){
-		for(j=0; j < m_vGroups.size(); j++){
-			if(find_song_flag)
-				break;
-			m_iGroupNum = j;
-			UpdateSongsList();
-			for ( i = 0; i < m_vSongs.size(); ++i)
+	if(GAMESTATE->m_pCurSong==NULL)
+	{
+		GAMESTATE->m_pCurSong=m_vSongs[0];
+	}
+	if (GAMESTATE->m_pCurSong != NULL)
+	{
+		for ( unsigned i = 0 ; i<m_vSongs.size() ; ++i )
+			if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle())
+				m_iSongNum = i;
+				
+		CString GroupName =  m_vSongs[m_iSongNum]->m_sGroupName;
+		for(unsigned j = 0; j<m_vGroups.size(); ++j)
+		{
+			if(GroupName == m_vGroups[j])
 			{
-				if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle())
-				{
-					find_song_flag = true;
-					break;
-				}
+				m_iGroupNum = j;
+				UpdateGroupsListPos();
+				UpdateSongsList();
+				for ( unsigned i = 0 ; i<m_vSongs.size() ; ++i )
+					if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle())
+						m_iSongNum = i;
+				m_iSongNum += m_vSongs.size();
+				break;
 			}
 		}
-	}
-	UpdateGroupsListPos();
-	m_iSongNum = i + m_vSongs.size();
-	UpdateSongsListPos();
+	}	
 	
+	UpdateSongsListPos();
+
+	//================
+	// unsigned i=0;
+	// unsigned j=0;
+	// bool find_song_flag = false;
+	// if(GAMESTATE->m_pCurSong!=NULL){
+	// 	for(j=0; j < m_vGroups.size(); j++){
+	// 		if(find_song_flag)
+	// 			break;
+	// 		m_iGroupNum = j;
+	// 		UpdateSongsList();
+	// 		for ( i = 0; i < m_vSongs.size(); ++i)
+	// 		{
+	// 			if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle())
+	// 			{
+	// 				find_song_flag = true;
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// UpdateGroupsListPos();
+	// m_iSongNum = i + m_vSongs.size();
+	// UpdateSongsListPos();
+	//================
+
 	//Load SFX next
 	m_soundChangeOpt.Load( THEME->GetPathToS("ScreenNetSelectMusic change opt"));
 	m_soundChangeSel.Load( THEME->GetPathToS("ScreenNetSelectMusic change sel"));
@@ -330,6 +356,24 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL)) ||
 		(!NSMAN->useSMserver);	//If we are disconnected, assume no chatting
 	bool input_check = false;
+
+	bool bHoldingF1 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F1));
+	if(bHoldingF1)
+	{
+		GAMESTATE->m_bLoadPackConnect=true;
+		NSMAN->ReportNSSOnOff(2);
+		GAMESTATE->m_bEditing = true;
+		// SCREENMAN->PopTopScreen();
+		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+	}
+	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F1));
+	if(bHoldingF5)
+	{
+		NSMAN->ReportNSSOnOff(2);
+		GAMESTATE->m_bEditing = true;
+		// SCREENMAN->PopTopScreen();
+		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+	}
 	switch( DeviceI.button )
 	{
 	case KEY_ENTER:
@@ -349,27 +393,27 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		UpdateTextInput();
 		break;
 		
-	case KEY_F1:
-		{
-			GAMESTATE->m_bLoadPackConnect=true;
-		    NSMAN->ReportNSSOnOff(2);
-			GAMESTATE->m_bEditing = true;
-			// SCREENMAN->PopTopScreen();
-			SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
-		}
-		break;
+	// case KEY_F1:
+	// 	{
+	// 		GAMESTATE->m_bLoadPackConnect=true;
+	// 	    NSMAN->ReportNSSOnOff(2);
+	// 		GAMESTATE->m_bEditing = true;
+	// 		// SCREENMAN->PopTopScreen();
+	// 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+	// 	}
+	// 	break;
 	case KEY_F4:
 		{
 		    CheckChangeSong();
 		}
 		break;
-	case KEY_F5:
-		{
-		    NSMAN->ReportNSSOnOff(2);
-			GAMESTATE->m_bEditing = true;
-			// SCREENMAN->PopTopScreen();
-			SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
-		}
+	// case KEY_F5:
+	// 	{
+	// 	    NSMAN->ReportNSSOnOff(2);
+	// 		GAMESTATE->m_bEditing = true;
+	// 		// SCREENMAN->PopTopScreen();
+	// 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+	// 	}
 		break;
 	default:
 		char c;
@@ -435,31 +479,68 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 }
 void ScreenNetSelectMusic::CheckChangeSong()
 {
+	//===============
+	m_iGroupNum=m_vGroups.size()-1;
+	UpdateSongsList();
 	unsigned i;
-	unsigned j;
-	bool find_song_flag = false;
-	if(GAMESTATE->m_pCurSong==NULL){
-		//LOG->Info("GAMESTATE->m_pCurSong NULL");
-		return;
-	}
-	//LOG->Info("GAMESTATE->m_pCurSong %s", GAMESTATE->m_pCurSong->GetTranslitMainTitle().c_str());
-	for(j=0; j < m_vGroups.size(); j++){
-		if(find_song_flag)
+	for ( i = 0; i < m_vSongs.size(); ++i)
+		if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
+			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
+			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 			break;
-		m_iGroupNum = j;
-		UpdateSongsList();
-		for ( i = 0; i < m_vSongs.size(); ++i)
+	bool haveSong = i != m_vSongs.size();
+	if(haveSong)
+	{
+		bool find_song_in_group = false;
+		CString GroupName =  m_vSongs[i]->m_sGroupName;
+		for(unsigned j = 0; j<m_vGroups.size(); ++j)
 		{
-			if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sCurArtist ) ) &&
-				( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sCurMainTitle ) ) &&
-				( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sCurSubTitle ) ) )
+			if(GroupName == m_vGroups[j])
 			{
-				find_song_flag = true;
-				break;
+				m_iGroupNum = j;
+				UpdateGroupsListPos();
+				UpdateSongsList();
+				for ( i = 0 ; i<m_vSongs.size() ; ++i )
+				{
+					if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
+						( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
+						( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
+					{
+						find_song_in_group = true;
+						break;
+					}
+				}
+				if(find_song_in_group)
+					break;
 			}
 		}
 	}
-	bool haveSong = j != m_vGroups.size();
+	//===============
+	// unsigned i;
+	// unsigned j;
+	// bool find_song_flag = false;
+	// if(GAMESTATE->m_pCurSong==NULL){
+	// 	//LOG->Info("GAMESTATE->m_pCurSong NULL");
+	// 	return;
+	// }
+	// //LOG->Info("GAMESTATE->m_pCurSong %s", GAMESTATE->m_pCurSong->GetTranslitMainTitle().c_str());
+	// for(j=0; j < m_vGroups.size(); j++){
+	// 	if(find_song_flag)
+	// 		break;
+	// 	m_iGroupNum = j;
+	// 	UpdateSongsList();
+	// 	for ( i = 0; i < m_vSongs.size(); ++i)
+	// 	{
+	// 		if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sCurArtist ) ) &&
+	// 			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sCurMainTitle ) ) &&
+	// 			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sCurSubTitle ) ) )
+	// 		{
+	// 			find_song_flag = true;
+	// 			break;
+	// 		}
+	// 	}
+	// }
+	// bool haveSong = j != m_vGroups.size();
 	if(haveSong)
 	{
 		UpdateGroupsListPos();
@@ -491,29 +572,8 @@ void ScreenNetSelectMusic::ResetSongList()
 	UpdateSongsListPos();
 	GAMESTATE->m_pPreferredSong=NULL;
 	GAMESTATE->m_pPreferredCourse=NULL;
-
-	if (GAMESTATE->m_pCurSong != NULL)
-	{
-		bool find_song_flag=false;
-		for(int j=0; j < m_vGroups.size(); j++){
-			if(find_song_flag)
-				break;
-			m_iGroupNum = j;
-			UpdateSongsList();
-			for (int i = 0; i < m_vSongs.size(); ++i)
-			{
-				if (m_vSongs[i]->GetFullDisplayTitle() == GAMESTATE->m_pCurSong->GetFullDisplayTitle() )
-				{
-					find_song_flag = true;
-					m_iSongNum = i;
-					break;
-				}
-			}
-		}
-	}
 	
-	//HandleScreenMessage(SM_ChangeSong);
-	// CheckChangeSong();
+	CheckChangeSong();
 	//==================
 }
 void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
@@ -563,29 +623,65 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 			
 			// bool haveSong = i != m_vSongs.size();//serch allsongs_group to the end
 			//==========================
+			m_iGroupNum=m_vGroups.size()-1;
+			UpdateSongsList();
 			unsigned i;
-			unsigned j;
-			bool find_song_flag = false;
-
-			for(j=0; j < m_vGroups.size(); j++){
-				if(find_song_flag)
-					break;
-				m_iGroupNum = j;
-				UpdateSongsList();
-				for ( i = 0; i < m_vSongs.size(); ++i)
+			for ( i = 0; i < m_vSongs.size(); ++i)
+				if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
+					 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
+					 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
+					 break;
+			bool haveSong = i != m_vSongs.size();
+			if(haveSong)
+			{
+				bool find_song_in_group = false;
+				CString GroupName =  m_vSongs[i]->m_sGroupName;
+				for(unsigned j = 0; j<m_vGroups.size(); ++j)
 				{
-					if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sCurArtist ) ) &&
-						( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sCurMainTitle ) ) &&
-						( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sCurSubTitle ) ) )
+					if(GroupName == m_vGroups[j])
 					{
-						find_song_flag = true;
-						break;
+						m_iGroupNum = j;
+						UpdateGroupsListPos();
+						UpdateSongsList();
+						for ( i = 0 ; i<m_vSongs.size() ; ++i )
+						{
+							if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
+								 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
+								 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
+							{
+								find_song_in_group = true;
+								break;
+							}
+						}
+						if(find_song_in_group)
+							break;
 					}
 				}
 			}
-			bool haveSong = j != m_vGroups.size();
-			if(haveSong)
-				UpdateGroupsListPos();
+			//==========================
+			// unsigned i;
+			// unsigned j;
+			// bool find_song_flag = false;
+
+			// for(j=0; j < m_vGroups.size(); j++){
+			// 	if(find_song_flag)
+			// 		break;
+			// 	m_iGroupNum = j;
+			// 	UpdateSongsList();
+			// 	for ( i = 0; i < m_vSongs.size(); ++i)
+			// 	{
+			// 		if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sCurArtist ) ) &&
+			// 			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sCurMainTitle ) ) &&
+			// 			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sCurSubTitle ) ) )
+			// 		{
+			// 			find_song_flag = true;
+			// 			break;
+			// 		}
+			// 	}
+			// }
+			// bool haveSong = j != m_vGroups.size();
+			// if(haveSong)
+			// 	UpdateGroupsListPos();
 			//==========================
 			switch (NSMAN->m_iSelectMode)
 			{
@@ -660,7 +756,6 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		NSMAN->ReportNSSOnOff(3);
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
-		// CheckChangeSong();
 		ResetSongList();
 		CheckChangeSong();
 		break;
@@ -994,9 +1089,10 @@ void ScreenNetSelectMusic::UpdateSongsList()
 		m_iGroupNum+=m_vGroups.size();
 	int j=m_iGroupNum%m_vGroups.size();
 	if ( m_vGroups[j]==AllGroups )
-		SONGMAN->GetSongs( m_vSongs );	//this gets it alphabetically
+		SONGMAN->GetSongs( m_vSongs );
 	else
 		SONGMAN->GetSongs( m_vSongs, m_vGroups[j] );
+	//SongUtil::SortSongPointerArrayByTitle( m_vSongs );
 }
 
 #endif

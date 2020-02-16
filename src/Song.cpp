@@ -224,10 +224,10 @@ bool Song::LoadFromSongDir( CString sDir )
 		bUseCache = false;
 	if( !PREFSMAN->m_bFastLoad && GetHashForDirectory(m_sSongDir) != uDirHash )
 		bUseCache = false; // this cache is out of date 
-	// if(GAMESTATE->m_pCurSongGroup==m_sGroupName)
-	// {
-	// 	bUseCache = false;
-	// }
+	if(GAMESTATE->m_pCurSongGroup==m_sGroupName)
+	{
+		bUseCache = false;
+	}
 	
 	if( bUseCache )
 	{
