@@ -16,6 +16,8 @@ Songs/
 Themes/
 ThirdParty/
 Utils/
+src/StepMania.suo
+**/*.vcproj.*.user
 info.txt
 log.txt
 winsocket_client.exe
