@@ -1,0 +1,18 @@
+/InputHandler.cpp/1.4/Sat May 15 21:59:40 2004//Tv390
+/InputHandler.h/1.9/Wed Jun 16 21:11:56 2004//Tv390
+/InputHandler_DirectInput.cpp/1.28/Thu Sep  9 22:12:10 2004//Tv390
+/InputHandler_DirectInput.h/1.9/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_DirectInputHelper.cpp/1.10/Mon Sep  6 04:48:33 2004//Tv390
+/InputHandler_DirectInputHelper.h/1.2/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Linux_Joystick.cpp/1.6/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Linux_Joystick.h/1.3/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Linux_tty.cpp/1.5/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Linux_tty.h/1.2/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Linux_tty_keys.h/1.1/Sun Jun 22 22:54:22 2003//Tv390
+/InputHandler_SDL.cpp/1.21.2.1/Sat Aug 12 21:47:27 2006//Tv390
+/InputHandler_SDL.h/1.3/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Win32_Para.cpp/1.2/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Win32_Para.h/1.2/Sat May 15 21:59:40 2004//Tv390
+/InputHandler_Win32_Pump.cpp/1.20/Mon Jun  7 02:40:09 2004//Tv390
+/InputHandler_Win32_Pump.h/1.7/Sat May 15 21:59:40 2004//Tv390
+D
