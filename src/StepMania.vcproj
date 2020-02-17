@@ -167,6 +167,7 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="false"
 				TreatWChar_tAsBuiltInType="false"
+				OpenMP="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="global.h"
 				PrecompiledHeaderFile="$(IntDir)/StepMania.pch"
