@@ -786,7 +786,7 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 		return;
 	}
-	if(bHoldingF5)
+	if(bHoldingF5 && !bHoldingCtrl)
 	{
 		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
 		{

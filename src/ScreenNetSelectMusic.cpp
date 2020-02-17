@@ -683,6 +683,10 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 			// if(haveSong)
 			// 	UpdateGroupsListPos();
 			//==========================
+			static int pre_m_iSelectMode=0;
+			if(pre_m_iSelectMode==2)
+				break;
+			pre_m_iSelectMode=NSMAN->m_iSelectMode;
 			switch (NSMAN->m_iSelectMode)
 			{
 			case 3:
@@ -726,25 +730,28 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		CheckChangeSong();
 		break;
 	case SM_BackFromSelectSongs:
-		LOG->Info("back form ScreenSelectMusic");
-		NSMAN->ReportNSSOnOff(3);
-		GAMESTATE->m_bEditing = false;
-		NSMAN->ReportPlayerOptions();
-		ResetSongList();
-			
-		if ((strcmp(NSMAN->m_sCurMainTitle, NSMAN->m_sMainTitle) == 0) &&
-			(strcmp(NSMAN->m_sCurSubTitle, NSMAN->m_sSubTitle) == 0) &&
-			(strcmp(NSMAN->m_sCurArtist, NSMAN->m_sArtist) == 0))
 		{
-			//choose the same song
-			if(NSMAN->m_sCurMainTitle!="")
+			LOG->Info("back form ScreenSelectMusic");
+			NSMAN->ReportNSSOnOff(3);
+			GAMESTATE->m_bEditing = false;
+			NSMAN->ReportPlayerOptions();
+			ResetSongList();
+				
+			if ((strcmp(NSMAN->m_sCurMainTitle, NSMAN->m_sMainTitle) == 0) &&
+				(strcmp(NSMAN->m_sCurSubTitle, NSMAN->m_sSubTitle) == 0) &&
+				(strcmp(NSMAN->m_sCurArtist, NSMAN->m_sArtist) == 0))
 			{
-				CheckChangeSong();
-				break;
-			}	
+				//choose the same song
+				if(NSMAN->m_sCurMainTitle!="")
+				{
+					CheckChangeSong();
+					break;
+				}	
+			}
+			NSMAN->SelectUserSong ();
+			break;
 		}
-		NSMAN->SelectUserSong ();
-		break;
+		
 	case SM_ReloadConnectPack:
 		GAMESTATE->m_bLoadPackConnect=true;
 		NSMAN->ReportNSSOnOff(2);
