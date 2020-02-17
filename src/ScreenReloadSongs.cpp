@@ -74,6 +74,13 @@ void ScreenReloadSongs::Update( float fDeltaTime )
 	ASSERT( !IsFirstUpdate() );
 	if(GAMESTATE->m_bfastLoadInScreenSelectMusic)//fast load in ScreenSelectMusic
 	{
+		// GAMESTATE->Reset();
+		GAMESTATE->m_pCurSong = NULL;
+		GAMESTATE->m_pPreferredSong = NULL;
+		FOREACH_PlayerNumber( p )
+			GAMESTATE->m_pCurSteps[p] = NULL;
+		GAMESTATE->m_pCurCourse = NULL;
+		GAMESTATE->m_pPreferredCourse = NULL;
 		if(GAMESTATE->m_pCurSongGroup=="")
 		{
 			LOG->Info("Fast reload all group");
@@ -87,13 +94,6 @@ void ScreenReloadSongs::Update( float fDeltaTime )
 		}
 		UNLOCKMAN->UpdateSongs();
 		//===========
-		// GAMESTATE->Reset();
-		GAMESTATE->m_pCurSong = NULL;
-		GAMESTATE->m_pPreferredSong = NULL;
-		FOREACH_PlayerNumber( p )
-			GAMESTATE->m_pCurSteps[p] = NULL;
-		GAMESTATE->m_pCurCourse = NULL;
-		GAMESTATE->m_pPreferredCourse = NULL;
 		FOREACH_HumanPlayer( pn )
 		{
 			Profile* pProfile = PROFILEMAN->GetProfile(pn);

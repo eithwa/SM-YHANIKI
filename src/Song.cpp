@@ -293,7 +293,18 @@ bool Song::LoadFromSongDir( CString sDir )
 	if( !m_bHasMusic )
 		return false;	// don't load this song
 	else
+	{
+		if(GAMESTATE->m_bfastLoadInScreenSelectMusic==true
+			&&GAMESTATE->m_pCurSong==NULL
+			&&GAMESTATE->m_pPreferredSong==NULL
+			&&bUseCache==false)
+			{
+				GAMESTATE->m_pCurSong=GAMESTATE->m_pPreferredSong=this;
+			}
+
 		return true;	// do load this song
+	}
+		
 }
 
 static void GetImageDirListing( CString sPath, CStringArray &AddTo, bool bReturnPathToo=false )
