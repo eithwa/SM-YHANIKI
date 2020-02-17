@@ -135,7 +135,7 @@ RageFileManager::RageFileManager( CString argv0 )
 	g_Drivers.push_back( ld );
 
 	/* The mount path is unused, but must be nonempty. */
-	RageFileManager::Mount( "mem", "(cache)", "@mem" );
+	// RageFileManager::Mount( "mem", "(cache)", "@mem" );
 }
 
 #ifndef HAVE_EXTRA // set for custom initial mount rules
