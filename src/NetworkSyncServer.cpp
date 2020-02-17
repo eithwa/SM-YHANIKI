@@ -973,8 +973,14 @@ CString StepManiaLanServer::ListPlayers()
 				if (Client[x]->Player[y].name.length() > 0){
 					if(x==0){
 						list += "[Host] ";
+					}else if(x==1){
+						list +="__[ ";
+						CString x_;
+						x_.Format("%d", x);
+						list +=x_;
+						list +=".] ";
 					}else{
-						list +="[";
+						list +="__[";
 						CString x_;
 						x_.Format("%d", x);
 						list +=x_;
