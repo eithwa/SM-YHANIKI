@@ -853,7 +853,7 @@ void StepManiaLanServer::ClientsSongSelectStart()
 	Reply.WriteNT(CurrentSongInfo.title);
 	Reply.WriteNT(CurrentSongInfo.artist);
 	Reply.WriteNT(CurrentSongInfo.subtitle);
-
+	LOG->Info("ClientsSongSelectStart");
 	//Only send data to clients currently in ScreenNetMusicSelect that use hasSong
 	for (unsigned int x = 0; x < Client.size(); ++x)
 		if (Client[x]->inNetMusicSelect && Client[x]->hasSong)

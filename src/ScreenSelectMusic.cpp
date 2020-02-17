@@ -786,7 +786,7 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 		return;
 	}
-	if(DeviceI.button==KEY_F5)
+	if(bHoldingF5 && !bHoldingCtrl)
 	{
 		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
 		{
@@ -814,7 +814,8 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 		return;
 	}
-	if(DeviceI.button==KEY_F2 && m_MusicWheel.GetSelectedType()==TYPE_SONG)
+	bool bHoldingF4 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F4));
+	if(bHoldingF4 && m_MusicWheel.GetSelectedType()==TYPE_SONG)
 	{
 		Song* pSong = m_MusicWheel.GetSelectedSong();
 		GAMESTATE->m_pCurSong=pSong;
