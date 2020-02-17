@@ -3,8 +3,8 @@
 #include "RageLog.h"
 #include "RageUtil.h"
 
-#pragma comment(lib, "archutils/Win32/ddk/setupapi.lib") 
-#pragma comment(lib, "archutils/Win32/ddk/hid.lib") 
+#pragma comment(lib, "../src/archutils/Win32/ddk/setupapi.lib") 
+#pragma comment(lib, "../src/archutils/Win32/ddk/hid.lib") 
 
 extern "C" {
 #include "archutils/Win32/ddk/setupapi.h"

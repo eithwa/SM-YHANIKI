@@ -32,6 +32,7 @@ public:
 	void UpdateTextInput();
 
 	void StartSelectedSong();
+	void ResetSongList();
 
 private:
 	int	m_iSongNum;

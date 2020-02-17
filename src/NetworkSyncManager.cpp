@@ -633,6 +633,10 @@ void NetworkSyncManager::ProcessInput()
 				m_sMainTitle = m_packet.ReadNT();
 				m_sArtist = m_packet.ReadNT();
 				m_sSubTitle = m_packet.ReadNT();
+
+				m_sCurMainTitle=m_sMainTitle;
+				m_sCurArtist=m_sArtist;
+				m_sCurSubTitle=m_sSubTitle;
 				SCREENMAN->SendMessageToTopScreen( SM_ChangeSong );
 			}
 			break;
@@ -681,7 +685,7 @@ void NetworkSyncManager::ProcessInput()
 				//==================
 				// if(now_SongDir==GAMESTATE->m_pCurSong->GetSongDir())return;
 				now_SongDir = GAMESTATE->m_pCurSong->GetSongDir();
-			
+				LOG->Info("now_SongDir %s",now_SongDir.c_str());
 				string tmp = now_SongDir.c_str();
 				tmp = tmp.substr(0, tmp.size()-1);
 
@@ -690,7 +694,7 @@ void NetworkSyncManager::ProcessInput()
 				char *path=NULL;
 				path=getcwd(path,size);
 				CurrentPath=path;
-
+				
 				// now_SongDir.left(now_SongDir.GetLength()-1);
 				// LOG->Info("GAMESTATE->m_pCurSong.m_sSongDir %s",tmp.c_str());
 				string connet_dir = path;
@@ -708,6 +712,7 @@ void NetworkSyncManager::ProcessInput()
 					   init_cmd+=zip_name;
 					   init_cmd+="\"";
 				//system("7za.exe d E:\\f5.zip");
+				LOG->Info("init_cmd %s",init_cmd.c_str());
 				system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
 				CString zip_cmd = "7za.exe a -tzip ";
 				zip_cmd+="\"";
@@ -721,7 +726,9 @@ void NetworkSyncManager::ProcessInput()
 				zip_cmd+="\\";
 				zip_cmd+=tmp;
 				zip_cmd+="\"";
+				LOG->Info("zip_cmd %s",zip_cmd.c_str());
 				system(zip_cmd.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
+				
 				//==========
 				//open server and sent require to open client
 				CString file_dir;
@@ -735,7 +742,33 @@ void NetworkSyncManager::ProcessInput()
 				file_size_.Format("%d", file_size);
 				// double file_size =0;
 				fclose(fp);
+				if( PREFSMAN->m_sAdditionalSongFolders != "" && file_size<10)
+				{
+					system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
+					//now_SongDir-"Songs"
+					string tmp = now_SongDir.c_str();
+					tmp = tmp.substr(5, tmp.size());
+					CString re_zip = "7za.exe a -tzip ";
 
+					re_zip+="\"";
+					re_zip+=connet_dir;
+					re_zip+="\\";
+					re_zip+=zip_name;
+					re_zip+="\" ";
+
+					re_zip+="\"";
+					re_zip+=PREFSMAN->m_sAdditionalSongFolders;
+					re_zip+="\\";
+					re_zip+=tmp;
+					re_zip+="\"";
+					LOG->Info("re_zip %s",re_zip.c_str());
+					system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
+
+					fp = fopen(file_dir, "rb");
+					file_size = GetFileLength(fp)/1024;//(kbs)
+					file_size_.Format("%d", file_size);
+					fclose(fp);
+				}
 				LOG->Info("file_size_ %s",file_size_.c_str());
 				m_packet.ClearPacket();
 				m_packet.Write1( NSSSC );

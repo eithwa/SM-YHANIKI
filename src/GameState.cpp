@@ -123,6 +123,8 @@ void GameState::Reset()
 	m_PlayMode = PLAY_MODE_INVALID;
 	m_bEditing = false;
 	m_bLoadPackConnect=false;
+	m_bfastLoadInScreenSelectMusic=false;
+	m_pCurSongGroup="";
 	m_bDemonstrationOrJukebox = false;
 	m_bJukeboxUsesModifiers = false;
 	m_iCurrentStageIndex = 0;
@@ -261,7 +263,10 @@ void GameState::PlayersFinalized()
 			PlayerOptions test;
 
 			if(PREFSMAN->m_ShowDancingCharacters == PrefsManager::CO_STATIC)
+			{
 				m_pCurCharacters[pn] = GetStaticCharacter(m_PlayerOptions[pn].m_sCharacter);
+				// m_pCurCharacters[pn] = GetDefaultCharacter();
+			}	
 		}
 		// Only set the sort order if it wasn't already set by a ModeChoice (or by an earlier profile)
 		if( m_SortOrder == SORT_INVALID && pProfile->m_SortOrder != SORT_INVALID )

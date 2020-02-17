@@ -79,7 +79,7 @@ public:
 	CString lastError;
 	int lastErrorCode;
 
-private:
+protected:
 #if !defined(WITHOUT_NETWORKING)
 	bool stop;
 	PacketFunctions Packet;

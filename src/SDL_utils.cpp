@@ -17,9 +17,9 @@
 /* Pull in all of our SDL libraries here. */
 #ifdef _XBOX
 	#ifdef DEBUG
-	#pragma comment(lib, "../ThirdParty/SDLx-0.02/SDLxd.lib")
+	#pragma comment(lib, "SDLx-0.02/SDLxd.lib")
 	#else
-	#pragma comment(lib, "../ThirdParty/SDLx-0.02/SDLx.lib")
+	#pragma comment(lib, "SDLx-0.02/SDLx.lib")
 	#endif
 #elif defined _WINDOWS
 	#ifdef DEBUG

@@ -76,6 +76,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -188,6 +189,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"

@@ -1,4 +1,5 @@
 7za.exe
+.vs/
 Announcers/
 BGAnimations/
 CDTitles/
@@ -16,7 +17,12 @@ Songs/
 Themes/
 ThirdParty/
 Utils/
+src/StepMania.suo
+**/*.vcproj.*.user
 info.txt
 log.txt
 winsocket_client.exe
 winsocket_server.exe
+src/StepMania.suo
+src/crypto51/d2utmpwOSSWZ
+crashinfo.txt

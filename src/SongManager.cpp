@@ -31,7 +31,7 @@
 #include "Foreach.h"
 #include "StageStats.h"
 #include "Style.h"
-
+#include <vector>
 SongManager*	SONGMAN = NULL;	// global and accessable from anywhere in our program
 
 #define SONGS_DIR				"Songs/"
@@ -125,7 +125,30 @@ void SongManager::Reload( LoadingWindow *ld )
 
 	PREFSMAN->m_bFastLoad = OldVal;
 }
+void SongManager::FastReload( LoadingWindow *ld )
+{
+	FlushDirCache();
 
+	if( ld )
+		ld->SetText( "Reloading ..." );
+
+	// save scores before unloading songs, of the scores will be lost
+	PROFILEMAN->SaveMachineProfile();
+
+	FreeSongs();
+	FreeCourses();
+
+	// /* Always check songs for changes. */
+	// const bool OldVal = PREFSMAN->m_bFastLoad;
+	// PREFSMAN->m_bFastLoad = false;
+
+	InitAll( ld );
+
+	// reload scores afterward
+	PROFILEMAN->LoadMachineProfile();
+
+	// PREFSMAN->m_bFastLoad = OldVal;
+}
 void SongManager::InitSongsFromDisk( LoadingWindow *ld )
 {
 	RageTimer tm;
@@ -202,9 +225,15 @@ void SongManager::LoadStepManiaSongDir( CString sDir, LoadingWindow *ld )
 	{
 		CString sGroupDirName = arrayGroupDirs[i];
 
-		if(GAMESTATE->m_bLoadPackConnect == true)//only read connect package 
+		if(GAMESTATE->m_bLoadPackConnect==true)//only read connect package 
 		{
-			if (0 != stricmp(sGroupDirName, "connect"))
+			//LOG->Info("GAMESTATE->m_bLoadPackConnect %d", GAMESTATE->m_bLoadPackConnect);
+			if(0 != stricmp( sGroupDirName, "connect" ))
+				continue;
+		}
+		if(GAMESTATE->m_pCurSongGroup!="")
+		{
+			if(0 != stricmp( sGroupDirName, GAMESTATE->m_pCurSongGroup ))
 				continue;
 		}
 		if( 0 == stricmp( sGroupDirName, "cvs" ) )	// the directory called "CVS"
@@ -335,7 +364,17 @@ void SongManager::FreeSongs()
 		m_pBestSongs[i].clear();
 	m_pShuffledSongs.clear();
 }
-
+void SongManager::FreeSongsFromGroup(CString GroupName)
+{
+	vector<Song*>::iterator it;
+	for(it=m_pSongs.begin();it!=m_pSongs.end();)
+	{
+		if((*it)->m_sGroupName==GroupName)
+			it=m_pSongs.erase(it);
+		else
+			it++;
+	}
+}
 CString SongManager::GetGroupBannerPath( CString sGroupName )
 {
 	unsigned i;

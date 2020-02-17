@@ -24,6 +24,7 @@ public:
 
 	void InitSongsFromDisk( LoadingWindow *ld );
 	void FreeSongs();
+	void FreeSongsFromGroup(CString GroupName);
 	void Cleanup();
 
 	void Invalidate( Song *pStaleSong );
@@ -43,6 +44,7 @@ public:
 
 	void InitAll( LoadingWindow *ld );	// songs, courses, groups - everything.
 	void Reload( LoadingWindow *ld=NULL );	// songs, courses, groups - everything.
+	void FastReload( LoadingWindow *ld=NULL );
 	void PreloadSongImages();
 
 

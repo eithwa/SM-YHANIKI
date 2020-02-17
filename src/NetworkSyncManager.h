@@ -132,6 +132,10 @@ public:
 	CString m_sMainTitle;
 	CString m_sArtist;
 	CString m_sSubTitle;
+
+	CString m_sCurMainTitle;
+	CString m_sCurArtist;
+	CString m_sCurSubTitle;
 	int m_iSelectMode;
 	void SelectUserSong();
 
