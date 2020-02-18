@@ -97,7 +97,8 @@ protected:
 	RageSound		m_soundMusic;
 
 	RageSound		m_soundAssistTick;
-
+// for auto save
+	time_t          start_time;
 
 public:
 	enum MainMenuChoice {

@@ -384,6 +384,8 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	m_soundAssistTick.Load(		THEME->GetPathToS("ScreenEdit assist tick") );
 
 	this->HandleScreenMessage( SM_DoUpdateTextInfo );
+	
+	start_time = time(0);
 }
 
 ScreenEdit::~ScreenEdit()
@@ -442,12 +444,11 @@ void ScreenEdit::PlayPreviewMusic()
 
 void ScreenEdit::AutoSave()
 {
-	static time_t start = time(0);
 	time_t now = time(0);
 	int save_time = (PREFSMAN->m_bEditorAutosaveMinute)*60;
-	if((now-start) > save_time){
+	if((now-start_time) > save_time){
 		HandleMainMenuChoice( save, NULL );
-		start = now;
+		start_time = now;
 	}
 }
 
