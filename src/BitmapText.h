@@ -17,6 +17,7 @@ public:
 	bool LoadFromFont( CString sFontName );
 	bool LoadFromTextureAndChars( CString sTexturePath, CString sChars );
 	void SetText( CString sText, CString sAlternateText = "", int iWrapWidthPixels = -1 );
+	void SetText2( CString sText, CString sAlternateText = "", int iWrapWidthPixels = -1 );
 	void SetMaxWidth( float MaxWidth );
 	void SetWrapWidthPixels( int iWrapWidthPixels );
 

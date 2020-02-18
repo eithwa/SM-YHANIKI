@@ -619,7 +619,7 @@ void NetworkSyncManager::ProcessInput()
 				SCREENMAN->SystemMessage( SysMSG );
 			}
 			break;
-		case NSCCM:	//Chat message from server					
+		case NSCCM:	//Chat message from server
 			{
 				m_sChatText += m_packet.ReadNT() + " \n ";
 				//10000 chars backlog should be more than enough
@@ -633,7 +633,6 @@ void NetworkSyncManager::ProcessInput()
 				m_sMainTitle = m_packet.ReadNT();
 				m_sArtist = m_packet.ReadNT();
 				m_sSubTitle = m_packet.ReadNT();
-				LOG->Info("NSCRSG %d",m_iSelectMode);
 				m_sCurMainTitle=m_sMainTitle;
 				m_sCurArtist=m_sArtist;
 				m_sCurSubTitle=m_sSubTitle;
