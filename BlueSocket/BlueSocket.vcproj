@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\common.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\winsocket_client.cpp"
 				>
 			</File>

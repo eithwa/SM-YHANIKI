@@ -827,7 +827,10 @@ void NetworkSyncManager::ProcessInput()
 				//LOG->Info("client_cmd %s",client_cmd.c_str());
 				//system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
 
-				BlueSocket::GetFile(server_ip.c_str(), (connet_dir + "\\" + zip_name).c_str(), file_size.c_str());
+				//RageThread getFileThread;
+				//getFileThread.SetName("GetFile");
+
+				BlueSocket::GetFile(server_ip.c_str(), (connet_dir + "\\" + zip_name).c_str(), file_size.c_str());				
 
 				CString zip_cmd = "7za.exe x ";
 						zip_cmd+=" \"";
