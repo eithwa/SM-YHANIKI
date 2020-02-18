@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa  /wd4430 /wd4996"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;..\ThirdParty\SDL-1.2.6\include&quot;;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
+				AdditionalIncludeDirectories=".;..\BlueSocket;&quot;..\ThirdParty\SDL-1.2.6\include&quot;;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,WINDOWS,DEBUG"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -76,16 +76,16 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
+				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 &quot;$(intdir)\verstub.obj&quot;"
-				AdditionalDependencies="gdi32.lib shell32.lib"
+				AdditionalDependencies="gdi32.lib shell32.lib BlueSocket_debug.lib"
 				OutputFile="../Program/StepMania-debug.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\ThirdParty\WinDDK\7600.16385.1\lib\ATL\amd64;..\ThirdParty\dx80\lib;..\ThirdParty"
+				AdditionalLibraryDirectories="..\BlueSocket;..\ThirdParty\WinDDK\7600.16385.1\lib\ATL\amd64;..\ThirdParty\dx80\lib;..\ThirdParty"
 				IgnoreDefaultLibraryNames="wininet.lib;msimg32.lib;libci.lib;msvcrt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="../Debug/StepMania-debug.pdb"
@@ -159,7 +159,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories=".;&quot;..\ThirdParty\SDL-1.2.6\include&quot;;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
+				AdditionalIncludeDirectories=".;..\BlueSocket;&quot;..\ThirdParty\SDL-1.2.6\include&quot;;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,WINDOWS,RELEASE"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -190,16 +190,16 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
+				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 &quot;$(intdir)\verstub.obj&quot;"
-				AdditionalDependencies="gdi32.lib shell32.lib"
+				AdditionalDependencies="gdi32.lib shell32.lib BlueSocket.lib"
 				OutputFile="../Program/StepMania.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\ThirdParty\WinDDK\7600.16385.1\lib\ATL\amd64;..\ThirdParty\dx80\lib;..\ThirdParty"
+				AdditionalLibraryDirectories="..\BlueSocket;..\ThirdParty\WinDDK\7600.16385.1\lib\ATL\amd64;..\ThirdParty\dx80\lib;..\ThirdParty"
 				IgnoreDefaultLibraryNames="wininet.lib;msimg32.lib;libci.lib"
 				ProgramDatabaseFile="../Release/StepMania.pdb"
 				GenerateMapFile="true"

@@ -7,12 +7,12 @@ Cache/
 Characters/
 Courses/
 Data/
-Debug/
+**/Debug
 NoteSkins/
 Packages/
 Program/
 RandomMovies/
-Release/
+**/Release
 Songs/
 Themes/
 ThirdParty/
@@ -26,3 +26,4 @@ winsocket_server.exe
 src/StepMania.suo
 src/crypto51/d2utmpwOSSWZ
 crashinfo.txt
+**/*.lib

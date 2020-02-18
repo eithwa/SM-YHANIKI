@@ -40,6 +40,8 @@ void NetworkSyncManager::SelectUserSong() { }
 #include "GameManager.h"
 #include "arch/LoadingWindow/LoadingWindow.h"
 
+#include "BlueSocket.h"
+
 const ScreenMessage	SM_AddToChat	= ScreenMessage(SM_User+4);
 const ScreenMessage SM_ChangeSong	= ScreenMessage(SM_User+5);
 const ScreenMessage SM_GotEval		= ScreenMessage(SM_User+6);
@@ -776,15 +778,19 @@ void NetworkSyncManager::ProcessInput()
 				m_packet.WriteNT( file_size_ );
 				NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
 				//==========
-				CString server_cmd = "winsocket_server.exe ";
-						server_cmd+=ip_address.c_str();
-						server_cmd+=" \"";
-						server_cmd+=connet_dir;
-						server_cmd+="\\";
-						server_cmd+=zip_name;
-						server_cmd+="\"";
-				LOG->Info("server_cmd %s",server_cmd.c_str());
-				system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
+
+				BlueSocket::SendFile(ip_address.c_str(), (connet_dir + "\\" + zip_name).c_str());
+
+				//EzSockets* SendSongServer = new EzSockets;
+				//CString server_cmd = "winsocket_server.exe ";
+				//		server_cmd+=ip_address.c_str();
+				//		server_cmd+=" \"";
+				//		server_cmd+=connet_dir;
+				//		server_cmd+="\\";
+				//		server_cmd+=zip_name;
+				//		server_cmd+="\"";
+				//LOG->Info("server_cmd %s",server_cmd.c_str());
+				//system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
 			}
 			break;
 		case NSSSC:
@@ -808,17 +814,21 @@ void NetworkSyncManager::ProcessInput()
 					   connect_dir_cmd+=connet_dir;
 					   connect_dir_cmd+="\"";
 				system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
+
 				string zip_name = "temp.zip";
-				CString client_cmd = "winsocket_client.exe ";
-						client_cmd+=server_ip.c_str();
-						client_cmd+=" \"";
-						client_cmd+=connet_dir;
-						client_cmd+="\\";
-						client_cmd+=zip_name;
-						client_cmd+="\" ";
-						client_cmd+=file_size.c_str();
-				LOG->Info("client_cmd %s",client_cmd.c_str());
-				system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
+				//CString client_cmd = "winsocket_client.exe ";
+				//		client_cmd+=server_ip.c_str();
+				//		client_cmd+=" \"";
+				//		client_cmd+=connet_dir;
+				//		client_cmd+="\\";
+				//		client_cmd+=zip_name;
+				//		client_cmd+="\" ";
+				//		client_cmd+=file_size.c_str();
+				//LOG->Info("client_cmd %s",client_cmd.c_str());
+				//system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
+
+				BlueSocket::GetFile(server_ip.c_str(), (connet_dir + "\\" + zip_name).c_str(), file_size.c_str());
+
 				CString zip_cmd = "7za.exe x ";
 						zip_cmd+=" \"";
 						zip_cmd+=connet_dir;

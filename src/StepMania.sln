@@ -1,11 +1,16 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StepMania", "StepMania.vcproj", "{670745A6-106B-420D-A2A9-D4F89A23986E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44E4D760-338B-4510-AFEE-8409D07FBAE1} = {44E4D760-338B-4510-AFEE-8409D07FBAE1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StandAloneServer", "..\StandAloneServer\StandAloneServer.vcproj", "{8E516C2C-D99A-47D3-AA31-9DA33916A325}"
 	ProjectSection(ProjectDependencies) = postProject
 		{670745A6-106B-420D-A2A9-D4F89A23986E} = {670745A6-106B-420D-A2A9-D4F89A23986E}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlueSocket", "..\BlueSocket\BlueSocket.vcproj", "{44E4D760-338B-4510-AFEE-8409D07FBAE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{8E516C2C-D99A-47D3-AA31-9DA33916A325}.Debug|Win32.Build.0 = Debug|Win32
 		{8E516C2C-D99A-47D3-AA31-9DA33916A325}.Release|Win32.ActiveCfg = Release|Win32
 		{8E516C2C-D99A-47D3-AA31-9DA33916A325}.Release|Win32.Build.0 = Release|Win32
+		{44E4D760-338B-4510-AFEE-8409D07FBAE1}.Debug|Win32.ActiveCfg = Release|Win32
+		{44E4D760-338B-4510-AFEE-8409D07FBAE1}.Debug|Win32.Build.0 = Release|Win32
+		{44E4D760-338B-4510-AFEE-8409D07FBAE1}.Release|Win32.ActiveCfg = Release|Win32
+		{44E4D760-338B-4510-AFEE-8409D07FBAE1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
