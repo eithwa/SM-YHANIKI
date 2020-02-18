@@ -799,6 +799,7 @@ void ScreenNetSelectMusic::MenuLeft( PlayerNumber pn, const InputEventType type 
 	{
 	case SelectGroup:
 		m_iGroupNum--;
+		m_iSongNum=0;
 		UpdateGroupsListPos();
 		UpdateSongsList();
 		UpdateSongsListPos();
@@ -849,6 +850,7 @@ void ScreenNetSelectMusic::MenuRight( PlayerNumber pn, const InputEventType type
 	{
 	case SelectGroup:
 		m_iGroupNum++;
+		m_iSongNum=0;
 		UpdateGroupsListPos();
 		UpdateSongsList();
 		UpdateSongsListPos();

@@ -27,6 +27,7 @@
 #include "GameConstantsAndTypes.h"
 #include "StepMania.h"
 #include "CommonMetrics.h"
+#include "NetworkSyncManager.h"
 
 #include <ctime>
 #include <set>
@@ -1339,7 +1340,7 @@ void GameState::AdjustFailType()
 	this->m_SongOptions.m_FailType = so.m_FailType;
 
     /* Easy and beginner are never harder than FAIL_END_OF_SONG. */
-	if(dc <= DIFFICULTY_EASY)
+	if(dc <= DIFFICULTY_EASY || NSMAN->useSMserver==true)
 		setmax(this->m_SongOptions.m_FailType, SongOptions::FAIL_END_OF_SONG);
 
 	/* If beginner's steps were chosen, and this is the first stage,
