@@ -215,12 +215,11 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 			Reply.Write1(NSSSC + NSServerOffset);
 			Reply.WriteNT(server_ip);
 			Reply.WriteNT(file_size);
-			// Reply.WriteNT(ListPlayers());
 			SendNetPacket(client_index, Reply);
 
 			LastSongInfo.title="NULL";
 			LastSongInfo.artist="NULL";
-			LastSongInfo.subtitle="NULL";//if sent file success, ask play? again
+			LastSongInfo.subtitle="NULL";//if sent file success, ask "play?" again
 		}
 		break;
 	default:
@@ -670,9 +669,7 @@ void StepManiaLanServer::AnalizeChat(PacketFunctions &Packet, const unsigned int
 				Reply.Write1(NSSSS + NSServerOffset);
 				Reply.WriteNT(host_ip);
 				Reply.WriteNT(name);
-				// Reply.WriteNT(ListPlayers());
 				SendNetPacket(clientNum, Reply);
-				// bannedIPs.push_back(Client[x]->clientSocket.address);
 			}
 		}
 		else if ((command.compare("list") == 0)||(command.compare("have") == 0))
@@ -973,15 +970,22 @@ CString StepManiaLanServer::ListPlayers()
 				if (Client[x]->Player[y].name.length() > 0){
 					if(x==0){
 						list += "[Host] ";
-					}else{
-						list +="[";
+					}else if(x==1){
+						list +="  [ ";
 						CString x_;
 						x_.Format("%d", x);
 						list +=x_;
-						list +=".] ";
+						list +=".]   ";
+					}else{
+						list +="  [";
+						CString x_;
+						x_.Format("%d", x);
+						list +=x_;
+						list +=".]   ";
 					}
 					list += Client[x]->Player[y].name + "\n";
 				}
+	LOG->Info("%s", list.c_str());
 	return list;
 }
 

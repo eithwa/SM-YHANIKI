@@ -293,7 +293,6 @@ void BitmapText::DrawChars()
 void BitmapText::SetText( CString sText, CString sAlternateText, int iWrapWidthPixels )
 {
 	ASSERT( m_pFont );
-
 	if(StringWillUseAlternate(sText, sAlternateText))
 		sText = sAlternateText;
 
@@ -370,7 +369,87 @@ void BitmapText::SetText( CString sText, CString sAlternateText, int iWrapWidthP
 	BuildChars();
 	UpdateBaseZoom();
 }
+void BitmapText::SetText2( CString sText, CString sAlternateText, int iWrapWidthPixels )
+{
+	ASSERT( m_pFont );
+	if(StringWillUseAlternate(sText, sAlternateText))
+		sText = sAlternateText;
 
+	if( iWrapWidthPixels == -1 )	// wrap not specified
+		iWrapWidthPixels = m_iWrapWidthPixels;
+
+	if(m_sText == sText && iWrapWidthPixels==m_iWrapWidthPixels)
+		return;
+	m_sText = sText;
+	m_iWrapWidthPixels = iWrapWidthPixels;
+
+
+	// Break the string into lines.
+	//
+	m_wTextLines.clear();
+
+	if( iWrapWidthPixels == -1 )
+	{
+		split( CStringToWstring(sText), L"\n", m_wTextLines, false );
+	}
+	else
+	{
+		//
+		// Break sText into lines that don't exceed iWrapWidthPixels
+		// (if only one word fits on the line, it may be larger than iWrapWidthPixels).
+		//
+		// TODO: Investigate whether this works in all languages
+		/* It doesn't.  I can add Japanese wrapping, at least.  We could handle hyphens
+		 * and soft hyphens and pretty easily, too. -glenn */
+		// TODO: Move this wrapping logic into Font
+		CStringArray asLines;
+		split( sText, "\n", asLines );
+
+		for( unsigned line = 0; line < asLines.size(); ++line )
+		{
+			CStringArray asWords;
+			split( asLines[line], " ", asWords );
+
+			CString sCurLine;
+			int iCurLineWidth = 0;
+
+			/* Note that GetLineWidthInSourcePixels does not include horizontal overdraw
+			 * right now (eg. italic fonts), so it's possible to go slightly over. */
+			for( unsigned i=0; i<asWords.size(); i++ )
+			{
+				const CString &sWord = asWords[i];
+				int iWidthWord = m_pFont->GetLineWidthInSourcePixels( CStringToWstring(sWord) );
+
+				if( sCurLine.empty() )
+				{
+					sCurLine = sWord;
+					iCurLineWidth = iWidthWord;
+					continue;
+				}
+
+				CString sToAdd = " " + sWord;
+				int iWidthToAdd = m_pFont->GetLineWidthInSourcePixels(L" ") + iWidthWord;
+				if( iCurLineWidth + iWidthToAdd <= iWrapWidthPixels )	// will fit on current line
+				{
+					sCurLine += sToAdd;
+					iCurLineWidth += iWidthToAdd;
+				}
+				else
+				{
+					// m_wTextLines.push_back( CStringToWstring(sCurLine) );
+					m_wTextLines.push_back( CStringToWstring(asLines[line]) );
+					sCurLine = sWord;
+					iCurLineWidth = iWidthWord;
+				}
+			}
+			// m_wTextLines.push_back( CStringToWstring(sCurLine) );
+			m_wTextLines.push_back( CStringToWstring(asLines[line]) );
+		}
+	}
+
+	BuildChars();
+	UpdateBaseZoom();
+}
 void BitmapText::SetMaxWidth( float MaxWidth )
 {
 	m_fMaxWidth = MaxWidth;

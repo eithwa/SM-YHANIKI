@@ -594,13 +594,15 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_AddToChat:
 		{
-			m_textOutHidden.SetText( NSMAN->m_sChatText );
+			m_textOutHidden.SetText2( NSMAN->m_sChatText );
 			vector <wstring> wLines;
 			m_textOutHidden.GetLines( wLines );
 			m_actualText = "";
 			for (unsigned i = max(int(wLines.size()) - SHOW_CHAT_LINES, 0 ) ; i < wLines.size() ; ++i)
+			{
 				m_actualText += WStringToCString( wLines[i] )+'\n';
-			m_textChatOutput.SetText( m_actualText );
+			}
+			m_textChatOutput.SetText2( m_actualText );
 			break;
 		}
 	case SM_ChangeSong:
@@ -797,6 +799,7 @@ void ScreenNetSelectMusic::MenuLeft( PlayerNumber pn, const InputEventType type 
 	{
 	case SelectGroup:
 		m_iGroupNum--;
+		m_iSongNum=0;
 		UpdateGroupsListPos();
 		UpdateSongsList();
 		UpdateSongsListPos();
@@ -847,6 +850,7 @@ void ScreenNetSelectMusic::MenuRight( PlayerNumber pn, const InputEventType type
 	{
 	case SelectGroup:
 		m_iGroupNum++;
+		m_iSongNum=0;
 		UpdateGroupsListPos();
 		UpdateSongsList();
 		UpdateSongsListPos();
@@ -974,7 +978,7 @@ void ScreenNetSelectMusic::DrawPrimitives()
 
 void ScreenNetSelectMusic::UpdateTextInput()
 {
-	m_textChatInput.SetText( m_sTextInput );  
+	m_textChatInput.SetText2( m_sTextInput );  
 }
 
 void ScreenNetSelectMusic::StartSelectedSong()
