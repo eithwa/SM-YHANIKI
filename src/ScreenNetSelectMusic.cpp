@@ -685,10 +685,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 			// if(haveSong)
 			// 	UpdateGroupsListPos();
 			//==========================
-			static int pre_m_iSelectMode=0;
-			if(pre_m_iSelectMode==2)
-				break;
-			pre_m_iSelectMode=NSMAN->m_iSelectMode;
+			
 			switch (NSMAN->m_iSelectMode)
 			{
 			case 3:
