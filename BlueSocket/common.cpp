@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <string>
 
+#include "BlueSocket.h"
+
 using namespace std;
 
 namespace BlueSocket {
+
+	Packet::packet(const char* _ip, const char* _dir, int _fileSize) {
+		this->ip = _ip;
+		this->dir = _dir;
+		this->fileSize = _fileSize;
+	}
 
 	unsigned long GetFileLength ( FILE * fileName)
 	{

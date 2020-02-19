@@ -15,9 +15,16 @@ using namespace std;
 
 namespace BlueSocket {
 
-	void GetFile(const char *ip = "127.0.0.1", const char *filename = "", const char *filesize = "0") {
+	int GetFile_RageThread(void* data) {
+		Packet* packet = (Packet*) data;
+		GetFile(packet->ip, packet->dir, packet->fileSize);
+		return 0;
+	}
 
-		int file_size = atoi(filesize);
+
+	void GetFile(const char *ip = "127.0.0.1", const char *filename = "", int filesize = 1) {
+
+		int file_size = filesize;
 		printf("IP: %s\n", ip);
 		printf("File Directory: %s\n", filename);
 		printf("File size: %d\n", file_size);

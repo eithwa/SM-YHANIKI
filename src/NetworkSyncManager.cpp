@@ -779,7 +779,15 @@ void NetworkSyncManager::ProcessInput()
 				NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
 				//==========
 
-				BlueSocket::SendFile(ip_address.c_str(), (connet_dir + "\\" + zip_name).c_str());
+				RageThread sendFileThread;
+				sendFileThread.SetName("SendFile");
+				sendFileThread.Create(
+					BlueSocket::SendFile_RageThread, 
+					new BlueSocket::Packet(
+						ip_address.c_str(),
+						(connet_dir + "\\" + zip_name).c_str(), 1));
+
+				//BlueSocket::SendFile(ip_address.c_str(), (connet_dir + "\\" + zip_name).c_str());
 
 				//EzSockets* SendSongServer = new EzSockets;
 				//CString server_cmd = "winsocket_server.exe ";
@@ -816,21 +824,22 @@ void NetworkSyncManager::ProcessInput()
 				system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
 
 				string zip_name = "temp.zip";
-				//CString client_cmd = "winsocket_client.exe ";
-				//		client_cmd+=server_ip.c_str();
-				//		client_cmd+=" \"";
-				//		client_cmd+=connet_dir;
-				//		client_cmd+="\\";
-				//		client_cmd+=zip_name;
-				//		client_cmd+="\" ";
-				//		client_cmd+=file_size.c_str();
-				//LOG->Info("client_cmd %s",client_cmd.c_str());
-				//system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
 
-				//RageThread getFileThread;
-				//getFileThread.SetName("GetFile");
+				/*RageThread getFileThread;
+				getFileThread.SetName("GetFile");
+				getFileThread.Create(
+					BlueSocket::GetFile_RageThread, 
+					new BlueSocket::Packet(
+						server_ip.c_str(),
+						(connet_dir + "\\" + zip_name).c_str(), atoi(file_size.c_str())));
 
-				BlueSocket::GetFile(server_ip.c_str(), (connet_dir + "\\" + zip_name).c_str(), file_size.c_str());				
+				getFileThread.Wait();*/
+
+				BlueSocket::GetFile(
+					server_ip.c_str(), 
+					(connet_dir + "\\" + zip_name).c_str(), 
+					atoi(file_size.c_str())
+				);
 
 				CString zip_cmd = "7za.exe x ";
 						zip_cmd+=" \"";
