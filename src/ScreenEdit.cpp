@@ -26,7 +26,7 @@
 #include "ScreenTextEntry.h"
 #include "PlayerOptions.h"
 #include <ctime>
-
+#include "ArrowEffects.h"
 const float RECORD_HOLD_SECONDS = 0.3f;
 
 
@@ -630,6 +630,10 @@ void ScreenEdit::DrawPrimitives()
 			m_textHelp.Draw();
 			m_sprInfo.Draw();
 			m_textInfo.Draw();
+
+			float fY = ArrowGetYPos( PLAYER_1, 0, -PLAYER_HEIGHT/2, 0);
+			float fPosY = CENTER_Y + fY;
+			m_SnapDisplay.SetY(fPosY);
 			m_SnapDisplay.Draw();
 
 			// HACK:  Make NoteFieldEdit draw using the trailing beat
@@ -1514,7 +1518,6 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 	case SM_BackFromSongOptions:
 		// coming back from PlayerOptions or SongOptions
 		GAMESTATE->StoreSelectedOptions();
-
 		// stop any music that screen may have been playing
 		SOUND->StopMusic();
 
@@ -1644,6 +1647,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromDisplayBPMMin:
 		{
+
 			float fBPM = atof( ScreenTextEntry::s_sLastAnswer.c_str() );
 			if ( fBPM <= 0 )
 				break;
