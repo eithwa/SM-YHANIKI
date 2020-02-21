@@ -1067,14 +1067,10 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 	Song* pSong = m_vSongs[j];
 	if( pSong  &&  pSong->HasMusic() )
 	{
-		if(SOUND->GetMusicPath().CompareNoCase(pSong->GetMusicPath())) // dont play the same sound over and over
-		{
-			
-			SOUND->StopMusic();
-			SOUND->PlayMusic(pSong->GetMusicPath(), true,
-				pSong->m_fMusicSampleStartSeconds,
-				pSong->m_fMusicSampleLengthSeconds);
-		}
+		SOUND->StopMusic();
+		SOUND->PlayMusic(pSong->GetMusicPath(), true,
+			pSong->m_fMusicSampleStartSeconds,
+			pSong->m_fMusicSampleLengthSeconds);
 	}
 
 }

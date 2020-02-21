@@ -663,12 +663,10 @@ void StepManiaLanServer::ClientSort(int clientNum)
 			if(i==clientNum)continue;
 			Client_tmp.push_back(Client.at(i));
 		}
-		// Client_tmp.assign(Client.begin(), Client.end());
-		// GameClient *tmp = Client_tmp[0];
-		// Client_tmp[0]=Client_tmp[clientNum];
-		// Client_tmp[clientNum]=tmp;
+		Client.clear();
 		Client.assign(Client_tmp.begin(), Client_tmp.end());
 	}
+	AssignPlayerIDs();
 	SendUserList();
 }
 

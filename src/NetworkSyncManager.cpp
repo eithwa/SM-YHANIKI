@@ -655,7 +655,7 @@ void NetworkSyncManager::ProcessInput()
 						m_ActivePlayer.push_back( i );
 					}
 					m_PlayerStatus.push_back( PStatus );
-					m_PlayerNames.push_back( m_packet.ReadNT() );
+					m_PlayerNames.push_back( m_packet.ReadNT() );	
 				}
 			}
 			break;
