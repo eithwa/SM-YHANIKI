@@ -960,7 +960,10 @@ void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, uns
 {
 	CString message = "";
 	int EntExitCode = Packet.Read1();
-
+	if(clientNum>=Client.size())
+	{
+		return;
+	}
 	message += Client[clientNum]->Player[0].name;
 	if (Client[clientNum]->twoPlayers)
 		message += "&";
