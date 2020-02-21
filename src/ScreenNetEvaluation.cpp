@@ -147,6 +147,12 @@ void ScreenNetEvaluation::UpdateStats()
 
 	m_textPlayerOptions[m_pActivePlayer].SetText( NSMAN->m_EvalPlayerData[m_iCurrentPlayer].playerOptions );
 	m_Percent[m_pActivePlayer].SetPercent(NSMAN->m_EvalPlayerData[m_iCurrentPlayer].percentage);
+	//=========
+	m_Graph[m_pActivePlayer].LoadFromNet(NSMAN->m_EvalPlayerData[m_iCurrentPlayer].Graph);
+	m_Graph[m_pActivePlayer].DrawPrimitives();
+	// SET_XY_AND_ON_COMMAND( m_Graph[m_pActivePlayer] );
+	// this->AddChild( &m_Graph[m_pActivePlayer] );
+	//=========
 }
 
 #endif

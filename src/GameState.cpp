@@ -60,6 +60,13 @@ GameState::GameState()
 	/* Don't reset yet; let the first screen do it, so we can
 	 * use PREFSMAN and THEME. */
 //	Reset();
+	FOREACH_PlayerNumber( p )
+	{
+		for(int i=0; i<100; i++)
+		{
+			m_PlayerGraph[p][i]=0;
+		}
+	}
 }
 
 GameState::~GameState()

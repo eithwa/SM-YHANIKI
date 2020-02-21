@@ -30,6 +30,7 @@ enum NSCommand
 	NSCUPPer,       //12
 	NSSSS,          //13 share song server
 	NSSSC,          //14
+	NSCGraph,        //15
 	NUM_NS_COMMANDS
 };
 
@@ -44,6 +45,7 @@ struct EndOfGame_PlayerData
 	int tapScores[NETNUMTAPSCORES];	//This will be a const soon enough
 	CString playerOptions;
 	CString percentage;
+	float Graph[100];
 };
 
 enum NSScoreBoardColumn
@@ -127,6 +129,7 @@ public:
 	//Used for options
 	void ReportPlayerOptions();
 	void ReportPercentage();
+	void ReportGraph();
 
 	//Used for song checking/changing
 	CString m_sMainTitle;

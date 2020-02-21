@@ -2319,7 +2319,15 @@ void ScreenGameplay::HandleScreenMessage( const ScreenMessage SM )
 			if( PREFSMAN->m_bEventMode )
 			{
 				if(EVAL_ON_FAIL) // go to the eval screen if we fail
-					SCREENMAN->SetNewScreen( "ScreenEvaluationStage" );
+				{
+					if(NSMAN->useSMserver)
+					{
+						SCREENMAN->SetNewScreen( NEXT_SCREEN );
+					}else
+					{
+						SCREENMAN->SetNewScreen( "ScreenEvaluationStage" );
+					}
+				}
 				else // the theme says just fail and go back to the song select for event mode
 					SCREENMAN->SetNewScreen( PREV_SCREEN );
 			}

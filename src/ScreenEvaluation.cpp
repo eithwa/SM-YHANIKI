@@ -438,6 +438,7 @@ void ScreenEvaluation::Init()
 	//
 	if( SHOW_GRAPH_AREA )
 	{
+		enum { VALUE_RESOLUTION=100 };
 		FOREACH_EnabledPlayer( p )
 		{
 			m_sprGraphFrame[p].Load( THEME->GetPathToG(ssprintf("ScreenEvaluation graph frame p%d",p+1)) );
@@ -449,10 +450,15 @@ void ScreenEvaluation::Init()
 			m_Graph[p].Load( THEME->GetPathToG(ssprintf("%s graph p%i",m_sName.c_str(), p+1)), GRAPH_START_HEIGHT );
 			//=========
 			m_Graph[p].LoadFromStageStats( stageStats, (PlayerNumber)p );
+			for(int i=0; i<VALUE_RESOLUTION; i++)
+			{
+				GAMESTATE->m_PlayerGraph[p][i]=m_Graph[p].Get_m_DestValues(i)*10000;
+			}
 			//=========
 			SET_XY_AND_ON_COMMAND( m_Graph[p] );
 			this->AddChild( &m_Graph[p] );
 		}
+		NSMAN->ReportGraph();
 	}
 
 	if( SHOW_COMBO_AREA )
@@ -476,6 +482,7 @@ void ScreenEvaluation::Init()
 		for( int g=GRADE_TIER_1; g<NUM_GRADES; g++ )
 			THEME->GetPathToG( "ScreenEvaluation grade "+ GradeToString((Grade)g) );
 
+		
 		FOREACH_EnabledPlayer( p )
 		{
 			m_sprGradeFrame[p].Load( THEME->GetPathToG(ssprintf("ScreenEvaluation grade frame p%d",p+1)) );
@@ -493,6 +500,7 @@ void ScreenEvaluation::Init()
 
 			m_sprGrade[p].Load( THEME->GetPathToG( "ScreenEvaluation grade "+ GradeToString(grade[p]) ) );
 			m_sprGrade[p]->SetName( ssprintf("GradeP%d",p+1) );
+			
 			SET_XY_AND_ON_COMMAND( m_sprGrade[p] );
 			this->AddChild( m_sprGrade[p] );
 		}

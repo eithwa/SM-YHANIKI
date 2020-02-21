@@ -222,6 +222,9 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 			LastSongInfo.subtitle="NULL";//if sent file success, ask "play?" again
 		}
 		break;
+	case NSCGraph:
+		ServerGetGraph(Packet, clientNum);
+		break;
 	default:
 		break;
 	}
@@ -442,9 +445,36 @@ void StepManiaLanServer::GameOver(PacketFunctions& Packet, const unsigned int cl
 				SendNetPacket(x, Reply);
 				Client[x]->wasIngame = false;
 			}
+		//============
+		for(x = 0; x < numPlayers; ++x)
+		{
+			Reply.ClearPacket();
+			Reply.Write1( NSCGraph + NSServerOffset );
+			Reply.Write1( (uint8_t) numPlayers );
+			Reply.Write1( (uint8_t) x );
+			for (int i=0; i<100; i++)
+			{
+				Reply.Write4( playersPtr[x]->Graph[i] );
+			}
+			for(int j=0; j<numPlayers; ++j)
+			{
+				SendNetPacket(j, Reply);
+			}
+		}
+		//============
 	}
 }
-
+void StepManiaLanServer::ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum)
+{
+	for(int i=0; i<100; i++)
+	{
+		Client[clientNum]->Player[0].Graph[i] = Packet.Read4();
+	}
+	for(int i=0; i<100; i++)
+	{
+		Client[clientNum]->Player[1].Graph[i] = Packet.Read4();
+	}
+}
 void StepManiaLanServer::AssignPlayerIDs()
 {
 	unsigned int counter = 0;
@@ -639,6 +669,7 @@ void StepManiaLanServer::ClientSort(int clientNum)
 		// Client_tmp[clientNum]=tmp;
 		Client.assign(Client_tmp.begin(), Client_tmp.end());
 	}
+	SendUserList();
 }
 
 void StepManiaLanServer::SendValue(uint8_t value, const unsigned int clientNum)
@@ -800,13 +831,13 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 			Reply.WriteNT(message);
 			SendNetPacket(clientNum, Reply);
 
-			Reply.ClearPacket();
-			Reply.Write1(NSCRSG + NSServerOffset);
-			Reply.Write1(1);
-			Reply.WriteNT(CurrentSongInfo.title);
-			Reply.WriteNT(CurrentSongInfo.artist);
-			Reply.WriteNT(CurrentSongInfo.subtitle);
-			SendNetPacket(clientNum, Reply);
+			// Reply.ClearPacket();
+			// Reply.Write1(NSCRSG + NSServerOffset);
+			// Reply.Write1(1);
+			// Reply.WriteNT(CurrentSongInfo.title);
+			// Reply.WriteNT(CurrentSongInfo.artist);
+			// Reply.WriteNT(CurrentSongInfo.subtitle);
+			// SendNetPacket(clientNum, Reply);
 		}
 	}
 

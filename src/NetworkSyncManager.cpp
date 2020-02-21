@@ -835,6 +835,19 @@ void NetworkSyncManager::ProcessInput()
 				SCREENMAN->SendMessageToTopScreen( SM_ReloadConnectPack );
 			}
 			break;
+		case NSCGraph:
+			{
+				int PlayersInPack = m_packet.Read1();
+				int PlayerNum = m_packet.Read1();
+				if(PlayerNum<PlayersInPack)
+				{
+					for(int i=0; i<100; i++)
+					{
+						m_EvalPlayerData[PlayerNum].Graph[i] = (float)m_packet.Read4()/10000;
+					}
+				}
+			}
+			break;
 		}
 		m_packet.ClearPacket();
 	}
@@ -872,6 +885,20 @@ void NetworkSyncManager::ReportPercentage()
 	FOREACH_PlayerNumber (pn)
 	{
 		m_packet.WriteNT( GAMESTATE->m_PlayerPercentage[pn] );
+	}
+		
+	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
+}
+void NetworkSyncManager::ReportGraph()
+{
+	m_packet.ClearPacket();
+	m_packet.Write1( NSCGraph );
+	FOREACH_PlayerNumber (pn)
+	{
+		for(int i=0; i<100; i++)
+		{
+			m_packet.Write4( GAMESTATE->m_PlayerGraph[pn][i] );
+		}
 	}
 		
 	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 

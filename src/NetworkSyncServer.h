@@ -25,6 +25,7 @@ public:
 	int diff;
 	CString options;
 	CString percentage;
+	int Graph[100];
 	LanPlayer();
 };
 
@@ -131,6 +132,7 @@ protected:
 	void Disconnect(const unsigned int clientNum);
 	void ClientsSongSelectStart();
 	void ResetLastSongInfo();
+	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
 #endif
 };
 

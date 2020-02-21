@@ -48,7 +48,14 @@ void GraphDisplay::LoadFromStageStats( const StageStats &s, PlayerNumber pn )
 		CLAMP( m_DestValues[i], 0.f, 1.f );
 	UpdateVerts();
 }
-
+void GraphDisplay::LoadFromNet(float Graph[100])
+{
+	memcpy( m_LastValues, m_CurValues, sizeof(m_CurValues) );
+	m_Position = 0.9;
+	for( unsigned i=0; i<ARRAYSIZE(m_DestValues); i++ )
+		m_DestValues[i] = Graph[i];
+	UpdateVerts();	
+}
 void GraphDisplay::UpdateVerts()
 {
 	RectF quadVertices;
@@ -131,7 +138,12 @@ void GraphDisplay::DrawPrimitives()
 	DISPLAY->DrawQuads( Slices, ARRAYSIZE(Slices) );
 	DISPLAY->SetTexture( 0, NULL );
 }
-
+float GraphDisplay::Get_m_DestValues(int i){
+	if(i<VALUE_RESOLUTION)
+		return m_DestValues[i];
+	else
+		return 0;
+}
 /*
  * (c) 2003 Glenn Maynard
  * All rights reserved.

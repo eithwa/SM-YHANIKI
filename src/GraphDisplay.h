@@ -15,9 +15,10 @@ public:
 	void Unload();
 
 	void LoadFromStageStats( const StageStats &s, PlayerNumber pn );
+	void LoadFromNet(float Graph[100]);
 	void Update( float fDeltaTime );
 	void DrawPrimitives();
-
+	float Get_m_DestValues(int i);
 private:
 	void UpdateVerts();
 

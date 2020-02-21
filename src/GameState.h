@@ -223,6 +223,8 @@ public:
 	PlayerOptions	m_PlayerOptions[NUM_PLAYERS];			// change this, and current will move gradually toward it
 	PlayerOptions   m_StoredPlayerOptions[NUM_PLAYERS];	// user's choices on the PlayerOptions screen
 	CString 		m_PlayerPercentage[NUM_PLAYERS];
+	enum { VALUE_RESOLUTION=100 };
+	int             m_PlayerGraph[NUM_PLAYERS][VALUE_RESOLUTION];
 	SongOptions		m_SongOptions;
 	SongOptions		m_StoredSongOptions;
 

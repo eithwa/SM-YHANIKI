@@ -366,7 +366,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		// SCREENMAN->PopTopScreen();
 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
 	}
-	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F1));
+	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F5));
 	if(bHoldingF5)
 	{
 		NSMAN->ReportNSSOnOff(2);
@@ -691,7 +691,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 				break;
 			}
 			pre_m_iSelectMode=NSMAN->m_iSelectMode;
-			
+
 			switch (NSMAN->m_iSelectMode)
 			{
 			case 3:
