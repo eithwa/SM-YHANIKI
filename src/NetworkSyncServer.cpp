@@ -657,13 +657,13 @@ void StepManiaLanServer::ClientSort(int clientNum)
 	if ( clientNum < Client.size() )
 	{
 		vector<GameClient*> Client_tmp;
-		//Client_tmp.push_back(Client.at(clientNum));
-		for(int i=0;i<Client.size();i++)
+		Client_tmp.push_back(Client.at(clientNum));//host
+		for(int i=1;i<Client.size();i++)
 		{
 			if(i==clientNum)continue;
 			Client_tmp.push_back(Client.at(i));
 		}
-		Client_tmp.push_back(Client.at(clientNum));//set the host to last
+		Client_tmp.push_back(Client.at(0));//set the pre host to the last
 		Client.clear();
 		Client.assign(Client_tmp.begin(), Client_tmp.end());
 	}
