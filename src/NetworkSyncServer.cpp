@@ -657,12 +657,13 @@ void StepManiaLanServer::ClientSort(int clientNum)
 	if ( clientNum < Client.size() )
 	{
 		vector<GameClient*> Client_tmp;
-		Client_tmp.push_back(Client.at(clientNum));
+		//Client_tmp.push_back(Client.at(clientNum));
 		for(int i=0;i<Client.size();i++)
 		{
 			if(i==clientNum)continue;
 			Client_tmp.push_back(Client.at(i));
 		}
+		Client_tmp.push_back(Client.at(clientNum));//set the host to last
 		Client.clear();
 		Client.assign(Client_tmp.begin(), Client_tmp.end());
 	}
@@ -682,7 +683,7 @@ void StepManiaLanServer::AnalizeChat(PacketFunctions &Packet, const unsigned int
 	if (message.at(0) == '/')
 	{
 		CString command = message.substr(1, message.find(" ")-1);
-		if((command.compare("share") == 0))
+		if((command.compare("share") == 0)||(command.compare("share_f") == 0))
 		{
 			CString name = message.substr(message.find(" ")+1);
 			int client_index = atof( name.c_str() );
@@ -698,6 +699,13 @@ void StepManiaLanServer::AnalizeChat(PacketFunctions &Packet, const unsigned int
 				Reply.Write1(NSSSS + NSServerOffset);
 				Reply.WriteNT(host_ip);
 				Reply.WriteNT(name);
+				if((command.compare("share") == 0))
+				{
+					Reply.Write1(1);//open the video file filter
+				}else
+				{
+					Reply.Write1(0);
+				}
 				SendNetPacket(clientNum, Reply);
 			}
 		}

@@ -677,6 +677,7 @@ void NetworkSyncManager::ProcessInput()
 				LOG->Info("open the share song server!!");
 				CString server_ip = m_packet.ReadNT();
 				CString player_num = m_packet.ReadNT();
+				int video_file_filter = m_packet.Read1();
 				CString now_SongDir;
 
 				//============
@@ -736,7 +737,10 @@ void NetworkSyncManager::ProcessInput()
 				filter_cmd+=zip_name;
 				filter_cmd+="\" ";
 				filter_cmd+="*.avi *.mpeg *.mpg *.mp4 -r";
-				system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+				if(video_file_filter==1)
+				{
+					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+				}
 				//==========
 				//open server and sent require to open client
 				CString file_dir;
@@ -772,7 +776,10 @@ void NetworkSyncManager::ProcessInput()
 					LOG->Info("re_zip %s",re_zip.c_str());
 					system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
 					//==========
-					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+					if(video_file_filter==1)
+					{
+						system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+					}
 					//==========
 					fp = fopen(file_dir, "rb");
 					file_size = GetFileLength(fp)/1024;//(kbs)
