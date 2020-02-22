@@ -1083,16 +1083,20 @@ void StepManiaLanServer::Host(CString &name, PacketFunctions& Packet, unsigned i
 			{
 				message += "Host changed to " + Client[x]->Player[y].name + ".";
 				ServerChat(message);
-				ClientSort(x);
-				rehosted = true;
-				ChangeHost = true;
+				if(x!=0)
+				{	
+					ClientSort(x);
+					rehosted = true;
+					ChangeHost = true;
+					return;
+				}
 			}
 		}
 	}
+	int clint_index = atof( name.c_str() );
 	if(!rehosted)
 	{
-		int clint_index = atof( name.c_str() );
-		if(clint_index>=0 && clint_index<Client.size())
+		if(clint_index!=0 && clint_index<Client.size())
 		{
 			for (int y = 0; (y < 2)&&(rehosted == false); ++y)
 			{
@@ -1103,12 +1107,14 @@ void StepManiaLanServer::Host(CString &name, PacketFunctions& Packet, unsigned i
 					ClientSort(clint_index);
 					rehosted = true;
 					ChangeHost = true;
+					return;
 				}
 			}
 		}
 	}
 	if(!rehosted){
-		message += "Failed! No one is called " + name + ".";
+		//message += "User doesn't exist !";
+		message += "Failed !";
 		//ServerChat(message);
 		Reply.ClearPacket();
 		Reply.Write1(NSCCM + NSServerOffset);
