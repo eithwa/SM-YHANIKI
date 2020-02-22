@@ -683,7 +683,7 @@ void StepManiaLanServer::AnalizeChat(PacketFunctions &Packet, const unsigned int
 	if (message.at(0) == '/')
 	{
 		CString command = message.substr(1, message.find(" ")-1);
-		if((command.compare("share") == 0)||(command.compare("share_f") == 0))
+		if((command.compare("share") == 0)||(command.compare("sharefull") == 0))
 		{
 			CString name = message.substr(message.find(" ")+1);
 			int client_index = atof( name.c_str() );
