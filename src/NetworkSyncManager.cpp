@@ -772,7 +772,7 @@ void NetworkSyncManager::ProcessInput()
 					LOG->Info("re_zip %s",re_zip.c_str());
 					system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
 					//==========
-					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg -r
+					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
 					//==========
 					fp = fopen(file_dir, "rb");
 					file_size = GetFileLength(fp)/1024;//(kbs)

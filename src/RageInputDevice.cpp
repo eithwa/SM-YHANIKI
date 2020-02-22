@@ -264,6 +264,28 @@ char DeviceInput::ToChar() const
 	case DEVICE_KEYBOARD:
 		if( button < 127 )
 			return (char) button;
+		else if(button==KEY_KP_C0)
+			return (char)'0';
+		else if(button==KEY_KP_C1)
+			return (char)'1';
+		else if(button==KEY_KP_C2)
+			return (char)'2';
+		else if(button==KEY_KP_C3)
+			return (char)'3';
+		else if(button==KEY_KP_C4)
+			return (char)'4';
+		else if(button==KEY_KP_C5)
+			return (char)'5';
+		else if(button==KEY_KP_C6)
+			return (char)'6';
+		else if(button==KEY_KP_C7)
+			return (char)'7';
+		else if(button==KEY_KP_C8)
+			return (char)'8';
+		else if(button==KEY_KP_C9)
+			return (char)'9';
+		else if(button==KEY_KP_PERIOD)
+			return '\56';//.
 		return '\0';
 	default:
 		return '\0';
