@@ -960,6 +960,8 @@ void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, uns
 {
 	CString message = "";
 	int EntExitCode = Packet.Read1();
+	static int pre_clientNum = -1;
+	static int pre_EntExitCode = -1;
 	if(clientNum>=Client.size())
 	{
 		return;
@@ -974,6 +976,10 @@ void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, uns
 	else
 		Client[clientNum]->inNetMusicSelect = false;
 
+	if(pre_clientNum==clientNum && pre_EntExitCode==EntExitCode)
+	{
+		return;
+	}
 	switch (EntExitCode)
 	{
 	case 0:
@@ -989,6 +995,8 @@ void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, uns
 		message += " came back from options.";
 		break;
 	}
+	pre_clientNum = clientNum;
+	pre_EntExitCode = EntExitCode;
 	ServerChat(message);
 }
 

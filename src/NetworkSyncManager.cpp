@@ -510,6 +510,7 @@ void NetworkSyncManager::ProcessInput()
 	{
 		SCREENMAN->SystemMessageNoAnimate("Connection to server dropped.");
 		useSMserver=false;
+		m_sChatText="";
 		return;
 	}
 
@@ -727,7 +728,15 @@ void NetworkSyncManager::ProcessInput()
 				zip_cmd+="\"";
 				LOG->Info("zip_cmd %s",zip_cmd.c_str());
 				system(zip_cmd.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
-				
+				//==========
+				CString filter_cmd = "7za.exe d ";
+				filter_cmd+="\"";
+				filter_cmd+=connet_dir;
+				filter_cmd+="\\";
+				filter_cmd+=zip_name;
+				filter_cmd+="\" ";
+				filter_cmd+="*.avi *.mpeg -r";
+				system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg -r
 				//==========
 				//open server and sent require to open client
 				CString file_dir;

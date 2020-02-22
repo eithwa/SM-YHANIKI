@@ -365,6 +365,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		GAMESTATE->m_bEditing = true;
 		// SCREENMAN->PopTopScreen();
 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+		return;
 	}
 	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F5));
 	if(bHoldingF5)
@@ -472,7 +473,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		}
 		break;
 	}
-	if(!input_check)
+	if(!input_check && DeviceI.button!=KEY_F1)
 	{
 		Screen::Input( DeviceI, type, GameI, MenuI, StyleI );	// default input handler
 	}

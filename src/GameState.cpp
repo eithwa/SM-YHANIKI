@@ -274,7 +274,10 @@ void GameState::PlayersFinalized()
 			{
 				m_pCurCharacters[pn] = GetStaticCharacter(m_PlayerOptions[pn].m_sCharacter);
 				// m_pCurCharacters[pn] = GetDefaultCharacter();
-			}	
+			}else
+			{
+				m_PlayerOptions[pn].m_sCharacter="default";
+			}
 		}
 		// Only set the sort order if it wasn't already set by a ModeChoice (or by an earlier profile)
 		if( m_SortOrder == SORT_INVALID && pProfile->m_SortOrder != SORT_INVALID )
