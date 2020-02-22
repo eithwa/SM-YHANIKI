@@ -735,8 +735,8 @@ void NetworkSyncManager::ProcessInput()
 				filter_cmd+="\\";
 				filter_cmd+=zip_name;
 				filter_cmd+="\" ";
-				filter_cmd+="*.avi *.mpeg -r";
-				system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg -r
+				filter_cmd+="*.avi *.mpeg *.mpg *.mp4 -r";
+				system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
 				//==========
 				//open server and sent require to open client
 				CString file_dir;
@@ -771,7 +771,9 @@ void NetworkSyncManager::ProcessInput()
 					re_zip+="\"";
 					LOG->Info("re_zip %s",re_zip.c_str());
 					system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
-
+					//==========
+					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg -r
+					//==========
 					fp = fopen(file_dir, "rb");
 					file_size = GetFileLength(fp)/1024;//(kbs)
 					file_size_.Format("%d", file_size);
