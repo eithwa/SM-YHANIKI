@@ -1060,13 +1060,35 @@ void MovieTexture_FFMpeg::SetPosition( float fSeconds )
 	/* We can reset to 0, but I don't think this API supports fast seeking
 	 * yet.  I don't think we ever actually seek except to 0 right now,
 	 * anyway. XXX */
+	// LOG->Trace( "Seek to %f", fSeconds );
+	// m_bWantRewind = true;
 	if( fSeconds != 0 )
 	{
 		// LOG->Warn( "MovieTexture_FFMpeg::SetPosition(%f): non-0 seeking unsupported; ignored", fSeconds );
 		// LOG->Info("start time ms ithink %f", fSeconds);
-		m_bWantRewind = true;
-		decoder->setPosition_flag = true;
-		decoder->setPosition_fSeconds = fSeconds;
+	
+		string videoName = GetID().filename;
+		std::size_t pos = videoName.find_last_of(".");
+  		std::string Extension = videoName.substr (pos);
+		// LOG->Info("VideoFile Name %s", videoName.c_str());
+		// LOG->Info("VideoFile Extension %s", Extension.c_str());
+		if(Extension==".avi"||Extension==".AVI")
+		{
+			m_bWantRewind = true;
+			decoder->setPosition_flag = true;
+			decoder->setPosition_fSeconds = fSeconds;
+		}
+		else
+		{
+			float fDelay = decoder->LastFrameDelay;
+
+			/* Restart. */
+			DestroyDecoder();
+			CreateDecoder();
+
+			decoder->Init();
+			m_Clock = -fDelay + fSeconds;
+		}
 		
 		//return;
 	}
