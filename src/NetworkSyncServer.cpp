@@ -3,6 +3,7 @@
 #include "RageLog.h"
 #include "PrefsManager.h"
 #include <time.h>
+#include <windows.h>
 
 #if defined(WITHOUT_NETWORKING)
 bool StepManiaLanServer::ServerStart() { return false; }
@@ -207,10 +208,11 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 			CString server_ip = Packet.ReadNT();
 			CString player_num = Packet.ReadNT();
 			CString file_size = Packet.ReadNT();
+			int client_index = atof( player_num.c_str() );
 			LOG->Info("NSSSC server_ip %s",server_ip.c_str());
 			LOG->Info("NSSSC file_size %s",file_size.c_str());
-			int client_index = atof( player_num.c_str() );
-			
+			LOG->Info("NSSSC client_index %d",client_index);
+
 			Reply.ClearPacket();
 			Reply.Write1(NSSSC + NSServerOffset);
 			Reply.WriteNT(server_ip);

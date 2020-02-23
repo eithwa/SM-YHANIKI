@@ -501,7 +501,193 @@ void NetworkSyncManager::Update(float fDeltaTime)
 	if (useSMserver)
 		ProcessInput();
 }
+HANDLE g_hMutex = NULL;
+DWORD NetworkSyncManager::ThreadProcNSSSS(void)
+{
+    LOG->Info("open the share song server!!");
+	// CString server_ip = m_packet.ReadNT();
+	// CString player_num = m_packet.ReadNT();
+	LOG->Info("player_num %s",player_num.c_str());
+	// int video_file_filter = m_packet.Read1();
+	CString now_SongDir;
 
+	//============
+	CString ip_address=this->NetPlayerClient->getIp();
+	LOG->Info("IP address %s", ip_address.c_str());
+	//==================
+	// if(now_SongDir==GAMESTATE->m_pCurSong->GetSongDir())return;
+	now_SongDir = GAMESTATE->m_pCurSong->GetSongDir();
+	LOG->Info("now_SongDir %s",now_SongDir.c_str());
+	string tmp = now_SongDir.c_str();
+	tmp = tmp.substr(0, tmp.size()-1);
+
+	string CurrentPath;
+	size_t size;
+	char *path=NULL;
+	path=getcwd(path,size);
+	CurrentPath=path;
+	
+	// now_SongDir.left(now_SongDir.GetLength()-1);
+	// LOG->Info("GAMESTATE->m_pCurSong.m_sSongDir %s",tmp.c_str());
+	string connet_dir = path;
+		connet_dir +="\\Songs\\connect";
+	string connect_dir_cmd="mkdir ";
+		connect_dir_cmd+="\"";
+		connect_dir_cmd+=connet_dir;
+		connect_dir_cmd+="\"";
+	system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
+	string zip_name = "temp.zip";
+	string init_cmd = "7za.exe d ";
+		init_cmd+="\"";
+		init_cmd+=connet_dir;
+		init_cmd+="\\";
+		init_cmd+=zip_name;
+		init_cmd+="\"";
+	//system("7za.exe d E:\\f5.zip");
+	LOG->Info("init_cmd %s",init_cmd.c_str());
+	system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
+	CString zip_cmd = "7za.exe a -tzip ";
+	zip_cmd+="\"";
+	zip_cmd+=connet_dir;
+	zip_cmd+="\\";
+	zip_cmd+=zip_name;
+	zip_cmd+="\" ";
+
+	zip_cmd+="\"";
+	zip_cmd+=CurrentPath;
+	zip_cmd+="\\";
+	zip_cmd+=tmp;
+	zip_cmd+="\"";
+	LOG->Info("zip_cmd %s",zip_cmd.c_str());
+	system(zip_cmd.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
+	//==========
+	CString filter_cmd = "7za.exe d ";
+	filter_cmd+="\"";
+	filter_cmd+=connet_dir;
+	filter_cmd+="\\";
+	filter_cmd+=zip_name;
+	filter_cmd+="\" ";
+	filter_cmd+="*.avi *.mpeg *.mpg *.mp4 -r";
+	if(video_file_filter==1)
+	{
+		system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+	}
+	//==========
+	//open server and sent require to open client
+	CString file_dir;
+			file_dir+=connet_dir;
+			file_dir+="\\";
+			file_dir+=zip_name;
+	
+	FILE *fp = fopen(file_dir, "rb");
+	int file_size = GetFileLength(fp)/1024;//(kbs)
+	CString file_size_;
+	file_size_.Format("%d", file_size);
+	// double file_size =0;
+	fclose(fp);
+	if( PREFSMAN->m_sAdditionalSongFolders != "" && file_size<10)
+	{
+		system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
+		//now_SongDir-"Songs"
+		string tmp = now_SongDir.c_str();
+		tmp = tmp.substr(5, tmp.size());
+		CString re_zip = "7za.exe a -tzip ";
+
+		re_zip+="\"";
+		re_zip+=connet_dir;
+		re_zip+="\\";
+		re_zip+=zip_name;
+		re_zip+="\" ";
+
+		re_zip+="\"";
+		re_zip+=PREFSMAN->m_sAdditionalSongFolders;
+		re_zip+="\\";
+		re_zip+=tmp;
+		re_zip+="\"";
+		LOG->Info("re_zip %s",re_zip.c_str());
+		system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
+		//==========
+		if(video_file_filter==1)
+		{
+			system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
+		}
+		//==========
+		fp = fopen(file_dir, "rb");
+		file_size = GetFileLength(fp)/1024;//(kbs)
+		file_size_.Format("%d", file_size);
+		fclose(fp);
+	}
+	LOG->Info("file_size_ %s",file_size_.c_str());
+
+	WaitForSingleObject(g_hMutex, INFINITE);
+	m_packet.ClearPacket();
+	m_packet.Write1( NSSSC );
+	m_packet.WriteNT( ip_address );
+	m_packet.WriteNT( player_num );
+	m_packet.WriteNT( file_size_ );
+	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
+	LOG->Info("player_num %s",player_num.c_str());
+	ReleaseMutex(g_hMutex);
+	//==========
+	CString server_cmd = "winsocket_server.exe ";
+			server_cmd+=ip_address.c_str();
+			server_cmd+=" \"";
+			server_cmd+=connet_dir;
+			server_cmd+="\\";
+			server_cmd+=zip_name;
+			server_cmd+="\"";
+	LOG->Info("server_cmd %s",server_cmd.c_str());
+	system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
+    return 0L;
+}
+DWORD NetworkSyncManager::ThreadProcNSSSC(void)
+{
+	LOG->Info("open the share song client!!");
+	// CString server_ip = m_packet.ReadNT();
+	// CString file_size = m_packet.ReadNT();
+	LOG->Info("server_ip %s",server_ip.c_str());
+	LOG->Info("file_size %s",file_size.c_str());
+
+	string CurrentPath;
+	size_t size;
+	char *path=NULL;
+	path=getcwd(path,size);
+	CurrentPath=path;
+
+	string connet_dir = path;
+		connet_dir +="\\Songs\\connect";
+	string connect_dir_cmd="mkdir ";
+		connect_dir_cmd+="\"";
+		connect_dir_cmd+=connet_dir;
+		connect_dir_cmd+="\"";
+	system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
+	string zip_name = "temp.zip";
+	CString client_cmd = "winsocket_client.exe ";
+			client_cmd+=server_ip.c_str();
+			client_cmd+=" \"";
+			client_cmd+=connet_dir;
+			client_cmd+="\\";
+			client_cmd+=zip_name;
+			client_cmd+="\" ";
+			client_cmd+=file_size.c_str();
+	LOG->Info("client_cmd %s",client_cmd.c_str());
+	system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
+	CString zip_cmd = "7za.exe x ";
+			zip_cmd+=" \"";
+			zip_cmd+=connet_dir;
+			zip_cmd+="\\";
+			zip_cmd+=zip_name;
+			zip_cmd+="\" ";
+			zip_cmd+="-y -aos -o";
+			zip_cmd+="\"";
+			zip_cmd+=connet_dir;
+			zip_cmd+="\"";
+	LOG->Info("zip_cmd %s",zip_cmd.c_str());
+	system(zip_cmd.c_str());//7za.exe x "C:\\StepMania\\Songs\\connect\\temp.zip" -y -aos -o"C:\\StepMania\\Songs\\connect"
+
+	SCREENMAN->SendMessageToTopScreen( SM_ReloadConnectPack );
+	return 0L;
+}
 void NetworkSyncManager::ProcessInput()
 {
 	//If we're disconnected, just exit
@@ -674,183 +860,25 @@ void NetworkSyncManager::ProcessInput()
 			break;
 		case NSSSS:
 			{
-				LOG->Info("open the share song server!!");
-				CString server_ip = m_packet.ReadNT();
-				CString player_num = m_packet.ReadNT();
-				int video_file_filter = m_packet.Read1();
-				CString now_SongDir;
+				server_ip = m_packet.ReadNT();
+				player_num = m_packet.ReadNT();
+				LOG->Info("player_num %s",player_num.c_str());
+				video_file_filter = m_packet.Read1();
 
-				//============
-				CString ip_address=this->NetPlayerClient->getIp();
-				LOG->Info("IP address %s", ip_address.c_str());
-				//==================
-				// if(now_SongDir==GAMESTATE->m_pCurSong->GetSongDir())return;
-				now_SongDir = GAMESTATE->m_pCurSong->GetSongDir();
-				LOG->Info("now_SongDir %s",now_SongDir.c_str());
-				string tmp = now_SongDir.c_str();
-				tmp = tmp.substr(0, tmp.size()-1);
-
-				string CurrentPath;
-				size_t size;
-				char *path=NULL;
-				path=getcwd(path,size);
-				CurrentPath=path;
-				
-				// now_SongDir.left(now_SongDir.GetLength()-1);
-				// LOG->Info("GAMESTATE->m_pCurSong.m_sSongDir %s",tmp.c_str());
-				string connet_dir = path;
-					   connet_dir +="\\Songs\\connect";
-				string connect_dir_cmd="mkdir ";
-					   connect_dir_cmd+="\"";
-					   connect_dir_cmd+=connet_dir;
-					   connect_dir_cmd+="\"";
-				system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
-				string zip_name = "temp.zip";
-				string init_cmd = "7za.exe d ";
-					   init_cmd+="\"";
-					   init_cmd+=connet_dir;
-					   init_cmd+="\\";
-					   init_cmd+=zip_name;
-					   init_cmd+="\"";
-				//system("7za.exe d E:\\f5.zip");
-				LOG->Info("init_cmd %s",init_cmd.c_str());
-				system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
-				CString zip_cmd = "7za.exe a -tzip ";
-				zip_cmd+="\"";
-				zip_cmd+=connet_dir;
-				zip_cmd+="\\";
-				zip_cmd+=zip_name;
-				zip_cmd+="\" ";
-
-				zip_cmd+="\"";
-				zip_cmd+=CurrentPath;
-				zip_cmd+="\\";
-				zip_cmd+=tmp;
-				zip_cmd+="\"";
-				LOG->Info("zip_cmd %s",zip_cmd.c_str());
-				system(zip_cmd.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
-				//==========
-				CString filter_cmd = "7za.exe d ";
-				filter_cmd+="\"";
-				filter_cmd+=connet_dir;
-				filter_cmd+="\\";
-				filter_cmd+=zip_name;
-				filter_cmd+="\" ";
-				filter_cmd+="*.avi *.mpeg *.mpg *.mp4 -r";
-				if(video_file_filter==1)
-				{
-					system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
-				}
-				//==========
-				//open server and sent require to open client
-				CString file_dir;
-						file_dir+=connet_dir;
-						file_dir+="\\";
-						file_dir+=zip_name;
-				
-				FILE *fp = fopen(file_dir, "rb");
-				int file_size = GetFileLength(fp)/1024;//(kbs)
-				CString file_size_;
-				file_size_.Format("%d", file_size);
-				// double file_size =0;
-				fclose(fp);
-				if( PREFSMAN->m_sAdditionalSongFolders != "" && file_size<10)
-				{
-					system(init_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip"
-					//now_SongDir-"Songs"
-					string tmp = now_SongDir.c_str();
-					tmp = tmp.substr(5, tmp.size());
-					CString re_zip = "7za.exe a -tzip ";
-
-					re_zip+="\"";
-					re_zip+=connet_dir;
-					re_zip+="\\";
-					re_zip+=zip_name;
-					re_zip+="\" ";
-
-					re_zip+="\"";
-					re_zip+=PREFSMAN->m_sAdditionalSongFolders;
-					re_zip+="\\";
-					re_zip+=tmp;
-					re_zip+="\"";
-					LOG->Info("re_zip %s",re_zip.c_str());
-					system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
-					//==========
-					if(video_file_filter==1)
-					{
-						system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
-					}
-					//==========
-					fp = fopen(file_dir, "rb");
-					file_size = GetFileLength(fp)/1024;//(kbs)
-					file_size_.Format("%d", file_size);
-					fclose(fp);
-				}
-				LOG->Info("file_size_ %s",file_size_.c_str());
-				m_packet.ClearPacket();
-				m_packet.Write1( NSSSC );
-				m_packet.WriteNT( ip_address );
-				m_packet.WriteNT( player_num );
-				m_packet.WriteNT( file_size_ );
-				NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
-				//==========
-				CString server_cmd = "winsocket_server.exe ";
-						server_cmd+=ip_address.c_str();
-						server_cmd+=" \"";
-						server_cmd+=connet_dir;
-						server_cmd+="\\";
-						server_cmd+=zip_name;
-						server_cmd+="\"";
-				LOG->Info("server_cmd %s",server_cmd.c_str());
-				system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
+				DWORD ThreadID;
+				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSS, (void*) this, 0, &ThreadID);
+				CloseHandle(thread);
 			}
 			break;
 		case NSSSC:
 			{
-				LOG->Info("open the share song client!!");
-				CString server_ip = m_packet.ReadNT();
-				CString file_size = m_packet.ReadNT();
+				server_ip = m_packet.ReadNT();
+				file_size = m_packet.ReadNT();
 				LOG->Info("server_ip %s",server_ip.c_str());
 				LOG->Info("file_size %s",file_size.c_str());
-
-				string CurrentPath;
-				size_t size;
-				char *path=NULL;
-				path=getcwd(path,size);
-				CurrentPath=path;
-
-				string connet_dir = path;
-					   connet_dir +="\\Songs\\connect";
-				string connect_dir_cmd="mkdir ";
-					   connect_dir_cmd+="\"";
-					   connect_dir_cmd+=connet_dir;
-					   connect_dir_cmd+="\"";
-				system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
-				string zip_name = "temp.zip";
-				CString client_cmd = "winsocket_client.exe ";
-						client_cmd+=server_ip.c_str();
-						client_cmd+=" \"";
-						client_cmd+=connet_dir;
-						client_cmd+="\\";
-						client_cmd+=zip_name;
-						client_cmd+="\" ";
-						client_cmd+=file_size.c_str();
-				LOG->Info("client_cmd %s",client_cmd.c_str());
-				system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
-				CString zip_cmd = "7za.exe x ";
-						zip_cmd+=" \"";
-						zip_cmd+=connet_dir;
-						zip_cmd+="\\";
-						zip_cmd+=zip_name;
-						zip_cmd+="\" ";
-						zip_cmd+="-y -aos -o";
-						zip_cmd+="\"";
-						zip_cmd+=connet_dir;
-						zip_cmd+="\"";
-				LOG->Info("zip_cmd %s",zip_cmd.c_str());
-				system(zip_cmd.c_str());//7za.exe x "C:\\StepMania\\Songs\\connect\\temp.zip" -y -aos -o"C:\\StepMania\\Songs\\connect"
-			
-				SCREENMAN->SendMessageToTopScreen( SM_ReloadConnectPack );
+				DWORD ThreadID;
+				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSC, (void*) this, 0, &ThreadID);
+				CloseHandle(thread);
 			}
 			break;
 		case NSCGraph:

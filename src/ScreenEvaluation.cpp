@@ -409,7 +409,15 @@ void ScreenEvaluation::Init()
 					this->AddChild( &m_DifficultyMeter[p] );
 					
 					m_textPlayerOptions[p].LoadFromFont( THEME->GetPathToF("Common normal") );
-					CString sPO = GAMESTATE->m_PlayerOptions[p].GetThemedString();
+					CString sPO;
+					if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
+					{
+						CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
+						if( s[s.GetLength()-1] == '0' )
+							s.erase(s.GetLength()-1);
+						sPO += s + "xMusic ";
+					}
+					sPO += GAMESTATE->m_PlayerOptions[p].GetThemedString();
 					sPO.Replace( ", ", PLAYER_OPTIONS_SEPARATOR );
 					m_textPlayerOptions[p].SetName( ssprintf("PlayerOptionsP%d",p+1) );
 					SET_XY_AND_ON_COMMAND( m_textPlayerOptions[p] );

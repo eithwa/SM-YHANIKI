@@ -913,8 +913,17 @@ void ScreenGameplay::LoadNextSong()
 		 * even if the people playing it aren't good at it.) */
 		if( !m_bDemonstration )
 			PROFILEMAN->IncrementStepsPlayCount( pSong, pSteps, p );
-
-		m_textPlayerOptions[p].SetText( GAMESTATE->m_PlayerOptions[p].GetString() );
+		CString player_options;
+		if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
+		{
+				CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
+				if( s[s.GetLength()-1] == '0' )
+					s.erase(s.GetLength()-1);
+				player_options += s + "xMusic ";
+		}
+		player_options += GAMESTATE->m_PlayerOptions[p].GetString();
+		// m_textPlayerOptions[p].SetText( GAMESTATE->m_PlayerOptions[p].GetString() );
+		m_textPlayerOptions[p].SetText( player_options );
 		m_ActiveAttackList[p].Refresh();
 
 		// reset oni game over graphic

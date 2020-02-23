@@ -29,7 +29,7 @@ float ArrowGetYOffset( PlayerNumber pn, int iCol, float fNoteBeat )
 	{
 		float fSongBeat = GAMESTATE->m_fSongBeat;
 		float fBeatsUntilStep = fNoteBeat - fSongBeat;
-		float fYOffsetBeatSpacing = fBeatsUntilStep * ARROW_SPACING;
+		float fYOffsetBeatSpacing = fBeatsUntilStep * ARROW_SPACING/GAMESTATE->m_SongOptions.m_fMusicRate;
 		fYOffset += fYOffsetBeatSpacing * (1-GAMESTATE->m_CurrentPlayerOptions[pn].m_fTimeSpacing);
 	}
 
@@ -40,7 +40,7 @@ float ArrowGetYOffset( PlayerNumber pn, int iCol, float fNoteBeat )
 		float fSecondsUntilStep = fNoteSeconds - fSongSeconds;
 		float fBPM = GAMESTATE->m_CurrentPlayerOptions[pn].m_fScrollBPM;
 		float fBPS = fBPM/60.f;
-		float fYOffsetTimeSpacing = fSecondsUntilStep * fBPS * ARROW_SPACING;
+		float fYOffsetTimeSpacing = fSecondsUntilStep * fBPS * ARROW_SPACING/GAMESTATE->m_SongOptions.m_fMusicRate;
 		fYOffset += fYOffsetTimeSpacing * GAMESTATE->m_CurrentPlayerOptions[pn].m_fTimeSpacing;
 	}
 
