@@ -37,14 +37,23 @@ namespace BlueSocket {
 		}
 		WSADATA wsaData;
 		WSAStartup(MAKEWORD(2, 2), &wsaData);
-		SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+		SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
 		sockaddr_in sockAddr;
 		memset(&sockAddr, 0, sizeof(sockAddr));
-		sockAddr.sin_family = PF_INET;
-		// sockAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_addr.s_addr = inet_addr(ip);
 		sockAddr.sin_port = htons(1234);
-		connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));
+
+		//fd_set readfds;
+		//FD_SET(sock, &readfds);
+
+		unsigned long nNonBlocking = 1;
+		ioctlsocket(sock, FIONBIO, &nNonBlocking);
+		while (0 != connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR))) {
+			Sleep(500);
+		}
 
 		char buffer[BUF_SIZE] = {0}; 
 		int nCount=-1;

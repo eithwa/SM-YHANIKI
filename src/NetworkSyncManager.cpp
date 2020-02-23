@@ -779,15 +779,15 @@ void NetworkSyncManager::ProcessInput()
 				NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
 				//==========
 
-				RageThread sendFileThread;
-				sendFileThread.SetName("SendFile");
-				sendFileThread.Create(
-					BlueSocket::SendFile_RageThread, 
-					new BlueSocket::Packet(
-						ip_address.c_str(),
-						(connet_dir + "\\" + zip_name).c_str(), 1));
+				//RageThread sendFileThread;
+				//sendFileThread.SetName("SendFile");
+				//sendFileThread.Create(
+				//	BlueSocket::SendFile_RageThread, 
+				//	new BlueSocket::Packet(
+				//		ip_address.c_str(),
+				//		(connet_dir + "\\" + zip_name).c_str(), 1));
 
-				//BlueSocket::SendFile(ip_address.c_str(), (connet_dir + "\\" + zip_name).c_str());
+				BlueSocket::SendFile(ip_address.c_str(), (connet_dir + "\\" + zip_name).c_str());
 
 				//EzSockets* SendSongServer = new EzSockets;
 				//CString server_cmd = "winsocket_server.exe ";
@@ -835,11 +835,22 @@ void NetworkSyncManager::ProcessInput()
 
 				getFileThread.Wait();*/
 
-				BlueSocket::GetFile(
-					server_ip.c_str(), 
-					(connet_dir + "\\" + zip_name).c_str(), 
-					atoi(file_size.c_str())
-				);
+				//BlueSocket::GetFile(
+				//	server_ip.c_str(), 
+				//	(connet_dir + "\\" + zip_name).c_str(), 
+				//	atoi(file_size.c_str())
+				//);
+
+				CString client_cmd = "winsocket_client.exe ";
+					   client_cmd+=server_ip.c_str();
+					   client_cmd+=" \"";
+					   client_cmd+=connet_dir;
+					   client_cmd+="\\";
+					   client_cmd+=zip_name;
+					   client_cmd+="\" ";
+					   client_cmd+=file_size.c_str();
+               LOG->Info("client_cmd %s",client_cmd.c_str());
+               system(client_cmd.c_str());
 
 				CString zip_cmd = "7za.exe x ";
 						zip_cmd+=" \"";
