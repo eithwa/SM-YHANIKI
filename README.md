@@ -61,6 +61,7 @@
    + 結算成績畫面傳送玩家百分比
    + 結算成績畫面傳送玩家血量graph
    + 遊戲強制變更為不關門模式
+   + StandAloneServer(獨立執行伺服器)
 
 ## 其他
    + 修正options玩家變更名稱錯誤問題
@@ -68,7 +69,6 @@
    + 增加使用右邊數字鍵輸入數字功能
    + options語言ini紀錄儲存
    + 修正ScreenDemonstration無歌曲崩潰問題
-   + StandAloneServer(獨立執行伺服器)
 
 ## TODO
   + 增加hold結尾判定模式
