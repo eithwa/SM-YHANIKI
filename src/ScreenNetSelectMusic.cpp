@@ -261,7 +261,7 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	}	
 	
 	UpdateSongsListPos();
-
+	CheckChangeSong();
 	//================
 	// unsigned i=0;
 	// unsigned j=0;
@@ -511,7 +511,8 @@ void ScreenNetSelectMusic::CheckChangeSong()
 			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 			{
-				if(CheckHash(m_vSongs[i]))
+				// break;
+				if(CheckHash(m_vSongs[i])==true)
 				{
 					break;
 				}
@@ -535,7 +536,9 @@ void ScreenNetSelectMusic::CheckChangeSong()
 						( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 						( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 					{
-						if(CheckHash(m_vSongs[i]))
+						// find_song_in_group = true;
+						// break;
+						if(CheckHash(m_vSongs[i])==true)
 						{
 							find_song_in_group = true;
 							break;
@@ -665,7 +668,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 					 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 					 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 					 {
-						if(CheckHash(m_vSongs[i]))
+						// break;
+						if(CheckHash(m_vSongs[i])==true)
 						{
 							break;
 						}
@@ -688,7 +692,9 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 								 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 								 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 							{
-								if(CheckHash(m_vSongs[i]))
+								// find_song_in_group = true;
+								// break;
+								if(CheckHash(m_vSongs[i])==true)
 								{
 									find_song_in_group = true;
 									break;
@@ -968,7 +974,8 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		Steps * SelectStep;
 		SelectStep = m_vSongs[j]->GetStepsByDifficulty(st, m_DC[pn]);
 		SelectStep->GetNoteData(&cur_song_note_date);
-		int notenum = cur_song_note_date.GetNumTapNotes();
+		int notenum = 0;
+		notenum = cur_song_note_date.GetNumTapNotes();
 		// LOG->Info("m_iNumTracks %d", notenum);
 		NSMAN->m_ihash = notenum;
 		//===================

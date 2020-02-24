@@ -522,19 +522,19 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 	tmp = tmp.substr(0, tmp.size()-1);
 
 	string CurrentPath;
-	size_t size;
-	char *path=NULL;
-	path=getcwd(path,size);
-	CurrentPath=path;
+	char buf[100];
+    getcwd(buf, sizeof(buf));
+	CurrentPath.assign(buf);
 	
 	// now_SongDir.left(now_SongDir.GetLength()-1);
 	// LOG->Info("GAMESTATE->m_pCurSong.m_sSongDir %s",tmp.c_str());
-	string connet_dir = path;
-		connet_dir +="\\Songs\\connect";
+	string connet_dir = CurrentPath;
+		   connet_dir +="\\Songs\\connect";
 	string connect_dir_cmd="mkdir ";
 		connect_dir_cmd+="\"";
 		connect_dir_cmd+=connet_dir;
 		connect_dir_cmd+="\"";
+	LOG->Info("connect_dir_cmd %s",connect_dir_cmd.c_str());
 	system(connect_dir_cmd.c_str());//mkdir "C:\\StepMania\\Songs\\connect"
 	string zip_name = "temp.zip";
 	string init_cmd = "7za.exe d ";
@@ -649,12 +649,11 @@ DWORD NetworkSyncManager::ThreadProcNSSSC(void)
 	LOG->Info("file_size %s",file_size.c_str());
 
 	string CurrentPath;
-	size_t size;
-	char *path=NULL;
-	path=getcwd(path,size);
-	CurrentPath=path;
+	char buf[100];
+    getcwd(buf, sizeof(buf));
+	CurrentPath.assign(buf);
 
-	string connet_dir = path;
+	string connet_dir = CurrentPath;
 		connet_dir +="\\Songs\\connect";
 	string connect_dir_cmd="mkdir ";
 		connect_dir_cmd+="\"";
@@ -820,7 +819,11 @@ void NetworkSyncManager::ProcessInput()
 				m_sMainTitle = m_packet.ReadNT();
 				m_sArtist = m_packet.ReadNT();
 				m_sSubTitle = m_packet.ReadNT();
-				m_ihash = m_packet.Read4();
+				int temp_hash = m_packet.Read4();
+				if(temp_hash!=0)
+				{
+					m_ihash = temp_hash;
+				}
 				m_sCurMainTitle=m_sMainTitle;
 				m_sCurArtist=m_sArtist;
 				m_sCurSubTitle=m_sSubTitle;

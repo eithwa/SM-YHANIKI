@@ -797,7 +797,11 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 			CurrentSongInfo.title = Packet.ReadNT();
 			CurrentSongInfo.artist = Packet.ReadNT();
 			CurrentSongInfo.subtitle = Packet.ReadNT();
-			CurrentSongInfo.hash = Packet.Read4();
+			int tmp_hash =Packet.Read4();
+			if(tmp_hash!=0)
+			{
+				CurrentSongInfo.hash = tmp_hash;
+			}
 
 			Reply.ClearPacket();
 			Reply.Write1(NSCRSG + NSServerOffset);
