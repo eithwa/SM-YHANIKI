@@ -47,7 +47,7 @@
      + 影片預覽撥放位置修正
      + 變速結尾bpm錯誤修正
      + 變速長條截斷修正
-     + 變速切換難度 紀錄bug修改(SONGMAN->Cleanup(); ignore)
+     + 開啟PlayerOptions, SongOptions 譜面還原問題修改(SONGMAN->Cleanup(); ignore)
      + 多段變速bpm修正
      + 多難度停拍位置修正
      + 測試前緩衝調整選項(Preferences->play mode beats buffer)
