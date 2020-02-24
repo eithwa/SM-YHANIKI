@@ -63,10 +63,10 @@
    + 遊戲強制變更為不關門模式
 
 ## 其他
-   + 修正玩家options重新命名錯誤問題
+   + 修正options玩家變更名稱錯誤問題
    + options選預設charater(options->background options->danceing characters->static)
    + 增加使用右邊數字鍵輸入數字功能
-   + options 語言ini紀錄儲存
+   + options語言ini紀錄儲存
    + 修正ScreenDemonstration無歌曲崩潰問題
 
 ## TODO
