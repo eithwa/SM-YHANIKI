@@ -107,6 +107,7 @@ private:
 	RageSound m_soundChangeSel;
 	vector <Steps *> SortStep(vector <Steps *> MultiSteps);
 	void CheckChangeSong();
+	bool CheckHash(Song * temp_song);
 
 };
 

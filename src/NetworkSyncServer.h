@@ -36,6 +36,7 @@ public:
 	CString subtitle;
 	CString artist;
 	CString course;
+	int     hash;
 };
 
 class GameClient

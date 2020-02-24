@@ -820,6 +820,7 @@ void NetworkSyncManager::ProcessInput()
 				m_sMainTitle = m_packet.ReadNT();
 				m_sArtist = m_packet.ReadNT();
 				m_sSubTitle = m_packet.ReadNT();
+				m_ihash = m_packet.Read4();
 				m_sCurMainTitle=m_sMainTitle;
 				m_sCurArtist=m_sArtist;
 				m_sCurSubTitle=m_sSubTitle;
@@ -957,6 +958,7 @@ void NetworkSyncManager::SelectUserSong()
 	m_packet.WriteNT( m_sMainTitle );
 	m_packet.WriteNT( m_sArtist );
 	m_packet.WriteNT( m_sSubTitle );
+	m_packet.Write4( m_ihash );
 	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
 }
 

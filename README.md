@@ -64,7 +64,7 @@
      + /host 玩家名稱或玩家編號 更換房主
      + /share 玩家編號 傳送歌曲(過濾影片)
      + /sharefull 玩家編號 傳送歌曲(包含影片)
-     + 缺歌檔案傳送功能(/share /sharefull)
+   + 缺歌檔案傳送功能(/share /sharefull)
    + 修正CyberiaStyle 6連線模式無法顯示玩家名稱問題
    + 修正歌包跳回ALL GROUPS問題
    + 修正歌曲難度排序問題

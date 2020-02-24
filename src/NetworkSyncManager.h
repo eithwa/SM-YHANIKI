@@ -141,6 +141,7 @@ public:
 	CString m_sCurArtist;
 	CString m_sCurSubTitle;
 	int m_iSelectMode;
+	int m_ihash;
 	void SelectUserSong();
 
 	CString			m_sChatText;

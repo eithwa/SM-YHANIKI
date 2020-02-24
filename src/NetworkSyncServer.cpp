@@ -797,13 +797,15 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 			CurrentSongInfo.title = Packet.ReadNT();
 			CurrentSongInfo.artist = Packet.ReadNT();
 			CurrentSongInfo.subtitle = Packet.ReadNT();
+			CurrentSongInfo.hash = Packet.Read4();
 
 			Reply.ClearPacket();
 			Reply.Write1(NSCRSG + NSServerOffset);
 			Reply.Write1(1);
 			Reply.WriteNT(CurrentSongInfo.title);
 			Reply.WriteNT(CurrentSongInfo.artist);
-			Reply.WriteNT(CurrentSongInfo.subtitle);		
+			Reply.WriteNT(CurrentSongInfo.subtitle);
+			Reply.Write4(CurrentSongInfo.hash);		
 
 			//Only send data to clients currently in ScreenNetMusicSelect
 			for (unsigned int x = 0; x < Client.size(); ++x)

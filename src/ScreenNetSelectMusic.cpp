@@ -21,6 +21,7 @@
 
 #include "SongUtil.h"
 //==========
+#include "NoteField.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -419,7 +420,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 	default:
 		char c;
 		c = DeviceI.ToChar();
-		if((int)c>0 && (int)c<127 )
+		if((int)DeviceI.button>0 && (int)DeviceI.button<127 )
 		{
 			input_check=true;
 		}
@@ -478,6 +479,27 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		Screen::Input( DeviceI, type, GameI, MenuI, StyleI );	// default input handler
 	}
 }
+bool ScreenNetSelectMusic::CheckHash(Song * temp_song)
+{
+	//=========test======
+	StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
+	vector <Steps *> MultiSteps;
+	NoteField cur_song_note_date;
+	Steps * SelectStep;
+	int notenum = 0;
+	MultiSteps = temp_song->GetAllSteps( st );
+	for(int i = 0; i<MultiSteps.size(); i++)
+	{
+		MultiSteps[i]->GetNoteData(&cur_song_note_date);
+		notenum = cur_song_note_date.GetNumTapNotes();
+		if(notenum==NSMAN->m_ihash)
+		{
+			//LOG->Info("find the song notenum %d",notenum);
+			return true;
+		}
+	}
+	return false;
+}
 void ScreenNetSelectMusic::CheckChangeSong()
 {
 	//===============
@@ -488,7 +510,13 @@ void ScreenNetSelectMusic::CheckChangeSong()
 		if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
 			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
-			break;
+			{
+				if(CheckHash(m_vSongs[i]))
+				{
+					break;
+				}
+			}
+			
 	bool haveSong = i != m_vSongs.size();
 	if(haveSong)
 	{
@@ -507,8 +535,11 @@ void ScreenNetSelectMusic::CheckChangeSong()
 						( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 						( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 					{
-						find_song_in_group = true;
-						break;
+						if(CheckHash(m_vSongs[i]))
+						{
+							find_song_in_group = true;
+							break;
+						}
 					}
 				}
 				if(find_song_in_group)
@@ -633,7 +664,12 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 				if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
 					 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 					 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
-					 break;
+					 {
+						if(CheckHash(m_vSongs[i]))
+						{
+							break;
+						}
+					 }
 			bool haveSong = i != m_vSongs.size();
 			if(haveSong)
 			{
@@ -652,8 +688,11 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 								 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 								 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 							{
-								find_song_in_group = true;
-								break;
+								if(CheckHash(m_vSongs[i]))
+								{
+									find_song_in_group = true;
+									break;
+								}
 							}
 						}
 						if(find_song_in_group)
@@ -923,8 +962,18 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		NSMAN->m_sMainTitle = m_vSongs[j]->GetTranslitMainTitle();
 		NSMAN->m_sSubTitle = m_vSongs[j]->GetTranslitSubTitle();
 		NSMAN->m_iSelectMode = 2; //Command for user selecting song
+		//=========test======
+		StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
+		NoteField cur_song_note_date;
+		Steps * SelectStep;
+		SelectStep = m_vSongs[j]->GetStepsByDifficulty(st, m_DC[pn]);
+		SelectStep->GetNoteData(&cur_song_note_date);
+		int notenum = cur_song_note_date.GetNumTapNotes();
+		// LOG->Info("m_iNumTracks %d", notenum);
+		NSMAN->m_ihash = notenum;
+		//===================
 		NSMAN->SelectUserSong ();
-		// CheckChangeSong();
+
 	}
 	else
 		StartSelectedSong();
