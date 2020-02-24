@@ -10,6 +10,7 @@
 #include "RageSoundManager.h"
 #include "GameSoundManager.h"
 #include "GameManager.h"
+#include "SongManager.h"
 
 
 #define SECONDS_TO_SHOW			THEME->GetMetricF("ScreenDemonstration","SecondsToShow")
@@ -36,8 +37,8 @@ bool PrepareForDemonstration()		// always return true.
 ScreenDemonstration::ScreenDemonstration( CString sName ) : ScreenJukebox( sName, PrepareForDemonstration() )	// this is a hack to get some code to execute before the ScreenGameplay constructor
 {
 	LOG->Trace( "ScreenDemonstration::ScreenDemonstration()" );
-
-	if( GAMESTATE->m_pCurSong == NULL )	// we didn't find a song.
+	
+	if( GAMESTATE->m_pCurSong == NULL||SONGMAN->GetNumSongs()==0 )	// we didn't find a song.
 	{
 		HandleScreenMessage( SM_GoToNextScreen );	// Abort demonstration.
 		return;
