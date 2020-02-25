@@ -135,6 +135,7 @@ protected:
 	void ResetLastSongInfo();
 	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
 	void SendPlayerCondition();
+	void GetHasSong(PacketFunctions&Packet, unsigned int clientNum);
 #endif
 };
 

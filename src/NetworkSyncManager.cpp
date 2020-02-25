@@ -973,7 +973,16 @@ void NetworkSyncManager::SelectUserSong()
 	m_packet.Write4( m_ihash );
 	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
 }
-
+void NetworkSyncManager::SendHasSong(bool hasSong)
+{
+	if(hasSong)
+	{
+		m_packet.ClearPacket();
+		m_packet.Write1( NSCCHS );
+		m_packet.Write1( 1 );
+		NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
+	}
+}
 
 //Packet functions
 

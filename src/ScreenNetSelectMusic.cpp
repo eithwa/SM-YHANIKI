@@ -654,7 +654,7 @@ void ScreenNetSelectMusic::CheckChangeSong()
 		UpdateGroupsListPos();
 		m_iSongNum = i + m_vSongs.size();
 		UpdateSongsListPos();
-		NSMAN->SelectUserSong();
+		NSMAN->SendHasSong(true);
 	}
 	else if(NSMAN->m_sCurMainTitle=="")
 	{
