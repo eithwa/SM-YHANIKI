@@ -134,6 +134,7 @@ protected:
 	void ClientsSongSelectStart();
 	void ResetLastSongInfo();
 	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
+	void SendPlayerCondition();
 #endif
 };
 

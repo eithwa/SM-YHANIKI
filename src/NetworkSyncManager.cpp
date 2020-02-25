@@ -898,6 +898,15 @@ void NetworkSyncManager::ProcessInput()
 				}
 			}
 			break;
+		case NSCPC:
+			{	
+				m_PlayerCondition.clear();
+				int player_number = m_packet.Read1();
+				for(int i=0; i<player_number; i++)
+				{
+					m_PlayerCondition.push_back(m_packet.Read1());
+				}
+			}
 		}
 		m_packet.ClearPacket();
 	}

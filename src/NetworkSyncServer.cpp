@@ -169,21 +169,25 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 		// Start Request
 		Client[clientNum]->StartRequest(Packet);
 		CheckReady();  //This is what ACTUALLY starts the games
+		SendPlayerCondition();
 		break;
 	case NSCGON:
 		// GameOver 
 		GameOver(Packet, clientNum);
+		SendPlayerCondition();
 		break;
 	case NSCGSU:
 		// StatsUpdate
 		Client[clientNum]->UpdateStats(Packet);
 		if (!Client[clientNum]->lowerJudge)
 			CheckLowerJudge(clientNum);
+		SendPlayerCondition();
 		break;
 	case NSCSU:
 		// Style Update
 		Client[clientNum]->StyleUpdate(Packet);
 		SendUserList();
+		SendPlayerCondition();
 		break;
 	case NSCCM:
 		// Chat message
@@ -191,9 +195,11 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 		break;
 	case NSCRSG:
 		SelectSong(Packet, clientNum);
+		SendPlayerCondition();
 		break;
 	case NSCSMS:
 		ScreenNetMusicSelectStatus(Packet, clientNum);
+		SendPlayerCondition();
 		break;
 	case NSCUPOpts:
 		Client[clientNum]->Player[0].options = Packet.ReadNT();		
@@ -219,9 +225,9 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 			Reply.WriteNT(file_size);
 			SendNetPacket(client_index, Reply);
 
-			LastSongInfo.title="NULL";
-			LastSongInfo.artist="NULL";
-			LastSongInfo.subtitle="NULL";//if sent file success, ask "play?" again
+			LastSongInfo.title="";
+			LastSongInfo.artist="";
+			LastSongInfo.subtitle="";//if sent file success, ask "play?" again
 		}
 		break;
 	case NSCGraph:
@@ -670,6 +676,7 @@ void StepManiaLanServer::ClientSort(int clientNum)
 		Client.assign(Client_tmp.begin(), Client_tmp.end());
 		AssignPlayerIDs();
 		SendUserList();
+		SendPlayerCondition();
 	}
 }
 
@@ -820,6 +827,7 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 			if ((strcmp(CurrentSongInfo.title, LastSongInfo.title) == 0) &&
 				(strcmp(CurrentSongInfo.artist, LastSongInfo.artist) == 0) &&
 				(strcmp(CurrentSongInfo.subtitle, LastSongInfo.subtitle) == 0)&&
+				CurrentSongInfo.hash==LastSongInfo.hash&&
 				!ChangeHost)
 					SecondSameSelect = true;
 
@@ -828,6 +836,7 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 				LastSongInfo.title = CurrentSongInfo.title;
 				LastSongInfo.artist = CurrentSongInfo.artist;
 				LastSongInfo.subtitle = CurrentSongInfo.subtitle;
+				LastSongInfo.hash = CurrentSongInfo.hash;
 				message = "Play \"";
 				message += CurrentSongInfo.title + " " + CurrentSongInfo.subtitle;
 				message += "\"?";
@@ -971,7 +980,34 @@ void StepManiaLanServer::SendUserList()
 
 	SendToAllClients(Reply);
 }
+void StepManiaLanServer::SendPlayerCondition()
+{
+	Reply.ClearPacket();
+	Reply.Write1(NSCPC + NSServerOffset);
+	Reply.Write1( (uint8_t) Client.size() );
+	//0 = normal
+	//1 = lack song
+	//2 = leave room
+	for (unsigned int x = 0; x < Client.size(); ++x)
+		for (int y = 0; y < 2; ++y)
+		{
+			if (Client[x]->Player[y].name.length() != 0)
+			{
+				if(Client[x]->inNetMusicSelect==false)
+				{
+					Reply.Write1(2);
+				}else if(Client[x]->hasSong==false)
+				{
+					Reply.Write1(1);
+				}else if(Client[x]->hasSong==true)
+				{
+					Reply.Write1(0);
+				}
+			}
+		}
 
+	SendToAllClients(Reply);
+}
 void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, unsigned int clientNum)
 {
 	CString message = "";

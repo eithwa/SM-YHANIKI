@@ -31,7 +31,8 @@ enum NSCommand
 	NSCUPPer,       //12
 	NSSSS,          //13 share song server
 	NSSSC,          //14
-	NSCGraph,        //15
+	NSCGraph,       //15
+	NSCPC,			//16 player conditions //is the data size enough to use 16?
 	NUM_NS_COMMANDS
 };
 
@@ -115,6 +116,7 @@ public:
 	int m_ActivePlayers;
 	vector <int> m_ActivePlayer;
 	vector <CString> m_PlayerNames;
+	vector <int> m_PlayerCondition;
 
 	//Used for ScreenNetEvaluation
 	EndOfGame_PlayerData m_EvalPlayerData[NETMAXPLAYERS];
