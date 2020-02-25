@@ -1125,6 +1125,8 @@ void ScreenNetSelectMusic::UpdateUsersStates()
 	//RageColor(R,G,B,A)
 	for( int i=0; i<NSMAN->m_PlayerNames.size()/2; ++i )
 	{
+		if(NSMAN->m_PlayerCondition.size()-1<i)
+			return;
 		if(NSMAN->m_PlayerCondition[i]==0)
 		{
 			m_textUsers[i].SetDiffuse(RageColor(1,1,1,alpha));
