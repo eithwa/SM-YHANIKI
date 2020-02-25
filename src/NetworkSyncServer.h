@@ -136,6 +136,7 @@ protected:
 	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
 	void SendPlayerCondition();
 	void GetHasSong(PacketFunctions&Packet, unsigned int clientNum);
+	void GetAskSong(PacketFunctions&Packet, unsigned int clientNum);
 #endif
 };
 

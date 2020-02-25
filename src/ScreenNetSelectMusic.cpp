@@ -303,9 +303,6 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	//Load SFX next
 	m_soundChangeOpt.Load( THEME->GetPathToS("ScreenNetSelectMusic change opt"));
 	m_soundChangeSel.Load( THEME->GetPathToS("ScreenNetSelectMusic change sel"));
-
-	NSMAN->ReportNSSOnOff(1);
-	NSMAN->ReportPlayerOptions();
 	//=====user rect======
 	int ShowSide;
 	m_pActivePlayer = PLAYER_1;	
@@ -359,6 +356,9 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 		cy+=USERDY;
 	}
 	//======================
+	NSMAN->ReportNSSOnOff(1);
+	NSMAN->ReportPlayerOptions();
+	NSMAN->SendAskSong();
 	return;
 }
 
@@ -703,7 +703,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_AddToChat:
 		{
-			m_textOutHidden.SetText2( NSMAN->m_sChatText );
+			//m_textOutHidden.SetText2( NSMAN->m_sChatText );
+			m_textOutHidden.SetText( NSMAN->m_sChatText );
 			vector <wstring> wLines;
 			m_textOutHidden.GetLines( wLines );
 			m_actualText = "";
@@ -711,7 +712,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 			{
 				m_actualText += WStringToCString( wLines[i] )+'\n';
 			}
-			m_textChatOutput.SetText2( m_actualText );
+			// m_textChatOutput.SetText2( m_actualText );
+			m_textChatOutput.SetText( m_actualText );
 			break;
 		}
 	case SM_ChangeSong:
@@ -1186,7 +1188,8 @@ void ScreenNetSelectMusic::DrawPrimitives()
 
 void ScreenNetSelectMusic::UpdateTextInput()
 {
-	m_textChatInput.SetText2( m_sTextInput );  
+	// m_textChatInput.SetText2( m_sTextInput );
+	m_textChatInput.SetText( m_sTextInput );  
 }
 
 void ScreenNetSelectMusic::StartSelectedSong()

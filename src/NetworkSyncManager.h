@@ -34,6 +34,7 @@ enum NSCommand
 	NSCGraph,       //15
 	NSCPC,			//16 player conditions //is the data size enough to use 16?
 	NSCCHS,			//17 checkhassong
+	NSCAS,			//18 ask song
 	NUM_NS_COMMANDS
 };
 
@@ -147,6 +148,7 @@ public:
 	int m_ihash;
 	void SelectUserSong();
 	void SendHasSong(bool hasSong);
+	void SendAskSong();
 	CString			m_sChatText;
 
 	bool isLanServer;	//Must be public for ScreenNetworkOptions

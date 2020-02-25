@@ -983,7 +983,12 @@ void NetworkSyncManager::SendHasSong(bool hasSong)
 		NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
 	}
 }
-
+void NetworkSyncManager::SendAskSong()
+{
+	m_packet.ClearPacket();
+	m_packet.Write1( NSCAS );
+	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
+}
 //Packet functions
 
 uint8_t PacketFunctions::Read1()
