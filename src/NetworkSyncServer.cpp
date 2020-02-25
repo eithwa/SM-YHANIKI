@@ -139,6 +139,7 @@ void StepManiaLanServer::Disconnect(const unsigned int clientNum)
 		}
 	}
 	SendUserList();
+	SendPlayerCondition();
 }
 
 int GameClient::GetData(PacketFunctions& Packet)
