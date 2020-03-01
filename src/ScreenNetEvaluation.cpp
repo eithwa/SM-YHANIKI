@@ -51,7 +51,7 @@ ScreenNetEvaluation::ScreenNetEvaluation (const CString & sClassName) : ScreenEv
 	float cy = THEME->GetMetricF("ScreenNetEvaluation",ssprintf("User%dY",ShowSide));
 	
 	m_iActivePlayers = NSMAN->m_ActivePlayers;
-	m_iCurrentPlayer = 0;
+	m_iCurrentPlayer = (m_iCurrentPlayer + NSMAN->ClientNum) % m_iActivePlayers;;
 
 	for( int i=0; i<m_iActivePlayers; ++i )
 	{
@@ -77,8 +77,13 @@ void ScreenNetEvaluation::MenuUp( PlayerNumber pn, const InputEventType type )
 	if ( (!m_bHasStats) || ( m_iActivePlayers < 1 ) )
 		return;
 	COMMAND( m_textUsers[m_iCurrentPlayer], "DeSel" );
+	m_textUsers[m_iCurrentPlayer].SetText( NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name] );
 	m_iCurrentPlayer = (m_iCurrentPlayer + m_iActivePlayers - 1) % m_iActivePlayers;
 	COMMAND( m_textUsers[m_iCurrentPlayer], "Sel" );
+	CString CurPlayer = "> ";
+	CurPlayer +=NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name];
+	CurPlayer +=" <";
+	m_textUsers[m_iCurrentPlayer].SetText( CurPlayer );
 	UpdateStats();
 }
 
@@ -92,8 +97,13 @@ void ScreenNetEvaluation::MenuDown( PlayerNumber pn, const InputEventType type )
 	if ( (!m_bHasStats) || ( m_iActivePlayers < 1 ) )
 		return;
 	COMMAND( m_textUsers[m_iCurrentPlayer], "DeSel" );
+	m_textUsers[m_iCurrentPlayer].SetText( NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name] );
 	m_iCurrentPlayer = (m_iCurrentPlayer + 1) % m_iActivePlayers;
 	COMMAND( m_textUsers[m_iCurrentPlayer], "Sel" );
+	CString CurPlayer = "> ";
+	CurPlayer +=NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name];
+	CurPlayer +=" <";
+	m_textUsers[m_iCurrentPlayer].SetText( CurPlayer );
 	UpdateStats();
 }
 
@@ -105,7 +115,16 @@ void ScreenNetEvaluation::HandleScreenMessage( const ScreenMessage SM )
 		m_bHasStats = true;
 		for( int i=0; i<m_iActivePlayers; ++i )
 		{
-			m_textUsers[i].SetText( NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[i].name] );
+			if(i==m_iCurrentPlayer)
+			{
+				CString CurPlayer = "> ";
+				CurPlayer +=NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name];
+				CurPlayer +=" <";
+				m_textUsers[i].SetText( CurPlayer );
+			}else
+			{
+				m_textUsers[i].SetText( NSMAN->m_PlayerNames[NSMAN->m_EvalPlayerData[i].name] );
+			}
 			if ( NSMAN->m_EvalPlayerData[i].grade < GRADE_TIER_3 )	//Yes, hardcoded (I'd like to leave it that way)
 				m_textUsers[i].TurnRainbowOn();
 			else

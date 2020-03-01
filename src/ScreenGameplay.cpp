@@ -454,7 +454,8 @@ void ScreenGameplay::Init()
 				m_Scoreboard[i2].SetShadowLength( 0 );
 				m_Scoreboard[i2].SetName( ssprintf("ScoreboardC%iP%i",i2+1,i+1) );
 				SET_XY( m_Scoreboard[i2] );
-				if(g_CurStageStats.pStyle->m_StyleType==Style::ONE_PLAYER_ONE_CREDIT)
+				if(g_CurStageStats.pStyle->m_StyleType==Style::ONE_PLAYER_ONE_CREDIT&&
+					!PREFSMAN->m_bSoloSingle)
 				{
 					m_Scoreboard[i2].SetY(80);
 				}

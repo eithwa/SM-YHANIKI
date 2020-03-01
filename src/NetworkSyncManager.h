@@ -119,6 +119,7 @@ public:
 	vector <int> m_ActivePlayer;
 	vector <CString> m_PlayerNames;
 	vector <int> m_PlayerCondition;
+	int ClientNum;
 
 	//Used for ScreenNetEvaluation
 	EndOfGame_PlayerData m_EvalPlayerData[NETMAXPLAYERS];

@@ -233,7 +233,9 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	SONGMAN->GetGroupNames( m_vGroups );
 	if (m_vGroups.size()<1)
 	{
-		SCREENMAN->SendMessageToTopScreen( SM_NoSongs );
+		SCREENMAN->SetNewScreen( "ScreenTitleMenu" );
+		SCREENMAN->SystemMessage( "You don't have any songs in the game" );
+		//SCREENMAN->SendMessageToTopScreen( SM_NoSongs );
 		return;
 	}
 	
@@ -344,7 +346,7 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 		m_textUsers[i].SetXY( cx+30, cy );
 		
 		m_textUsersNum[i].SetVertAlign(align_top);
-		m_textUsersNum[i].SetHorizAlign( align_left );
+		// m_textUsersNum[i].SetHorizAlign( align_left );
 		m_textUsersNum[i].LoadFromFont( THEME->GetPathF(m_sName,"chat") );
 		m_textUsersNum[i].SetName( "UserNum" );
 		m_textUsersNum[i].SetShadowLength( 1 );

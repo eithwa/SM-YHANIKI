@@ -56,6 +56,7 @@ unsigned long GetFileLength ( FILE * fileName)
 }
 NetworkSyncManager::NetworkSyncManager( LoadingWindow *ld )
 {
+	ClientNum=0;
 	LANserver = NULL;	//So we know if it has been created yet
 	if( GetCommandlineArgument( "runserver" ))
 	{
@@ -906,6 +907,7 @@ void NetworkSyncManager::ProcessInput()
 				{
 					m_PlayerCondition.push_back(m_packet.Read1());
 				}
+				ClientNum = m_packet.Read1();
 			}
 		}
 		m_packet.ClearPacket();

@@ -117,11 +117,12 @@ GameClient::GameClient()
 
 void StepManiaLanServer::Disconnect(const unsigned int clientNum)
 {
-	if (clientNum == (Client.size()-1))
+	if (clientNum == (Client.size()-1))//host leave
 	{
 		delete Client[Client.size()-1];
 		Client[Client.size()-1] = NULL;
 		Client.pop_back();
+		ClearHasSong();
 	}
 	else
 	{
@@ -175,6 +176,7 @@ void StepManiaLanServer::ParseData(PacketFunctions& Packet, const unsigned int c
 	case NSCGON:
 		// GameOver 
 		GameOver(Packet, clientNum);
+		ClearHasSong();
 		SendPlayerCondition();
 		break;
 	case NSCGSU:
@@ -839,6 +841,19 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 	{
 		if (clientNum == 0)
 		{ 
+			for(int i=0; i<Client.size(); i++)
+			{
+				if(Client[i]->inNetMusicSelect==false)
+				{
+					message = servername;
+					message += ": Someone is not ready.";
+					Reply.ClearPacket();
+					Reply.Write1(NSCCM + NSServerOffset);
+					Reply.WriteNT(message);
+					SendNetPacket(clientNum, Reply);
+					return;
+				}
+			}
 			SecondSameSelect = false;
 
 			CurrentSongInfo.title = Packet.ReadNT();
@@ -1057,8 +1072,15 @@ void StepManiaLanServer::SendPlayerCondition()
 				}
 			}
 		}
-
-	SendToAllClients(Reply);
+	PacketFunctions tmp = Reply;
+	for (unsigned int x = 0; x < Client.size(); ++x)
+	{
+		PacketFunctions tmp = Reply;
+		tmp.Write1(x);
+		SendNetPacket(x, tmp);
+	}
+		
+	// SendToAllClients(Reply);
 }
 
 void StepManiaLanServer::ScreenNetMusicSelectStatus(PacketFunctions& Packet, unsigned int clientNum)

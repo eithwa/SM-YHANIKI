@@ -1885,6 +1885,8 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 				else
 					SCREENMAN->SystemMessage( "Saved as SM." );
 				SOUND->PlayOnce( THEME->GetPathToS("ScreenEdit save") );
+				time_t now = time(0);
+				start_time = now;
 			}
 			break;
 		case reload:
