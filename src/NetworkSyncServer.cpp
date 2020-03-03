@@ -26,6 +26,10 @@ LanPlayer::LanPlayer()
 	offset = 0;
 	options = "";
 	percentage = "";
+	for(int i=0; i<100; i++)
+	{
+		Graph[i]=0;
+	}
 }
 
 StepManiaLanServer::StepManiaLanServer()
