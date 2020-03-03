@@ -4,6 +4,7 @@
 #include "ScreenNetEvaluation.h"
 #include "ThemeManager.h"
 #include "GameState.h"
+#include "RageLog.h"
 
 const int NUM_SCORE_DIGITS	=	9;
 
@@ -51,7 +52,6 @@ ScreenNetEvaluation::ScreenNetEvaluation (const CString & sClassName) : ScreenEv
 	float cy = THEME->GetMetricF("ScreenNetEvaluation",ssprintf("User%dY",ShowSide));
 	
 	m_iActivePlayers = NSMAN->m_ActivePlayers;
-	m_iCurrentPlayer = (m_iCurrentPlayer + NSMAN->ClientNum) % m_iActivePlayers;;
 
 	for( int i=0; i<m_iActivePlayers; ++i )
 	{
@@ -112,6 +112,14 @@ void ScreenNetEvaluation::HandleScreenMessage( const ScreenMessage SM )
 	switch( SM )
 	{
 	case SM_GotEval:
+		for(int i=0; i<m_iActivePlayers; i++)//32
+		{
+			if(NSMAN->m_EvalPlayerData[i].name/2==NSMAN->ClientNum)
+			{
+				m_iCurrentPlayer=i;
+				break;
+			}
+		}
 		m_bHasStats = true;
 		for( int i=0; i<m_iActivePlayers; ++i )
 		{
