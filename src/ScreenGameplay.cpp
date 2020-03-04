@@ -919,13 +919,13 @@ void ScreenGameplay::LoadNextSong()
 		if( !m_bDemonstration )
 			PROFILEMAN->IncrementStepsPlayCount( pSong, pSteps, p );
 		CString player_options;
-		if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
-		{
-				CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
-				if( s[s.GetLength()-1] == '0' )
-					s.erase(s.GetLength()-1);
-				player_options += s + "xMusic ";
-		}
+		// if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
+		// {
+		// 		CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
+		// 		if( s[s.GetLength()-1] == '0' )
+		// 			s.erase(s.GetLength()-1);
+		// 		player_options += s + "xMusic  ";
+		// }
 		player_options += GAMESTATE->m_PlayerOptions[p].GetString();
 		// m_textPlayerOptions[p].SetText( GAMESTATE->m_PlayerOptions[p].GetString() );
 		m_textPlayerOptions[p].SetText( player_options );
@@ -1251,9 +1251,14 @@ void ScreenGameplay::Update( float fDeltaTime )
 		}
 		else
 		{
+			float scale =1;
+			if(GAMESTATE->m_SongOptions.m_fMusicRate<1)
+			{
+				scale = GAMESTATE->m_SongOptions.m_fMusicRate;
+			}
 			float fMinTimeToMusic = m_In.GetLengthSeconds();	// start of m_Ready
 			float fMinTimeToNotes = fMinTimeToMusic + m_Ready.GetLengthSeconds() + m_Go.GetLengthSeconds()+2;	// end of Go
-
+			fMinTimeToNotes = fMinTimeToNotes*scale; 
 			/*
 			 * Tell the music to start, but don't actually make any noise for
 			 * at least 2.5 (or 1.5) seconds.  (This is so we scroll on screen smoothly.)
@@ -2169,17 +2174,24 @@ void ScreenGameplay::HandleScreenMessage( const ScreenMessage SM )
 		break;
 
 	case SM_LoadNextSong:
-		SongFinished();
+		{
+			SongFinished();
 
-		COMMAND( m_sprCourseSongNumber, "ChangeOut" );
+			COMMAND( m_sprCourseSongNumber, "ChangeOut" );
 
-		LoadNextSong();
-		GAMESTATE->m_bPastHereWeGo = true;
-		/* We're fading in, so don't hit any notes for a few seconds; they'll be
-		 * obscured by the fade. */
-		StartPlayingSong( m_NextSongIn.GetLengthSeconds()+2, 0 );
-		m_NextSongIn.StartTransitioning( SM_None );
-		break;
+			LoadNextSong();
+			GAMESTATE->m_bPastHereWeGo = true;
+			/* We're fading in, so don't hit any notes for a few seconds; they'll be
+			 * obscured by the fade. */
+			float scale =1;
+			if(GAMESTATE->m_SongOptions.m_fMusicRate<1)
+			{
+				scale = GAMESTATE->m_SongOptions.m_fMusicRate;
+			}
+			StartPlayingSong( (m_NextSongIn.GetLengthSeconds()+2)*scale, 0 );
+			m_NextSongIn.StartTransitioning( SM_None );
+			break;
+		}
 
 	case SM_PlayToasty:
 		if( PREFSMAN->m_bEasterEggs )

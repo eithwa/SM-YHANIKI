@@ -2263,7 +2263,6 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 				/* Give a 1 measure lead-in.  Set this before loading Player, so it knows
 				 * where we're starting. */
 				// float fSeconds = m_pSong->m_Timing.GetElapsedTimeFromBeat( m_NoteFieldEdit.m_fBeginMarker - 4 );
-				GAMESTATE->m_SongOptions.m_fMusicRate;
 				float scale =1;
 				if(GAMESTATE->m_SongOptions.m_fMusicRate<1)
 				{
