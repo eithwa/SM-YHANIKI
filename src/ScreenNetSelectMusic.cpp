@@ -21,6 +21,7 @@
 
 #include "SongUtil.h"
 //==========
+#include "NoteField.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +65,18 @@ using namespace std;
 #define SUBTITLE_WIDTH				THEME->GetMetricF("ScreenNetSelectMusic","SongsSubtitleWidth")
 #define ARTIST_WIDTH				THEME->GetMetricF("ScreenNetSelectMusic","SongsArtistWidth")
 
+const int NUM_SCORE_DIGITS	=	9;
+
+#define USERSBG_WIDTH				THEME->GetMetricF("ScreenNetEvaluation","UsersBGWidth")
+#define USERSBG_HEIGHT				THEME->GetMetricF("ScreenNetEvaluation","UsersBGHeight")
+#define USERSBG_COLOR				THEME->GetMetricC("ScreenNetEvaluation","UsersBGColor")
+
+#define USERDX						THEME->GetMetricF("ScreenNetEvaluation","UserDX")
+// #define USERDY						THEME->GetMetricF("ScreenNetEvaluation","UserDY")
+#define USERDY						25
+
+#define MAX_COMBO_NUM_DIGITS		THEME->GetMetricI("ScreenEvaluation","MaxComboNumDigits")
+
 const ScreenMessage SM_NoSongs		= ScreenMessage(SM_User+3);
 const ScreenMessage	SM_AddToChat	= ScreenMessage(SM_User+4);
 const ScreenMessage SM_ChangeSong	= ScreenMessage(SM_User+5);
@@ -76,6 +89,7 @@ const CString AllGroups			= "[ALL MUSIC]";
 
 ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithMenuElements( sName )
 {
+	
 	/* Finish any previous stage.  It's OK to call this when we havn't played a stage yet. */
 	GAMESTATE->FinishStage();
 
@@ -219,7 +233,9 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	SONGMAN->GetGroupNames( m_vGroups );
 	if (m_vGroups.size()<1)
 	{
-		SCREENMAN->SendMessageToTopScreen( SM_NoSongs );
+		SCREENMAN->SetNewScreen( "ScreenTitleMenu" );
+		SCREENMAN->SystemMessage( "You don't have any songs in the game" );
+		//SCREENMAN->SendMessageToTopScreen( SM_NoSongs );
 		return;
 	}
 	
@@ -260,7 +276,7 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	}	
 	
 	UpdateSongsListPos();
-
+	CheckChangeSong();
 	//================
 	// unsigned i=0;
 	// unsigned j=0;
@@ -289,10 +305,62 @@ ScreenNetSelectMusic::ScreenNetSelectMusic( const CString& sName ) : ScreenWithM
 	//Load SFX next
 	m_soundChangeOpt.Load( THEME->GetPathToS("ScreenNetSelectMusic change opt"));
 	m_soundChangeSel.Load( THEME->GetPathToS("ScreenNetSelectMusic change sel"));
+	//=====user rect======
+	int ShowSide;
+	m_pActivePlayer = PLAYER_1;	
 
+	FOREACH_PlayerNumber (pn)
+		if ( GAMESTATE->IsPlayerEnabled( pn ) )
+			m_pActivePlayer = pn;
+
+	if (m_pActivePlayer == PLAYER_1)
+		ShowSide = 2;
+	else
+		ShowSide = 1;
+	m_rectUsersBG.SetWidth( USERSBG_WIDTH );
+	m_rectUsersBG.SetHeight( USERSBG_HEIGHT );
+	m_rectUsersBG.SetDiffuse( USERSBG_COLOR );
+	m_rectUsersBG.SetName( "UsersBG" );
+	//ON_COMMAND( m_rectUsersBG );
+	
+	m_rectUsersBG.SetXY(
+		THEME->GetMetricF("ScreenNetEvaluation",ssprintf("UsersBG%dX",ShowSide)),
+		THEME->GetMetricF("ScreenNetEvaluation",ssprintf("UsersBG%dY",ShowSide)) );
+
+	this->AddChild( &m_rectUsersBG );
+
+	float cx = THEME->GetMetricF("ScreenNetEvaluation",ssprintf("User%dX",ShowSide));
+	float cy = THEME->GetMetricF("ScreenNetEvaluation",ssprintf("User%dY",ShowSide));
+	
+	m_iActivePlayers = 20;
+	m_iCurrentPlayer = 0;
+
+	for( int i=0; i<m_iActivePlayers; ++i )
+	{
+		//m_textUsers[i].LoadFromFont( THEME->GetPathF(m_sName,"names") );
+		m_textUsers[i].SetVertAlign(align_top);
+		//m_textUsers[i].SetHorizAlign( align_left );
+		m_textUsers[i].LoadFromFont( THEME->GetPathF(m_sName,"chat") );
+		m_textUsers[i].SetName( "User" );
+		m_textUsers[i].SetShadowLength( 1 );
+		m_textUsers[i].SetXY( cx+30, cy );
+		
+		m_textUsersNum[i].SetVertAlign(align_top);
+		// m_textUsersNum[i].SetHorizAlign( align_left );
+		m_textUsersNum[i].LoadFromFont( THEME->GetPathF(m_sName,"chat") );
+		m_textUsersNum[i].SetName( "UserNum" );
+		m_textUsersNum[i].SetShadowLength( 1 );
+		m_textUsersNum[i].SetXY( cx-80, cy );
+		
+		this->AddChild( &m_textUsers[i] );
+		this->AddChild( &m_textUsersNum[i] );
+		cx+=USERDX;
+		cy+=USERDY;
+	}
+	//======================
 	NSMAN->ReportNSSOnOff(1);
 	NSMAN->ReportPlayerOptions();
-
+	NSMAN->SendAskSong();
 	return;
 }
 
@@ -375,6 +443,17 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		// SCREENMAN->PopTopScreen();
 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
 	}
+	// bool bHoldingtab = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_TAB));
+
+	if(DeviceI.button==KEY_F8)
+	{
+		if(GAMESTATE->ScreenNetSelectMusicAlpha){
+			GAMESTATE->ScreenNetSelectMusicAlpha=false;
+		}else
+		{
+			GAMESTATE->ScreenNetSelectMusicAlpha=true;
+		}
+	}
 	switch( DeviceI.button )
 	{
 	case KEY_ENTER:
@@ -419,7 +498,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 	default:
 		char c;
 		c = DeviceI.ToChar();
-		if((int)c>0 && (int)c<127 )
+		if((int)DeviceI.button>0 && (int)DeviceI.button<127 )
 		{
 			input_check=true;
 		}
@@ -478,6 +557,24 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		Screen::Input( DeviceI, type, GameI, MenuI, StyleI );	// default input handler
 	}
 }
+bool ScreenNetSelectMusic::CheckHash(Song * temp_song)
+{
+	//=========test======
+	StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
+	vector <Steps *> MultiSteps;
+	int notenum = 0;
+	MultiSteps = temp_song->GetAllSteps( st );
+	for(int i = 0; i<MultiSteps.size(); i++)
+	{
+		notenum=MultiSteps[i]->GetNumTapNotesformSetp();
+		if(notenum==NSMAN->m_ihash)
+		{
+			//LOG->Info("find the song notenum %d",notenum);
+			return true;
+		}
+	}
+	return false;
+}
 void ScreenNetSelectMusic::CheckChangeSong()
 {
 	//===============
@@ -488,7 +585,14 @@ void ScreenNetSelectMusic::CheckChangeSong()
 		if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
 			( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 			( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
-			break;
+			{
+				// break;
+				if(CheckHash(m_vSongs[i])==true)
+				{
+					break;
+				}
+			}
+			
 	bool haveSong = i != m_vSongs.size();
 	if(haveSong)
 	{
@@ -507,8 +611,13 @@ void ScreenNetSelectMusic::CheckChangeSong()
 						( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 						( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 					{
-						find_song_in_group = true;
-						break;
+						// find_song_in_group = true;
+						// break;
+						if(CheckHash(m_vSongs[i])==true)
+						{
+							find_song_in_group = true;
+							break;
+						}
 					}
 				}
 				if(find_song_in_group)
@@ -547,6 +656,7 @@ void ScreenNetSelectMusic::CheckChangeSong()
 		UpdateGroupsListPos();
 		m_iSongNum = i + m_vSongs.size();
 		UpdateSongsListPos();
+		NSMAN->SendHasSong(true);
 	}
 	else if(NSMAN->m_sCurMainTitle=="")
 	{
@@ -595,7 +705,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_AddToChat:
 		{
-			m_textOutHidden.SetText2( NSMAN->m_sChatText );
+			//m_textOutHidden.SetText2( NSMAN->m_sChatText );
+			m_textOutHidden.SetText( NSMAN->m_sChatText );
 			vector <wstring> wLines;
 			m_textOutHidden.GetLines( wLines );
 			m_actualText = "";
@@ -603,7 +714,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 			{
 				m_actualText += WStringToCString( wLines[i] )+'\n';
 			}
-			m_textChatOutput.SetText2( m_actualText );
+			// m_textChatOutput.SetText2( m_actualText );
+			m_textChatOutput.SetText( m_actualText );
 			break;
 		}
 	case SM_ChangeSong:
@@ -633,7 +745,13 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 				if ( ( !m_vSongs[i]->GetTranslitArtist().CompareNoCase( NSMAN->m_sArtist ) ) &&
 					 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 					 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
-					 break;
+					 {
+						// break;
+						if(CheckHash(m_vSongs[i])==true)
+						{
+							break;
+						}
+					 }
 			bool haveSong = i != m_vSongs.size();
 			if(haveSong)
 			{
@@ -652,8 +770,13 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 								 ( !m_vSongs[i]->GetTranslitMainTitle().CompareNoCase( NSMAN->m_sMainTitle ) ) &&
 								 ( !m_vSongs[i]->GetTranslitSubTitle().CompareNoCase( NSMAN->m_sSubTitle ) ) )
 							{
-								find_song_in_group = true;
-								break;
+								// find_song_in_group = true;
+								// break;
+								if(CheckHash(m_vSongs[i])==true)
+								{
+									find_song_in_group = true;
+									break;
+								}
 							}
 						}
 						if(find_song_in_group)
@@ -923,8 +1046,18 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		NSMAN->m_sMainTitle = m_vSongs[j]->GetTranslitMainTitle();
 		NSMAN->m_sSubTitle = m_vSongs[j]->GetTranslitSubTitle();
 		NSMAN->m_iSelectMode = 2; //Command for user selecting song
+		//=========test======
+		StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
+		NoteField cur_song_note_date;
+		Steps * SelectStep;
+		SelectStep = m_vSongs[j]->GetStepsByDifficulty(st, m_DC[pn]);
+		int notenum = 0;
+		notenum = SelectStep->GetNumTapNotesformSetp();
+		// LOG->Info("m_iNumTracks %d", notenum);
+		NSMAN->m_ihash = notenum;
+		//===================
 		NSMAN->SelectUserSong ();
-		// CheckChangeSong();
+
 	}
 	else
 		StartSelectedSong();
@@ -973,8 +1106,85 @@ void ScreenNetSelectMusic::TweenOffScreen()
 void ScreenNetSelectMusic::Update( float fDeltaTime )
 {
 	Screen::Update( fDeltaTime );
+	UpdateUsersStates();
 }
+void ScreenNetSelectMusic::UpdateUsersStates()
+{
+	float alpha = 1;
+	if(GAMESTATE->ScreenNetSelectMusicAlpha)
+	{
+		alpha = 1;
+	}else{
+		alpha = 0;
+	}
 
+	m_rectUsersBG.SetDiffuse(RageColor(0,1,0.9,alpha*0.2));
+	for( int i=0; i<20; ++i )
+	{
+		m_textUsers[i].SetText( "" );
+		m_textUsersNum[i].SetText( "" );
+	}
+	//RageColor(R,G,B,A)
+	for( int i=0; i<NSMAN->m_PlayerNames.size()/2; ++i )
+	{
+		if(NSMAN->m_PlayerCondition.size()<=i)
+			return;
+		if(NSMAN->m_PlayerCondition[i]==0)
+		{
+			m_textUsers[i].SetDiffuse(RageColor(1,1,1,alpha));
+			m_textUsersNum[i].SetDiffuse(RageColor(1,1,1,alpha));
+		}else if(NSMAN->m_PlayerCondition[i]==1)
+		{
+			m_textUsers[i].SetDiffuse(RageColor(0.9,0,0,alpha));
+			m_textUsersNum[i].SetDiffuse(RageColor(0.9,0,0,alpha));
+		}else
+		{
+			m_textUsers[i].SetDiffuse(RageColor(0.3,0.3,0.3,alpha));
+			m_textUsersNum[i].SetDiffuse(RageColor(0.3,0.3,0.3,alpha));
+		}
+		
+		CString Num;
+		Num.Format("%d", i);
+		CString Display_Num;
+		if(i==0)
+		{
+			Display_Num="[H]";
+		}else
+		{
+			Display_Num="[";
+			Display_Num+=Num;
+			Display_Num+=".]";
+		}
+		m_textUsersNum[i].SetText( Display_Num );
+		//=========
+		CString temp_PlayerName="";
+		if(NSMAN->m_PlayerNames[i*2]!=""
+		 &&NSMAN->m_PlayerNames[i*2+1]=="")
+		{
+			temp_PlayerName=NSMAN->m_PlayerNames[i*2];
+		}
+		else if(NSMAN->m_PlayerNames[i*2]==""
+		 &&NSMAN->m_PlayerNames[i*2+1]!="")
+		{
+			temp_PlayerName=NSMAN->m_PlayerNames[i*2+1];
+		}
+		else if(NSMAN->m_PlayerNames[i*2]!=""
+		 &&NSMAN->m_PlayerNames[i*2+1]!="")
+		{
+			temp_PlayerName=NSMAN->m_PlayerNames[i*2];
+			temp_PlayerName+="&";
+			temp_PlayerName+=NSMAN->m_PlayerNames[i*2+1];
+		}
+		m_textUsers[i].SetText( temp_PlayerName );
+		// m_textUsers[i].SetDiffuse(RageColor(r,g,b,a));
+		
+		// if ( NSMAN->m_EvalPlayerData[i].grade < GRADE_TIER_3 )	//Yes, hardcoded (I'd like to leave it that way)
+		// 	m_textUsers[i].TurnRainbowOn();
+		// else
+		// 	m_textUsers[i].TurnRainbowOff();
+		// ON_COMMAND( m_textUsers[i] );
+	}
+}
 void ScreenNetSelectMusic::DrawPrimitives()
 {
 	Screen::DrawPrimitives();
@@ -982,7 +1192,8 @@ void ScreenNetSelectMusic::DrawPrimitives()
 
 void ScreenNetSelectMusic::UpdateTextInput()
 {
-	m_textChatInput.SetText2( m_sTextInput );  
+	// m_textChatInput.SetText2( m_sTextInput );
+	m_textChatInput.SetText( m_sTextInput );  
 }
 
 void ScreenNetSelectMusic::StartSelectedSong()

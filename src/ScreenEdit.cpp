@@ -1885,6 +1885,8 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 				else
 					SCREENMAN->SystemMessage( "Saved as SM." );
 				SOUND->PlayOnce( THEME->GetPathToS("ScreenEdit save") );
+				time_t now = time(0);
+				start_time = now;
 			}
 			break;
 		case reload:
@@ -2261,7 +2263,12 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 				/* Give a 1 measure lead-in.  Set this before loading Player, so it knows
 				 * where we're starting. */
 				// float fSeconds = m_pSong->m_Timing.GetElapsedTimeFromBeat( m_NoteFieldEdit.m_fBeginMarker - 4 );
-				float fSeconds = m_pSong->m_Timing.GetElapsedTimeFromBeat( m_NoteFieldEdit.m_fBeginMarker - PREFSMAN->m_bEditorPlayModeBeatsBuffer );
+				float scale =1;
+				if(GAMESTATE->m_SongOptions.m_fMusicRate<1)
+				{
+					scale = GAMESTATE->m_SongOptions.m_fMusicRate;
+				}
+				float fSeconds = m_pSong->m_Timing.GetElapsedTimeFromBeat( m_NoteFieldEdit.m_fBeginMarker - PREFSMAN->m_bEditorPlayModeBeatsBuffer*scale );
 				GAMESTATE->UpdateSongPosition( fSeconds, m_pSong->m_Timing );
 
 				SetupCourseAttacks();

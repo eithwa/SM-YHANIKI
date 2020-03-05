@@ -82,6 +82,14 @@ void Steps::GetNoteData( NoteData* pNoteDataOut ) const
 		pNoteDataOut->SetNumTracks( GameManager::StepsTypeToNumTracks(m_StepsType) );
 	}
 }
+int Steps::GetNumTapNotesformSetp()
+{
+	Decompress();
+	int NumTapNotes=0;
+	if( notes != NULL )
+		NumTapNotes = notes->GetNumTapNotes();
+	return NumTapNotes;
+}
 
 void Steps::SetSMNoteData( const CString &notes_comp_, const CString &attacks_comp_ )
 {

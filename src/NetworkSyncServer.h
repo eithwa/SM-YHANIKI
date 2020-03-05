@@ -36,6 +36,7 @@ public:
 	CString subtitle;
 	CString artist;
 	CString course;
+	int     hash;
 };
 
 class GameClient
@@ -133,6 +134,9 @@ protected:
 	void ClientsSongSelectStart();
 	void ResetLastSongInfo();
 	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
+	void SendPlayerCondition();
+	void GetHasSong(PacketFunctions&Packet, unsigned int clientNum);
+	void GetAskSong(PacketFunctions&Packet, unsigned int clientNum);
 #endif
 };
 

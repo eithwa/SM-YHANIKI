@@ -13,7 +13,7 @@
 #include "DifficultyIcon.h"
 #include "Difficulty.h"
 #include "DifficultyMeter.h"
-
+#define NETMAXPLAYERS 32
 class ScreenNetSelectMusic : public ScreenWithMenuElements
 {
 public:
@@ -73,7 +73,14 @@ private:
 	CString			m_sTextInput;
 	CString			m_actualText;
 
-
+	//user rect
+	Quad			m_rectUsersBG;
+	BitmapText		m_textUsers[NETMAXPLAYERS];
+	BitmapText		m_textUsersNum[NETMAXPLAYERS];
+	int				m_iCurrentPlayer;
+	int				m_iActivePlayers;
+	
+	PlayerNumber	m_pActivePlayer;
 	//Selection
 	Quad			m_rectSelection;
 
@@ -107,7 +114,8 @@ private:
 	RageSound m_soundChangeSel;
 	vector <Steps *> SortStep(vector <Steps *> MultiSteps);
 	void CheckChangeSong();
-
+	bool CheckHash(Song * temp_song);
+	void UpdateUsersStates();
 };
 
 #endif

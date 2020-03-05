@@ -748,6 +748,12 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		NSMAN->m_sArtist = pSong->GetTranslitArtist();
 		NSMAN->m_sMainTitle = pSong->GetTranslitMainTitle();
 		NSMAN->m_sSubTitle = pSong->GetTranslitSubTitle();
+		//NSMAN->m_ihash = pSong->GetNumStagesForSong();
+		FOREACH_EnabledPlayer( p )
+		{
+			NSMAN->m_ihash = m_vpSteps[m_iSelection[p]]->GetNumTapNotesformSetp();
+			if(p==0)break;
+		}
 		NSMAN->m_iSelectMode = 2; //Command for user selecting song
 		// SCREENMAN->PopTopScreen();
 		SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" );

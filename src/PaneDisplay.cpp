@@ -164,16 +164,20 @@ void PaneDisplay::SetContent( PaneContents c )
 
 	{
 		RadarValues rv;
-
+		int NumTapNotes=0;
 		if( g_Contents[c].req&NEED_NOTES )
+		{
 			rv = pSteps->GetRadarValues();
+			NumTapNotes = GAMESTATE->m_pCurSteps[m_PlayerNumber]->GetNumTapNotesformSetp();
+			LOG->Info("NumTapNotes %d", NumTapNotes);
+		}
+			
 		else if( g_Contents[c].req&NEED_COURSE )
 			rv = pTrail->GetRadarValues();
-
 		switch( c )
 		{
 		case COURSE_NUM_STEPS:
-		case SONG_NUM_STEPS:				val = rv[RADAR_NUM_TAPS_AND_HOLDS]; break;
+		case SONG_NUM_STEPS:				val = NumTapNotes; break;//val = rv[RADAR_NUM_TAPS_AND_HOLDS]; break;
 		case COURSE_JUMPS:
 		case SONG_JUMPS:					val = rv[RADAR_NUM_JUMPS]; break;
 		case COURSE_HOLDS:

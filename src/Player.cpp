@@ -411,7 +411,8 @@ void PlayerMinus::Update( float fDeltaTime )
 			fLife = 1;
 			hns = HNS_OK;
 			//m_pNoteField->DidTapNote( StyleI.col, TNS_PERFECT, true );	// bright ghost flash
-			m_pNoteField->DidTapNote( StyleI.col, TNS_MARVELOUS, true );	// bright ghost flash
+			bool bBright = g_CurStageStats.iCurCombo[m_PlayerNumber]>(int)BRIGHT_GHOST_COMBO_THRESHOLD;
+			m_pNoteField->DidTapNote( StyleI.col, TNS_MARVELOUS, bBright );	// bright ghost flash
 		}
 
 		if( hns != HNS_NONE )
