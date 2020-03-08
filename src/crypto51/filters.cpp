@@ -6,6 +6,7 @@
 #include "fltrimpl.h"
 #include "argnames.h"
 #include <functional>
+#include <memory>
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -407,7 +408,7 @@ void ProxyFilter::SetFilter(Filter *filter)
 	if (filter)
 	{
 		OutputProxy *proxy;
-		std::auto_ptr<OutputProxy> temp(proxy = new OutputProxy(*this, false));
+		std::unique_ptr<OutputProxy> temp(proxy = new OutputProxy(*this, false));
 		m_filter->TransferAllTo(*proxy);
 		m_filter->Attach(temp.release());
 	}

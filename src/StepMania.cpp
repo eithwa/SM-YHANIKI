@@ -926,7 +926,11 @@ static void ProcessArgsSecond()
 #ifdef _XBOX
 void __cdecl main()
 #else
-int main(int argc, char* argv[])
+int WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR szCmdLine, 
+	int iCmdShow)
 #endif
 {
 #ifdef _XBOX
@@ -934,8 +938,11 @@ int main(int argc, char* argv[])
 	char *argv[] = {"default.xbe"};
 #endif
 
-	g_argc = argc;
-	g_argv = argv;
+	/*g_argc = argc;
+	g_argv = argv;*/
+
+	g_argc = 1;
+	g_argv = { };
 
 	/* Set up arch hooks first.  This may set up crash handling. */
 	HOOKS = MakeArchHooks();
@@ -958,7 +965,8 @@ int main(int argc, char* argv[])
 #endif
 
 	/* Almost everything uses this to read and write files.  Load this early. */
-	FILEMAN = new RageFileManager( argv[0] );
+	//FILEMAN = new RageFileManager( argv[0] );
+	FILEMAN = new RageFileManager(szCmdLine);
 	FILEMAN->MountInitialFilesystems();
 
 	/* Set this up next.  Do this early, since it's needed for RageException::Throw. */
