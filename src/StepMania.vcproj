@@ -12,8 +12,6 @@
 			Name="Win32"
 		/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -26,18 +24,10 @@
 			CharacterSet="2"
 			>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName=".\../StepMania.tlb"
-			/>
-			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa  /wd4430 /wd4996"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;..\ThirdParty\SDL-1.2.6\include&quot;;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
+				AdditionalIncludeDirectories=".;..\ThirdParty\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;&quot;..\ThirdParty\lua-5.0\include&quot;;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,WINDOWS,DEBUG"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -52,18 +42,6 @@
 				WarningLevel="4"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -81,31 +59,6 @@
 				MapExports="true"
 				SubSystem="2"
 			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="disasm\mapconv &quot;$(IntDir)\$(TargetName).map&quot; &quot;$(TargetDir)\StepMania.vdi&quot;"
-			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -118,27 +71,6 @@
 			CharacterSet="2"
 			ManagedExtensions="0"
 			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="disasm\verinc&#x0D;&#x0A;cl /Zl /nologo /c verstub.cpp /Fo&quot;$(IntDir)&quot;\&#x0D;&#x0A;"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName=".\../StepMania.tlb"
-			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHa  /wd4430 /wd4996"
@@ -168,18 +100,6 @@
 				DebugInformationFormat="3"
 			/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-				CommandLine="@ECHO ON&#x0D;&#x0A;@ECHO &quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;&#x0D;&#x0A;&quot;$(VCInstallDir)bin/lib.exe&quot; /out:&quot;$(OutDir)/$(TargetName)_library.lib&quot; &quot;$(IntDir)/*.obj&quot;"
-			/>
-			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 &quot;$(intdir)\verstub.obj&quot;"
 				AdditionalDependencies="gdi32.lib shell32.lib"
@@ -193,31 +113,6 @@
 				MapFileName="$(IntDir)\$(TargetName).map"
 				MapExports="true"
 				SubSystem="2"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="disasm\mapconv &quot;$(IntDir)\$(TargetName).map&quot; &quot;$(TargetDir)\StepMania.vdi&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -3401,6 +3296,4 @@
 			>
 		</File>
 	</Files>
-	<Globals>
-	</Globals>
 </VisualStudioProject>
