@@ -26,3 +26,4 @@ winsocket_server.exe
 src/StepMania.suo
 src/crypto51/d2utmpwOSSWZ
 crashinfo.txt
+BlueSocket/**

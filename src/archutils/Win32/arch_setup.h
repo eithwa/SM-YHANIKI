@@ -81,7 +81,7 @@ inline int lrintf( float f )
 }
 
 /* For RageLog. */
-#define HAVE_VERSION_INFO
+//#define HAVE_VERSION_INFO
 
 /* We implement the crash handler interface (though that interface isn't completely
  * uniform across platforms yet). */

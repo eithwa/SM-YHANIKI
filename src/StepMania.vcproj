@@ -26,19 +26,6 @@
 			CharacterSet="2"
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="disasm\verinc&#x0D;&#x0A;cl /Zl /nologo /c verstub.cpp /Fo&quot;$(IntDir)&quot;\&#x0D;&#x0A;"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="true"
@@ -80,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386 &quot;$(intdir)\verstub.obj&quot;"
+				AdditionalOptions="/MACHINE:I386 &quot;"
 				AdditionalDependencies="gdi32.lib shell32.lib"
 				OutputFile="../Program/StepMania-debug.exe"
 				LinkIncremental="2"
