@@ -134,6 +134,9 @@
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <PostBuildEvent>
+      <Command>disasm\mapconv "$(IntDir)\$(TargetName).map" "$(TargetDir)\StepMania.vdi"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ActiveAttackList.cpp" />
