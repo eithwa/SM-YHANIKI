@@ -79,6 +79,9 @@
     <Filter Include="Crypto\crypto++">
       <UniqueIdentifier>{450c5164-0f82-4034-8788-658933177537}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Discord">
+      <UniqueIdentifier>{15da8344-1fcd-4cb5-b0fa-70df14f6fd94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Screen.cpp">
@@ -1166,6 +1169,48 @@
     </ClCompile>
     <ClCompile Include="crypto51\strciphr.cpp">
       <Filter>Crypto\crypto++</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\application_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\core.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\image_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\lobby_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\network_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\overlay_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\relationship_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\storage_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\store_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\types.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\user_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\voice_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\achievement_manager.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="discord\activity_manager.cpp">
+      <Filter>Discord</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2365,6 +2410,57 @@
     </ClInclude>
     <ClInclude Include="crypto51\words.h">
       <Filter>Crypto\crypto++</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\application_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\core.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\discord.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\event.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\ffi.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\image_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\lobby_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\network_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\overlay_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\relationship_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\storage_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\store_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\types.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\user_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\voice_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\achievement_manager.h">
+      <Filter>Discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord\activity_manager.h">
+      <Filter>Discord</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

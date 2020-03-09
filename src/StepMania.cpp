@@ -1514,11 +1514,25 @@ static void CheckSkips( float fDeltaTime )
 			iThisFPS, fExpectedTime, fDeltaTime, fDifference );
 }
 
+#include "discord.h"
+
 static void GameLoop()
 {
+	discord::Core* core{};
+
+	auto result = discord::Core::Create(685922459790213149, DiscordCreateFlags_Default, &core);
+	discord::Activity activity{};
+	
+    activity.SetState("Testing");
+    activity.SetDetails("Fruit Loops");
+
+	core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
+    });
+
 	RageTimer timer;
 	while(!g_bQuitting)
 	{
+		core->RunCallbacks();
 
 		/*
 		 * Update
