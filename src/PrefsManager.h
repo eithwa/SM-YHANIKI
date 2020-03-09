@@ -128,6 +128,7 @@ public:
 	bool			m_bMercifulSuperMeter;	// negative super deltas are scaled by the players life percentage
 
 	bool			m_bAutoPlay;
+	int             m_iPlayerControllerType;
 	bool			m_bDelayedEscape;
 	bool			m_bInstructions, m_bShowDontDie, m_bShowSelectGroup;
 	bool			m_bShowNative;
@@ -223,6 +224,7 @@ public:
 	
 	/* Editor prefs: */
 	bool			m_bEditorShowBGChangesPlay;
+	int			    m_bEditorShowBGChangesAlpha;
 	bool			m_bEditorReverseIntuitive;
 	int				m_bEditorAutosaveMinute;
 	int             m_bEditorPlayModeBeatsBuffer;

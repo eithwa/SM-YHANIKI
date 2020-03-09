@@ -83,6 +83,7 @@ const ScreenMessage	SM_StopHereWeGo			= ScreenMessage(SM_User+41);
 
 ScreenGameplay::ScreenGameplay( CString sName, bool bDemonstration ) : Screen(sName)
 {
+	m_bUsingAutoPlay = false;
 	m_bDemonstration = bDemonstration;
 	Init(); // work around horrible gcc bug 3187
 }
@@ -982,6 +983,11 @@ void ScreenGameplay::LoadNextSong()
 			GAMESTATE->m_PlayerController[p] = PC_AUTOPLAY;
 		else
 			GAMESTATE->m_PlayerController[p] = PC_HUMAN;
+		//=======================
+		if(PREFSMAN->m_iPlayerControllerType==2)
+		{
+			GAMESTATE->m_PlayerController[p] = PC_CPU;
+		}
 	}
 
 	m_textSongTitle.SetText( GAMESTATE->m_pCurSong->m_sMainTitle );
@@ -1237,7 +1243,14 @@ void ScreenGameplay::Update( float fDeltaTime )
 		Screen::Update( fDeltaTime );
 		return;
 	}
-
+	float fFirstBeat = GAMESTATE->m_pCurSong->m_fFirstBeat;
+	float fFirstSecond = GAMESTATE->m_pCurSong->GetElapsedTimeFromBeat( fFirstBeat );
+	if(m_bUsingAutoPlay==false && 
+	   PREFSMAN->m_iPlayerControllerType==2 &&//CPU Play
+	   g_CurStageStats.fGameplaySeconds>fFirstSecond)
+	{
+		m_bUsingAutoPlay=true;
+	}
 	if( m_bFirstUpdate )
 	{
 		SOUND->PlayOnceFromAnnouncer( "gameplay intro" );	// crowd cheer
@@ -1757,11 +1770,26 @@ void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType typ
 		case KEY_F8:
 			{
 				PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
-				UpdateAutoPlayText();
 				bool bIsHoldingShift = 
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT));
-                FOREACH_HumanPlayer(p)
+                if(PREFSMAN->m_bAutoPlay)
+				{
+					if(bIsHoldingShift)
+					{
+						PREFSMAN->m_iPlayerControllerType = 2;
+					}else
+					{
+						PREFSMAN->m_iPlayerControllerType = 1;
+					}
+					
+				}else
+				{
+					PREFSMAN->m_iPlayerControllerType = 0;
+				}
+				UpdateAutoPlayText();
+				// LOG->Info("PREFSMAN->m_iPlayerControllerType %d", PREFSMAN->m_iPlayerControllerType);
+				FOREACH_HumanPlayer(p)
 				{
                     if( bIsHoldingShift )
                         GAMESTATE->m_PlayerController[p] = PREFSMAN->m_bAutoPlay ? PC_CPU : PC_HUMAN;
@@ -1868,9 +1896,18 @@ void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType typ
 void ScreenGameplay::UpdateAutoPlayText()
 {
 	CString sText;
-
+	
 	if( PREFSMAN->m_bAutoPlay )
-		sText += "AutoPlay     ";
+	{	
+		if(PREFSMAN->m_iPlayerControllerType==1)
+		{
+			sText += "AutoPlay     ";
+		}else if(PREFSMAN->m_iPlayerControllerType==2)
+		{
+			sText += "AutoPlayCPU     ";
+		}
+		
+	}
 	if( GAMESTATE->m_SongOptions.m_bAutoSync )
 		sText += "AutoSync     ";
 
@@ -1978,6 +2015,11 @@ void ScreenGameplay::SongFinished()
 
 		m_Player[p].GetActualRadarValues( p, GAMESTATE->m_pCurSong->m_fMusicLengthSeconds, v );
 		g_CurStageStats.radarActual[p] += v;
+		
+		if(m_bUsingAutoPlay)
+		{
+			g_CurStageStats.iScore[p]=0;
+		}
 	}
 
 	/* Extremely important: if we don't remove attacks before moving on to the next

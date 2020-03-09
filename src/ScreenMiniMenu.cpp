@@ -7,7 +7,7 @@
 #include "PrefsManager.h"
 #include "ThemeManager.h"
 #include "Foreach.h"
-
+#include "GameState.h"
 
 const float LABEL_X		=	200;
 const float ANSWER_X	=	440;
@@ -82,7 +82,13 @@ ScreenMiniMenu::ScreenMiniMenu( Menu* pDef, ScreenMessage SM_SendOnOK, ScreenMes
 
 		for( unsigned j = 0; j < line.choices.size(); ++j )
 		{
-	 		m_textAnswer[i].SetText( line.choices[j] );
+			CString tmp = line.choices[j];
+			if(line.choices[j].GetLength()>20 && GAMESTATE->m_bEditing)
+			{
+				tmp = line.choices[j].Left(20);
+			}
+	 		//m_textAnswer[i].SetText( line.choices[j] );
+			m_textAnswer[i].SetText( tmp );
 			fLongestLabelPlusAnswer = max( 
 				fLongestLabelPlusAnswer, 
 				m_textLabel[i].GetUnzoomedWidth() * ZOOM_SELECTED +

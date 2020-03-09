@@ -179,6 +179,8 @@ protected:
 	BeginnerHelper	m_BeginnerHelper;
 
 	NoteData		m_CabinetLightsNoteData;
+
+	bool            m_bUsingAutoPlay;
 };
 
 

@@ -49,7 +49,7 @@ public:
 	void ApplyWaitingTransforms();
 
 	static float GetMaxStepDistanceSeconds();
-
+	int combo_Editing;
 protected:
 	void UpdateTapNotesMissedOlderThan( float fMissIfOlderThanThisBeat );
 	void OnRowCompletelyJudged( int iStepIndex );

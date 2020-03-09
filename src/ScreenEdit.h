@@ -8,12 +8,15 @@
 #include "Transition.h"
 #include "BitmapText.h"
 #include "Player.h"
+#include "PlayerAI.h"
 #include "RageSound.h"
 #include "BGAnimation.h"
 #include "SnapDisplay.h"
 #include "Background.h"
 #include "Foreground.h"
 #include "Course.h"
+#include "LyricDisplay.h"
+#include "LyricsLoader.h"
 #include <sstream>
 
 
@@ -46,7 +49,7 @@ protected:
 	void MenuItemLoseFocus( BitmapText* menuitem );
 	void AutoSave();
 	void SetDisplayBPMType(int DisplayBPMType);
-
+	void UpdateAutoPlayText();
 
 	enum EditMode { MODE_EDITING, MODE_RECORDING, MODE_PLAYING };
 	EditMode m_EditMode;
@@ -64,6 +67,8 @@ protected:
 	Sprite			m_sprInfo;
 	BitmapText		m_textInfo;		// status information that changes
 
+	LyricDisplay		m_LyricDisplay;
+	BitmapText			m_textAutoPlay;	// for AutoPlay, AutoAdjust
 	// keep track of where we are and what we're doing
 	float				m_fTrailingBeat;	// this approaches GAMESTATE->m_fSongBeat, which is the actual beat
 	/* The location we were at when shift was pressed, or
@@ -199,6 +204,7 @@ public:
 
 	enum PrefsChoice {
 		pref_show_bgs_play,
+		pref_show_bgs_alpha,
 		pref_reverse_intuitive,
 		pref_autosave_minute,
 		pref_play_mode_beats_buffer,

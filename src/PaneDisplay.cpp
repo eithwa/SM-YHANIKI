@@ -169,7 +169,7 @@ void PaneDisplay::SetContent( PaneContents c )
 		{
 			rv = pSteps->GetRadarValues();
 			NumTapNotes = GAMESTATE->m_pCurSteps[m_PlayerNumber]->GetNumTapNotesformSetp();
-			LOG->Info("NumTapNotes %d", NumTapNotes);
+			//LOG->Info("NumTapNotes %d", NumTapNotes);
 		}
 			
 		else if( g_Contents[c].req&NEED_COURSE )
