@@ -58,7 +58,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalOptions>/EHa  /wd4430 /wd4996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/EHa  /wd4430 /wd4996 /wd4458 /wd4018 /wd4456 /wd4457 /wd4459 /wd4838 /wd4996 /wd26812 /wd26495 /wd4244 /wd4306 /wd4389 /wd4305 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINDOWS;DEBUG;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -98,7 +98,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/EHa  /wd4430 /wd4996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/EHa  /wd4430 /wd4996 /wd4458 /wd4018 /wd4456 /wd4457 /wd4459 /wd4838 /wd4996 /wd26812 /wd26495 /wd4244 /wd4306 /wd4389 /wd4305 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>

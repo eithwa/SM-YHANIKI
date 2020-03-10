@@ -559,7 +559,7 @@ static void CheckVideoDefaultSettings()
 
 	const VideoCardDefaults* pDefaults = NULL;
 	
-	for( unsigned i=0; i<ARRAYSIZE(g_VideoCardDefaults); i++ )
+	for( unsigned i=0; i<RageARRAYSIZE(g_VideoCardDefaults); i++ )
 	{
 		pDefaults = &g_VideoCardDefaults[i];
 
@@ -926,7 +926,7 @@ static void ProcessArgsSecond()
 #ifdef _XBOX
 void __cdecl main()
 #else
-int WinMain(
+int __stdcall WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR szCmdLine, 

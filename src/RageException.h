@@ -14,7 +14,7 @@ public:
 	RageException( const CString &str );
 
 	virtual const char *what() const throw();
-	virtual ~RageException() throw() { }
+	virtual ~RageException() noexcept { }
 
 	/* The only difference between these is that Throw triggers debug behavior
 	 * and Nonfatal doesn't.  Nonfatal is used when the exception happens

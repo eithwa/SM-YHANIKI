@@ -3,3 +3,4 @@ verstub.cpp
 version.bin
 StepMania.vcproj.**.user
 .vscode
+**/obj/**
