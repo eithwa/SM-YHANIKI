@@ -68,9 +68,9 @@
 	#endif	
 #elif defined(_WINDOWS)
 	#ifdef DEBUG
-		#pragma comment(lib, "../ThirdParty/SDL-1.2.6/lib/SDLmaind.lib")
+		#pragma comment(lib, "./ThirdParty_rebuild/SDL-1.2.6/lib/SDLmaind.lib")
 	#else
-		#pragma comment(lib, "../ThirdParty/SDL-1.2.6/lib/SDLmain.lib")
+		#pragma comment(lib, "./ThirdParty_rebuild/SDL-1.2.6/lib/SDLmain.lib")
 	#endif	
 #endif
 
