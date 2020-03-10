@@ -82,6 +82,10 @@ void PrefsManager::Init()
 	m_bEventMode = false;
 	m_bAutoPlay = false;
 	m_iPlayerControllerType = 0;
+	if(m_bAutoPlay)
+	{
+		m_iPlayerControllerType=1;
+	}
 	m_fJudgeWindowScale = 1.0f;
 	m_fJudgeWindowAdd = 0;
 	m_fLifeDifficultyScale = 1.0f;

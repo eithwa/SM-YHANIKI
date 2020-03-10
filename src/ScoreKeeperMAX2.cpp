@@ -359,6 +359,17 @@ void ScoreKeeperMAX2::HandleTapRowScore( TapNoteScore scoreOfLastTap, int iNumTa
 	//
 	// handle combo logic
 	//
+	if(GAMESTATE->m_bUsingAutoPlay)
+	{
+		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
+                       0,
+                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}else
+	{
+		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
+                       g_CurStageStats.iScore[m_PlayerNumber],
+                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}
 #ifndef DEBUG
 	if( PREFSMAN->m_bAutoPlay && !GAMESTATE->m_bDemonstrationOrJukebox )	// cheaters never prosper
 	{
@@ -387,19 +398,7 @@ void ScoreKeeperMAX2::HandleTapRowScore( TapNoteScore scoreOfLastTap, int iNumTa
 	default:
 		m_iCurToastyCombo = 0;
 		break;
-	}
-
-	if(GAMESTATE->m_bUsingAutoPlay)
-	{
-		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
-                       0,
-                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
-	}else
-	{
-		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
-                       g_CurStageStats.iScore[m_PlayerNumber],
-                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
-	}
+	}	
 }
 
 
@@ -416,12 +415,12 @@ void ScoreKeeperMAX2::HandleHoldScore( HoldNoteScore holdScore, TapNoteScore tap
 	if(GAMESTATE->m_bUsingAutoPlay)
 	{
 		NSMAN->ReportScore(m_PlayerNumber, holdScore+7, 
-						g_CurStageStats.iScore[m_PlayerNumber],
+						0,
 						g_CurStageStats.iCurCombo[m_PlayerNumber]);
 	}else
 	{
 		NSMAN->ReportScore(m_PlayerNumber, holdScore+7, 
-						0,
+						g_CurStageStats.iScore[m_PlayerNumber],
 						g_CurStageStats.iCurCombo[m_PlayerNumber]);
 	}
 

@@ -1277,7 +1277,7 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 	}
 
 	//Then handle sound (Copied from MusicBannerWheel)
-	static Song* pre_Song = m_vSongs[j];
+	static Song* pre_Song;
 	static time_t now = time(0);
 	if(pre_Song == m_vSongs[j] && time(0)-now<2)
 	{
