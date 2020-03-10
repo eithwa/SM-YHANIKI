@@ -49,6 +49,7 @@
     <OutDir>./../Program\</OutDir>
     <IntDir>./../Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>./../Program\</OutDir>
@@ -59,10 +60,10 @@
     <ClCompile>
       <AdditionalOptions>/EHa  /wd4430 /wd4996 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;..\ThirdParty\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;..\ThirdParty\lua-5.0\include;..\ThirdParty\WindowsSDK\winsvr2003R2\Include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;..\ThirdParty\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;..\ThirdParty\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINDOWS;DEBUG;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling />
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader />
@@ -73,14 +74,18 @@
       <BrowseInformation />
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 " %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>gdi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../Program/StepMania-debug.exe</OutputFile>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>gdi32.lib;shell32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutputPath)$(ProjectName)-$(COnfiguration).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\ThirdParty\WinDDK\7600.16385.1\lib\ATL\amd64;..\ThirdParty\dx80\lib;..\ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ThirdParty\dx80\lib;..\ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>wininet.lib;msimg32.lib;libci.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>../Debug/StepMania-debug.pdb</ProgramDatabaseFile>
@@ -88,6 +93,7 @@
       <MapFileName>$(IntDir)$(TargetName).map</MapFileName>
       <MapExports>true</MapExports>
       <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
