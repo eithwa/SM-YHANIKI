@@ -141,7 +141,8 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
-      <Command>disasm\mapconv "$(IntDir)\$(TargetName).map" "$(TargetDir)\StepMania.vdi"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
