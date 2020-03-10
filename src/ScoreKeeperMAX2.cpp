@@ -389,10 +389,17 @@ void ScoreKeeperMAX2::HandleTapRowScore( TapNoteScore scoreOfLastTap, int iNumTa
 		break;
 	}
 
-	
-	NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
+	if(GAMESTATE->m_bUsingAutoPlay)
+	{
+		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
+                       0,
+                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}else
+	{
+		NSMAN->ReportScore(m_PlayerNumber, scoreOfLastTap,
                        g_CurStageStats.iScore[m_PlayerNumber],
                        g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}
 }
 
 
@@ -406,9 +413,17 @@ void ScoreKeeperMAX2::HandleHoldScore( HoldNoteScore holdScore, TapNoteScore tap
 	if( holdScore == HNS_OK )
 		AddScore( TNS_MARVELOUS );
 
-	NSMAN->ReportScore(m_PlayerNumber, holdScore+7, 
-                       g_CurStageStats.iScore[m_PlayerNumber],
-                       g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	if(GAMESTATE->m_bUsingAutoPlay)
+	{
+		NSMAN->ReportScore(m_PlayerNumber, holdScore+7, 
+						g_CurStageStats.iScore[m_PlayerNumber],
+						g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}else
+	{
+		NSMAN->ReportScore(m_PlayerNumber, holdScore+7, 
+						0,
+						g_CurStageStats.iCurCombo[m_PlayerNumber]);
+	}
 
 
 }

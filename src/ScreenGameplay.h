@@ -180,7 +180,7 @@ protected:
 
 	NoteData		m_CabinetLightsNoteData;
 
-	bool            m_bUsingAutoPlay;
+	// bool            m_bUsingAutoPlay;
 };
 
 

@@ -1055,6 +1055,7 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		int notenum = 0;
 		notenum = SelectStep->GetNumTapNotesformSetp();
 		// LOG->Info("m_iNumTracks %d", notenum);
+		if(notenum<=0)return;
 		NSMAN->m_ihash = notenum;
 		//===================
 		NSMAN->SelectUserSong ();

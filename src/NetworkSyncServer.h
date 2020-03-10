@@ -61,6 +61,10 @@ public:
 	bool isStarting;
 	bool wasIngame;
 	bool lowerJudge;
+	bool shareAll;
+	bool usingShareSongSystem;
+	bool filefilter;
+	int ShareNum;
 	
 private:
 	string build;
@@ -137,6 +141,8 @@ protected:
 	void SendPlayerCondition();
 	void GetHasSong(PacketFunctions&Packet, unsigned int clientNum);
 	void GetAskSong(PacketFunctions&Packet, unsigned int clientNum);
+	void ShareSong(unsigned int ShareSongServerNum, unsigned int ShareSongClientNum, CString ServerIp);
+	void ShareAll(unsigned int ShareSongServerNum, CString ServerIp);
 #endif
 };
 

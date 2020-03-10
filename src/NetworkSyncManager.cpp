@@ -508,7 +508,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
     LOG->Info("open the share song server!!");
 	// CString server_ip = m_packet.ReadNT();
 	// CString player_num = m_packet.ReadNT();
-	LOG->Info("player_num %s",player_num.c_str());
+	LOG->Info("player_num %d",player_num);
 	// int video_file_filter = m_packet.Read1();
 	CString now_SongDir;
 
@@ -518,7 +518,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 	//==================
 	// if(now_SongDir==GAMESTATE->m_pCurSong->GetSongDir())return;
 	now_SongDir = GAMESTATE->m_pCurSong->GetSongDir();
-	LOG->Info("now_SongDir %s",now_SongDir.c_str());
+	// LOG->Info("now_SongDir %s",now_SongDir.c_str());
 	string tmp = now_SongDir.c_str();
 	tmp = tmp.substr(0, tmp.size()-1);
 
@@ -569,7 +569,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 	filter_cmd+=zip_name;
 	filter_cmd+="\" ";
 	filter_cmd+="*.avi *.mpeg *.mpg *.mp4 -r";
-	if(video_file_filter==1)
+	if(video_file_filter)
 	{
 		system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
 	}
@@ -582,9 +582,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 	
 	FILE *fp = fopen(file_dir, "rb");
 	int file_size = GetFileLength(fp)/1024;//(kbs)
-	CString file_size_;
-	file_size_.Format("%d", file_size);
-	// double file_size =0;
+	
 	fclose(fp);
 	if( PREFSMAN->m_sAdditionalSongFolders != "" && file_size<10)
 	{
@@ -608,26 +606,25 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 		LOG->Info("re_zip %s",re_zip.c_str());
 		system(re_zip.c_str());//7za.exe a -tzip "C:\\StepMania\\Songs\\connect\\temp.zip" "C:\\StepMania\\Songs\\{SongDir}"
 		//==========
-		if(video_file_filter==1)
+		if(video_file_filter)
 		{
 			system(filter_cmd.c_str());//7za.exe d "C:\\StepMania\\Songs\\connect\\temp.zip" *.avi *.mpeg *.mpg *.mp4 -r
 		}
 		//==========
 		fp = fopen(file_dir, "rb");
 		file_size = GetFileLength(fp)/1024;//(kbs)
-		file_size_.Format("%d", file_size);
 		fclose(fp);
 	}
-	LOG->Info("file_size_ %s",file_size_.c_str());
+	LOG->Info("file_size %d", file_size);
 
 	WaitForSingleObject(g_hMutex, INFINITE);
 	m_packet.ClearPacket();
 	m_packet.Write1( NSSSC );
 	m_packet.WriteNT( ip_address );
-	m_packet.WriteNT( player_num );
-	m_packet.WriteNT( file_size_ );
+	m_packet.Write1( player_num );
+	m_packet.Write4( file_size );
 	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
-	LOG->Info("player_num %s",player_num.c_str());
+	// LOG->Info("player_num %d", player_num);
 	ReleaseMutex(g_hMutex);
 	//==========
 	CString server_cmd = "winsocket_server.exe ";
@@ -639,6 +636,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 			server_cmd+="\"";
 	LOG->Info("server_cmd %s",server_cmd.c_str());
 	system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
+	ReportShareSongFinish();
     return 0L;
 }
 DWORD NetworkSyncManager::ThreadProcNSSSC(void)
@@ -647,7 +645,9 @@ DWORD NetworkSyncManager::ThreadProcNSSSC(void)
 	// CString server_ip = m_packet.ReadNT();
 	// CString file_size = m_packet.ReadNT();
 	LOG->Info("server_ip %s",server_ip.c_str());
-	LOG->Info("file_size %s",file_size.c_str());
+	LOG->Info("file_size %d", file_size);
+	CString file_size_;
+	file_size_.Format("%d", file_size);
 
 	string CurrentPath;
 	char buf[100];
@@ -669,7 +669,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSC(void)
 			client_cmd+="\\";
 			client_cmd+=zip_name;
 			client_cmd+="\" ";
-			client_cmd+=file_size.c_str();
+			client_cmd+=file_size_.c_str();
 	LOG->Info("client_cmd %s",client_cmd.c_str());
 	system(client_cmd.c_str());//winsocket_client.exe {IP} "C:\\StepMania\\Songs\\connect\\temp.zip" {file_size}
 	CString zip_cmd = "7za.exe x ";
@@ -684,7 +684,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSC(void)
 			zip_cmd+="\"";
 	LOG->Info("zip_cmd %s",zip_cmd.c_str());
 	system(zip_cmd.c_str());//7za.exe x "C:\\StepMania\\Songs\\connect\\temp.zip" -y -aos -o"C:\\StepMania\\Songs\\connect"
-
+	ReportShareSongFinish();
 	SCREENMAN->SendMessageToTopScreen( SM_ReloadConnectPack );
 	return 0L;
 }
@@ -866,9 +866,16 @@ void NetworkSyncManager::ProcessInput()
 		case NSSSS:
 			{
 				server_ip = m_packet.ReadNT();
-				player_num = m_packet.ReadNT();
-				LOG->Info("player_num %s",player_num.c_str());
-				video_file_filter = m_packet.Read1();
+				player_num = m_packet.Read1();
+				// LOG->Info("player_num %d",player_num);
+				int filefilterflag = m_packet.Read1();
+				if(filefilterflag == 0)
+				{
+					video_file_filter = false;
+				}else
+				{
+					video_file_filter = true;
+				}
 
 				DWORD ThreadID;
 				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSS, (void*) this, 0, &ThreadID);
@@ -878,9 +885,9 @@ void NetworkSyncManager::ProcessInput()
 		case NSSSC:
 			{
 				server_ip = m_packet.ReadNT();
-				file_size = m_packet.ReadNT();
-				LOG->Info("server_ip %s",server_ip.c_str());
-				LOG->Info("file_size %s",file_size.c_str());
+				file_size = m_packet.Read4();
+				// LOG->Info("server_ip %s",server_ip.c_str());
+				// LOG->Info("file_size %d",file_size);
 				DWORD ThreadID;
 				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSC, (void*) this, 0, &ThreadID);
 				CloseHandle(thread);
@@ -989,6 +996,12 @@ void NetworkSyncManager::SendAskSong()
 {
 	m_packet.ClearPacket();
 	m_packet.Write1( NSCAS );
+	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
+}
+void NetworkSyncManager::ReportShareSongFinish()
+{
+	m_packet.ClearPacket();
+	m_packet.Write1( NSRSSF );
 	NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
 }
 //Packet functions

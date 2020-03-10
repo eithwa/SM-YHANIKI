@@ -83,7 +83,7 @@ const ScreenMessage	SM_StopHereWeGo			= ScreenMessage(SM_User+41);
 
 ScreenGameplay::ScreenGameplay( CString sName, bool bDemonstration ) : Screen(sName)
 {
-	m_bUsingAutoPlay = false;
+	GAMESTATE->m_bUsingAutoPlay = false;
 	m_bDemonstration = bDemonstration;
 	Init(); // work around horrible gcc bug 3187
 }
@@ -1245,11 +1245,11 @@ void ScreenGameplay::Update( float fDeltaTime )
 	}
 	float fFirstBeat = GAMESTATE->m_pCurSong->m_fFirstBeat;
 	float fFirstSecond = GAMESTATE->m_pCurSong->GetElapsedTimeFromBeat( fFirstBeat );
-	if(m_bUsingAutoPlay==false && 
+	if(GAMESTATE->m_bUsingAutoPlay==false && 
 	   PREFSMAN->m_iPlayerControllerType==2 &&//CPU Play
 	   g_CurStageStats.fGameplaySeconds>fFirstSecond)
 	{
-		m_bUsingAutoPlay=true;
+		GAMESTATE->m_bUsingAutoPlay=true;
 	}
 	if( m_bFirstUpdate )
 	{
@@ -2016,7 +2016,7 @@ void ScreenGameplay::SongFinished()
 		m_Player[p].GetActualRadarValues( p, GAMESTATE->m_pCurSong->m_fMusicLengthSeconds, v );
 		g_CurStageStats.radarActual[p] += v;
 		
-		if(m_bUsingAutoPlay)
+		if(GAMESTATE->m_bUsingAutoPlay)
 		{
 			g_CurStageStats.iScore[p]=0;
 		}
