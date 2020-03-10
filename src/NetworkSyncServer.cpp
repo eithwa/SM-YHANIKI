@@ -905,19 +905,6 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 	{
 		if (clientNum == 0)
 		{ 
-			for(int i=0; i<Client.size(); i++)
-			{
-				if(Client[i]->inNetMusicSelect==false)
-				{
-					message = servername;
-					message += ": Someone is not ready.";
-					Reply.ClearPacket();
-					Reply.Write1(NSCCM + NSServerOffset);
-					Reply.WriteNT(message);
-					SendNetPacket(clientNum, Reply);
-					return;
-				}
-			}
 			SecondSameSelect = false;
 
 			CurrentSongInfo.title = Packet.ReadNT();
@@ -1008,6 +995,19 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 	//Only play if everyone has the same song and the host has select the same song twice.
 	if ( CheckHasSongState() && SecondSameSelect && (clientNum == 0) )
 	{
+		for(int i=0; i<Client.size(); i++)
+		{
+			if(Client[i]->inNetMusicSelect==false)
+			{
+				message = servername;
+				message += ": Someone is not ready.";
+				Reply.ClearPacket();
+				Reply.Write1(NSCCM + NSServerOffset);
+				Reply.WriteNT(message);
+				SendNetPacket(clientNum, Reply);
+				return;
+			}
+		}
 		ClientsSongSelectStart();
 
 		//Reset last song in case host picks same song again (otherwise dual select is bypassed)

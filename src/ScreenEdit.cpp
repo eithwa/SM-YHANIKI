@@ -238,7 +238,7 @@ static Menu g_BGChange( "Background Change", g_BGChangeItems );
 static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
-	{ "Alpha of BGA ",		                    	true, 5, { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1" } },
+	{ "Alpha of BGA",		                    	true, 5, { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
 	{ "AutoSave during time, 0 is Disable(minute)",	true, 5, { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 																	"11","12","13","14","15","16","17","18","19","20",
@@ -2361,6 +2361,14 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 
 				m_Player.Load( PLAYER_1, &m_NoteFieldEdit, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 				GAMESTATE->m_PlayerController[PLAYER_1] = PREFSMAN->m_bAutoPlay?PC_AUTOPLAY:PC_HUMAN;
+				if(PREFSMAN->m_bAutoPlay && PREFSMAN->m_iPlayerControllerType==1)
+				{
+					GAMESTATE->m_PlayerController[PLAYER_1] = PC_AUTOPLAY;
+				}
+				if(PREFSMAN->m_bAutoPlay && PREFSMAN->m_iPlayerControllerType==2)
+				{
+					GAMESTATE->m_PlayerController[PLAYER_1] = PC_CPU;
+				}
 
 				m_rectRecordBack.StopTweening();
 				m_rectRecordBack.BeginTweening( 0.5f );
