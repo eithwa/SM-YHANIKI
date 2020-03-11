@@ -5,4 +5,7 @@ StepMania.vcproj.**.user
 .vscode
 .vs
 **/obj/**
-**/ThirdParty_Rebuild/**/**.lib
+**/SDLmaind.lib
+**/SDLmain.lib
+**/LibLua.lib
+**/LibLuaLib.lib
