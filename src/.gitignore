@@ -5,3 +5,4 @@ StepMania.vcproj.**.user
 .vscode
 .vs
 **/obj/**
+**/ThirdParty_Rebuild/**/**.lib
