@@ -40,6 +40,7 @@ GameState*	GAMESTATE = NULL;	// global and accessable from anywhere in our progr
 
 GameState::GameState()
 {
+	m_bUsingAutoPlay = false;
 	ScreenNetSelectMusicAlpha = 1;
 	m_pPosition = NULL;
 	m_pCurStyle = NULL;

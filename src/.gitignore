@@ -2,3 +2,10 @@ Stepmania.ncb
 verstub.cpp
 version.bin
 StepMania.vcproj.**.user
+.vscode
+.vs
+**/obj/**
+**/SDLmaind.lib
+**/SDLmain.lib
+**/LibLua.lib
+**/LibLuaLib.lib

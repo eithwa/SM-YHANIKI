@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <ctime>
 
 using namespace std;
 //===========
@@ -1046,7 +1047,7 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		NSMAN->m_sMainTitle = m_vSongs[j]->GetTranslitMainTitle();
 		NSMAN->m_sSubTitle = m_vSongs[j]->GetTranslitSubTitle();
 		NSMAN->m_iSelectMode = 2; //Command for user selecting song
-		//=========test======
+		//=========hash======
 		StepsType st = GAMESTATE->GetCurrentStyle()->m_StepsType;
 		NoteField cur_song_note_date;
 		Steps * SelectStep;
@@ -1054,6 +1055,7 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		int notenum = 0;
 		notenum = SelectStep->GetNumTapNotesformSetp();
 		// LOG->Info("m_iNumTracks %d", notenum);
+		if(notenum<=0)return;
 		NSMAN->m_ihash = notenum;
 		//===================
 		NSMAN->SelectUserSong ();
@@ -1275,15 +1277,24 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 	}
 
 	//Then handle sound (Copied from MusicBannerWheel)
-	SOUND->StopMusic();
-	Song* pSong = m_vSongs[j];
-	if( pSong  &&  pSong->HasMusic() )
+	static Song* pre_Song;
+	static time_t now = time(0);
+	if(pre_Song == m_vSongs[j] && time(0)-now<2)
+	{
+	}else
 	{
 		SOUND->StopMusic();
-		SOUND->PlayMusic(pSong->GetMusicPath(), true,
-			pSong->m_fMusicSampleStartSeconds,
-			pSong->m_fMusicSampleLengthSeconds);
+		Song* pSong = m_vSongs[j];
+		if( pSong  &&  pSong->HasMusic() )
+		{
+			SOUND->StopMusic();
+			SOUND->PlayMusic(pSong->GetMusicPath(), true,
+				pSong->m_fMusicSampleStartSeconds,
+				pSong->m_fMusicSampleLengthSeconds);
+		}
 	}
+	now = time(0);
+	pre_Song = m_vSongs[j];
 
 }
 

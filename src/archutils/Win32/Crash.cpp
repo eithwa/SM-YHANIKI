@@ -31,7 +31,7 @@ static void DoSave();
 ///////////////////////////////////////////////////////////////////////////
 
 extern HINSTANCE g_hInstance;
-extern unsigned long version_num;
+//extern unsigned long version_num;
 
 
 
@@ -753,12 +753,12 @@ static bool ReportCallStack( HWND hwnd, HANDLE hFile, const void **Backtrace )
 		return false;
 	}
 
-	if( g_debugInfo.nBuildNumber != int(version_num) )
+	/*if( g_debugInfo.nBuildNumber != int(version_num) )
 	{
 		Report(hwnd, hFile, "Incorrect %s file (build %d, expected %d) for this version of " PRODUCT_NAME " -- call stack unavailable.",
 			g_debugInfo.sFilename, g_debugInfo.nBuildNumber, int(version_num));
 		return false;
-	}
+	}*/
 
 	for( int i = 0; Backtrace[i]; ++i )
 	{
@@ -786,10 +786,15 @@ static void DoSave()
 	if (INVALID_HANDLE_VALUE == hFile)
 		return;
 
-	Report(NULL, hFile,
+	/*Report(NULL, hFile,
 			"%s crash report (build %d)\r\n"
 			"--------------------------------------"
-			"\r\n", PRODUCT_NAME_VER, version_num);
+			"\r\n", PRODUCT_NAME_VER, version_num);*/
+
+	Report(NULL, hFile,
+			"%s crash report (build ?)\r\n"
+			"--------------------------------------"
+			"\r\n", PRODUCT_NAME_VER);
 
 	ReportReason( NULL, hFile, &g_CrashInfo );
 	Report(NULL, hFile, "");

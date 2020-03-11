@@ -35,6 +35,7 @@ enum NSCommand
 	NSCPC,			//16 player conditions //is the data size enough to use 16?
 	NSCCHS,			//17 checkhassong
 	NSCAS,			//18 ask song
+	NSRSSF,         //19 share song finish
 	NUM_NS_COMMANDS
 };
 
@@ -97,6 +98,7 @@ public:
 	void ReportScore(int playerID, int step, int score, int combo);
 		
 	void ReportSongOver();	//Report to server that song is over
+	void ReportShareSongFinish();
 	void ReportStyle();		//Report to server the style, players, and names
 	void ReportNSSOnOff(int i);	//Report song selection screen on/off
 	void StartRequest(short position);	//Request a start.  Block until granted.
@@ -196,9 +198,9 @@ private:
 	DWORD ThreadProcNSSSC(void);
 
 	CString server_ip;
-	CString file_size;
-	CString player_num;
-	int video_file_filter;
+	int file_size;
+	int player_num;
+	bool video_file_filter;
 #endif
 };
 

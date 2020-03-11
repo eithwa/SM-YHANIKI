@@ -81,6 +81,11 @@ void PrefsManager::Init()
 	m_iNumArcadeStages = 3;
 	m_bEventMode = false;
 	m_bAutoPlay = false;
+	m_iPlayerControllerType = 0;
+	if(m_bAutoPlay)
+	{
+		m_iPlayerControllerType=1;
+	}
 	m_fJudgeWindowScale = 1.0f;
 	m_fJudgeWindowAdd = 0;
 	m_fLifeDifficultyScale = 1.0f;
@@ -256,6 +261,7 @@ void PrefsManager::Init()
 	m_bSignProfileData = false;
 
 	m_bEditorShowBGChangesPlay = true;
+	m_bEditorShowBGChangesAlpha = 5;
 	m_bEditorReverseIntuitive = true;
 	m_bEditorAutosaveMinute = 5;
 	m_bEditorPlayModeBeatsBuffer = 4;
@@ -374,6 +380,7 @@ void PrefsManager::ReadPrefsFromFile( CString sIni )
 	ini.GetValue( "Options", "NumArcadeStages",					m_iNumArcadeStages );
 	ini.GetValue( "Options", "EventMode",						m_bEventMode );
 	ini.GetValue( "Options", "AutoPlay",						m_bAutoPlay );
+	ini.GetValue( "Options", "m_iPlayerControllerType",			m_iPlayerControllerType );
 	ini.GetValue( "Options", "JudgeWindowScale",				m_fJudgeWindowScale );
 	ini.GetValue( "Options", "JudgeWindowAdd",					m_fJudgeWindowAdd );
 	ini.GetValue( "Options", "JudgeWindowSecondsMarvelous",		m_fJudgeWindowSecondsMarvelous );
@@ -569,6 +576,7 @@ void PrefsManager::ReadPrefsFromFile( CString sIni )
 	ini.GetValue( "Options", "SignProfileData",					m_bSignProfileData );
 
 	ini.GetValue( "Editor", "ShowBGChangesPlay",				m_bEditorShowBGChangesPlay );
+	ini.GetValue( "Editor", "ShowBGChangesAlpha",				m_bEditorShowBGChangesAlpha );
 	ini.GetValue( "Editor", "ReverseIntuitive",				    m_bEditorReverseIntuitive );
 	ini.GetValue( "Editor", "AutosaveMinute",				    m_bEditorAutosaveMinute );
 	ini.GetValue( "Editor", "PlayModeBeatsBuffer",			    m_bEditorPlayModeBeatsBuffer );
@@ -615,6 +623,7 @@ void PrefsManager::SaveGlobalPrefsToDisk() const
 	ini.SetValue( "Options", "NumArcadeStages",					m_iNumArcadeStages );
 	ini.SetValue( "Options", "EventMode",						m_bEventMode );
 	ini.SetValue( "Options", "AutoPlay",						m_bAutoPlay );
+	ini.SetValue( "Options", "m_iPlayerControllerType",			m_iPlayerControllerType );
 	ini.SetValue( "Options", "JudgeWindowScale",				m_fJudgeWindowScale );
 	ini.SetValue( "Options", "JudgeWindowAdd",					m_fJudgeWindowAdd );
 	ini.SetValue( "Options", "JudgeWindowSecondsMarvelous",		m_fJudgeWindowSecondsMarvelous );
@@ -806,6 +815,7 @@ void PrefsManager::SaveGlobalPrefsToDisk() const
 	ini.SetValue( "Options", "SoundDevice",						m_iSoundDevice );
 
 	ini.SetValue( "Editor", "ShowBGChangesPlay",				m_bEditorShowBGChangesPlay );
+	ini.SetValue( "Editor", "ShowBGChangesAlpha",				m_bEditorShowBGChangesAlpha );
 	ini.SetValue( "Editor", "ReverseIntuitive",				    m_bEditorReverseIntuitive );
 	ini.SetValue( "Editor", "AutosaveMinute",				    m_bEditorAutosaveMinute );
 	ini.SetValue( "Editor", "PlayModeBeatsBuffer",			    m_bEditorPlayModeBeatsBuffer );

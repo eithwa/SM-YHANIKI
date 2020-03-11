@@ -415,7 +415,7 @@ inline CryptoPP::word    operator%(const CryptoPP::Integer &a, CryptoPP::word b)
 NAMESPACE_END
 
 NAMESPACE_BEGIN(std)
-template<> inline void swap(CryptoPP::Integer &a, CryptoPP::Integer &b)
+template<> inline void swap(CryptoPP::Integer &a, CryptoPP::Integer &b) noexcept
 {
 	a.swap(b);
 }

@@ -238,6 +238,7 @@ static Menu g_BGChange( "Background Change", g_BGChangeItems );
 static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
+	{ "Alpha of BGA",		                    	true, 5, { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
 	{ "AutoSave during time, 0 is Disable(minute)",	true, 5, { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 																	"11","12","13","14","15","16","17","18","19","20",
@@ -361,6 +362,17 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	m_textHelp.SetZoom( 0.5f );
 	m_textHelp.SetText( HELP_TEXT );
 	m_textHelp.SetShadowLength( 0 );
+	
+	//=========
+	m_textAutoPlay.LoadFromFont( THEME->GetPathToF("Common normal") );
+	m_textAutoPlay.SetXY( CENTER_X, CENTER_Y-10 );
+	// m_textAutoPlay.SetHorizAlign( Actor::align_left );
+	m_textAutoPlay.SetVertAlign( Actor::align_top );
+	m_textAutoPlay.SetZoom( 0.8f );
+	m_textAutoPlay.SetName( "AutoPlay" );
+
+	UpdateAutoPlayText();
+	//==========
 
 	m_sprInfo.Load( THEME->GetPathToG("ScreenEdit Info") );
 	m_sprInfo.SetHorizAlign( Actor::align_right );
@@ -384,7 +396,25 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	m_soundAssistTick.Load(		THEME->GetPathToS("ScreenEdit assist tick") );
 
 	this->HandleScreenMessage( SM_DoUpdateTextInfo );
+	//=========
+	bool bReverse=false;
+	if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]==1 )
+	{
+		bReverse=true;
+	}
+	//LyricsX=320
+	//LyricsY=400
+	//LyricsReverseX=320
+	//LyricsReverseY=100
+	m_LyricDisplay.SetName( ssprintf( "Lyrics%s", bReverse? "Reverse": "") );
+	SET_XY( m_LyricDisplay );
+	if(PREFSMAN->m_bShowLyrics)
+		this->AddChild(&m_LyricDisplay);
+	LyricsLoader LL;
+	if( GAMESTATE->m_pCurSong->HasLyrics()  )
+		LL.LoadFromLRCFile(GAMESTATE->m_pCurSong->GetLyricsPath(), *GAMESTATE->m_pCurSong);
 	
+
 	start_time = time(0);
 }
 
@@ -393,7 +423,33 @@ ScreenEdit::~ScreenEdit()
 	LOG->Trace( "ScreenEdit::~ScreenEdit()" );
 	m_soundMusic.StopPlaying();
 }
+void ScreenEdit::UpdateAutoPlayText()
+{
+	CString sText;
+	
+	if(m_EditMode==MODE_PLAYING)
+	{
+		if( PREFSMAN->m_bAutoPlay )
+		{	
+			if(PREFSMAN->m_iPlayerControllerType==1)
+			{
+				sText += "AutoPlay     ";
+			}else if(PREFSMAN->m_iPlayerControllerType==2)
+			{
+				sText += "AutoPlayCPU     ";
+			}
+		}
+	}
+	else
+	{
+		sText +="";
+	}
 
+	if( sText.length() > 0 )
+		sText.resize( sText.length()-5 );
+	
+	m_textAutoPlay.SetText( sText );
+}
 // play assist ticks
 void ScreenEdit::PlayTicks()
 {
@@ -444,6 +500,7 @@ void ScreenEdit::PlayPreviewMusic()
 
 void ScreenEdit::AutoSave()
 {
+	if(PREFSMAN->m_bEditorAutosaveMinute==0)return;
 	time_t now = time(0);
 	int save_time = (PREFSMAN->m_bEditorAutosaveMinute)*60;
 	if((now-start_time) > save_time){
@@ -523,6 +580,7 @@ void ScreenEdit::Update( float fDeltaTime )
 	m_Out.Update( fDeltaTime );
 	m_sprHelp.Update( fDeltaTime );
 	m_textHelp.Update( fDeltaTime );
+	m_textAutoPlay.Update( fDeltaTime );
 	m_sprInfo.Update( fDeltaTime );
 	m_textInfo.Update( fDeltaTime );
 
@@ -567,7 +625,7 @@ void ScreenEdit::Update( float fDeltaTime )
 	}
 
 	m_NoteFieldEdit.Update( fDeltaTime );
-
+	UpdateAutoPlayText();
 	PlayTicks();
 }
 
@@ -650,7 +708,8 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( 0.5 );
+			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			//m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
 		else
@@ -664,13 +723,15 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( 0.5 );
+			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			// m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
 		else
 			m_BGAnimation.Draw();
 
 		m_Player.Draw();
+		m_textAutoPlay.Draw();
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 			m_Foreground.Draw();
 		break;
@@ -1281,6 +1342,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 	}
 	case KEY_Cp:
 		{
+			m_Player.combo_Editing=0;
 			if( INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD,KEY_LCTRL)) ||
 				INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD,KEY_RCTRL)) )
 				HandleMainMenuChoice( play_whole_song, NULL );
@@ -1374,10 +1436,32 @@ void ScreenEdit::InputPlay( const DeviceInput& DeviceI, const InputEventType typ
 			break;
 		case KEY_F8:
 			{
+				bool bIsHoldingShift = 
+					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
+					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT));
 				PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
+				 if(PREFSMAN->m_bAutoPlay)
+				{
+					if(bIsHoldingShift)
+					{
+						PREFSMAN->m_iPlayerControllerType = 2;
+					}else
+					{
+						PREFSMAN->m_iPlayerControllerType = 1;
+					}
+					
+				}else
+				{
+					PREFSMAN->m_iPlayerControllerType = 0;
+				}
+				UpdateAutoPlayText();
 				FOREACH_PlayerNumber( p )
 					if( GAMESTATE->IsHumanPlayer(p) )
-						GAMESTATE->m_PlayerController[p] = PREFSMAN->m_bAutoPlay?PC_AUTOPLAY:PC_HUMAN;
+						// GAMESTATE->m_PlayerController[p] = PREFSMAN->m_bAutoPlay?PC_AUTOPLAY:PC_HUMAN;
+						if( bIsHoldingShift )
+							GAMESTATE->m_PlayerController[p] = PREFSMAN->m_bAutoPlay ? PC_CPU : PC_HUMAN;
+						else
+							GAMESTATE->m_PlayerController[p] = PREFSMAN->m_bAutoPlay ? PC_AUTOPLAY : PC_HUMAN;
 			}
 			break;
 		case KEY_F11:
@@ -1497,6 +1581,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromPrefs:
 		PREFSMAN->m_bEditorShowBGChangesPlay = !!ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_play];
+		PREFSMAN->m_bEditorShowBGChangesAlpha = ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_alpha];
 		PREFSMAN->m_bEditorReverseIntuitive = !!ScreenMiniMenu::s_iLastAnswers[pref_reverse_intuitive];
 		PREFSMAN->m_bEditorAutosaveMinute = ScreenMiniMenu::s_iLastAnswers[pref_autosave_minute];
 		PREFSMAN->m_bEditorPlayModeBeatsBuffer = ScreenMiniMenu::s_iLastAnswers[pref_play_mode_beats_buffer];
@@ -2012,6 +2097,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			break;
 		case preferences:
 			g_Prefs.rows[pref_show_bgs_play].defaultChoice = PREFSMAN->m_bEditorShowBGChangesPlay;
+			g_Prefs.rows[pref_show_bgs_alpha].defaultChoice = PREFSMAN->m_bEditorShowBGChangesAlpha;
 			g_Prefs.rows[pref_reverse_intuitive].defaultChoice = PREFSMAN->m_bEditorReverseIntuitive;
 			g_Prefs.rows[pref_autosave_minute].defaultChoice = PREFSMAN->m_bEditorAutosaveMinute;
 			g_Prefs.rows[pref_play_mode_beats_buffer].defaultChoice = PREFSMAN->m_bEditorPlayModeBeatsBuffer;
@@ -2275,6 +2361,14 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 
 				m_Player.Load( PLAYER_1, &m_NoteFieldEdit, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 				GAMESTATE->m_PlayerController[PLAYER_1] = PREFSMAN->m_bAutoPlay?PC_AUTOPLAY:PC_HUMAN;
+				if(PREFSMAN->m_bAutoPlay && PREFSMAN->m_iPlayerControllerType==1)
+				{
+					GAMESTATE->m_PlayerController[PLAYER_1] = PC_AUTOPLAY;
+				}
+				if(PREFSMAN->m_bAutoPlay && PREFSMAN->m_iPlayerControllerType==2)
+				{
+					GAMESTATE->m_PlayerController[PLAYER_1] = PC_CPU;
+				}
 
 				m_rectRecordBack.StopTweening();
 				m_rectRecordBack.BeginTweening( 0.5f );

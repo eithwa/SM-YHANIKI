@@ -107,8 +107,8 @@ public:
 	};
 
 	explicit Exception(ErrorType errorType, const std::string &s) : m_errorType(errorType), m_what(s) {}
-	virtual ~Exception() throw() {}
-	const char *what() const throw() {return (m_what.c_str());}
+	virtual ~Exception() noexcept {}
+	const char *what() const noexcept {return (m_what.c_str());}
 	const std::string &GetWhat() const {return m_what;}
 	void SetWhat(const std::string &s) {m_what = s;}
 	ErrorType GetErrorType() const {return m_errorType;}
@@ -160,7 +160,7 @@ class OS_Error : public Exception
 public:
 	OS_Error(ErrorType errorType, const std::string s, const std::string& operation, int errorCode)
 		: Exception(errorType, s), m_operation(operation), m_errorCode(errorCode) {}
-	~OS_Error() throw() {}
+	~OS_Error() noexcept {}
 
 	// the operating system API that reported the error
 	const std::string & GetOperation() const {return m_operation;}
@@ -301,7 +301,8 @@ public:
 };
 
 //! .
-extern const NullNameValuePairs g_nullNameValuePairs;
+//extern const NullNameValuePairs g_nullNameValuePairs;
+extern NullNameValuePairs g_nullNameValuePairs;
 
 // ********************************************************
 

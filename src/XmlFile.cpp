@@ -346,7 +346,7 @@ char* XNode::Load( const char* pszXml, PARSEINFO *pi /*= &piDefault*/ )
 	// open/close tag <TAG ..> ... </TAG>
 	//                        ^- current pointer
 	{
-		// text value가 없으툈E넣도록한다.
+		// text value가 없으?E넣도록한다.
 		//if( this->value.empty() || this->value == ("") )
 		if( XIsEmptyString( value ) )
 		{
@@ -442,7 +442,7 @@ char* XNode::Load( const char* pszXml, PARSEINFO *pi /*= &piDefault*/ )
 				}
 			}
 			else	// Alone child Tag Loaded
-					// else 해야하는햨E말아야하는햨E의심간다.
+					// else 해야하는?E말아야하는?E의심간다.
 			{
 				
 				//if( xml && this->value.empty() && *xml !=chXMLTagOpen )

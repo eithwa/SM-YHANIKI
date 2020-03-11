@@ -87,7 +87,7 @@ PlayerMinus::PlayerMinus()
 	for( int c=0; c<MAX_NOTE_TRACKS; c++ )
 		this->AddChild( &m_HoldJudgment[c] );
 
-
+	combo_Editing = 0;
 	PlayerAI::InitFromDisk();
 }
 
@@ -1155,7 +1155,7 @@ void PlayerMinus::HandleTapRowScore( unsigned row )
 #ifdef DEBUG
 	NoCheating = false;
 #endif
-
+	
 	if(GAMESTATE->m_bDemonstrationOrJukebox)
 		NoCheating = false;
 	// don't accumulate points if AutoPlay is on.
@@ -1169,6 +1169,7 @@ void PlayerMinus::HandleTapRowScore( unsigned row )
 	case TNS_MARVELOUS:
 	case TNS_PERFECT:
 	case TNS_GREAT:
+		combo_Editing++;
 		g_CurStageStats.iCurMissCombo[m_PlayerNumber] = 0;
 		SCREENMAN->PostMessageToTopScreen( SM_MissComboAborted, 0 );
 		break;
@@ -1178,6 +1179,7 @@ void PlayerMinus::HandleTapRowScore( unsigned row )
 		m_iDCState = AS2D_MISS; // update dancing 2d characters that may have missed a note
 	case TNS_GOOD:
 	case TNS_BOO:
+		combo_Editing=0;
 		if( iCurCombo > 50 )
 			SCREENMAN->PostMessageToTopScreen( SM_ComboStopped, 0 );
 
@@ -1186,17 +1188,25 @@ void PlayerMinus::HandleTapRowScore( unsigned row )
 	default:
 		ASSERT( 0 );
 	}
-
+	
 	/* The score keeper updates the hit combo.  Remember the old combo for handling announcers. */
 	const int iOldCombo = g_CurStageStats.iCurCombo[m_PlayerNumber];
 
-	if(m_pPrimaryScoreKeeper)
-		m_pPrimaryScoreKeeper->HandleTapRowScore(scoreOfLastTap, iNumTapsInRow );
-	if(m_pSecondaryScoreKeeper)
-		m_pSecondaryScoreKeeper->HandleTapRowScore(scoreOfLastTap, iNumTapsInRow );
-
-	m_Combo.SetCombo( g_CurStageStats.iCurCombo[m_PlayerNumber], g_CurStageStats.iCurMissCombo[m_PlayerNumber] );
-
+	if(!GAMESTATE->m_bEditing)
+	{
+		if(m_pPrimaryScoreKeeper)
+			m_pPrimaryScoreKeeper->HandleTapRowScore(scoreOfLastTap, iNumTapsInRow );
+		if(m_pSecondaryScoreKeeper)
+			m_pSecondaryScoreKeeper->HandleTapRowScore(scoreOfLastTap, iNumTapsInRow );
+	}
+	if(GAMESTATE->m_bEditing)
+	{
+		m_Combo.SetCombo( combo_Editing, 0);
+	}
+	else
+	{
+		m_Combo.SetCombo( g_CurStageStats.iCurCombo[m_PlayerNumber], g_CurStageStats.iCurMissCombo[m_PlayerNumber] );
+	}
 #define CROSSED( x ) (iOldCombo<x && iCurCombo>=x)
 	if ( CROSSED(100) )	
 		SCREENMAN->PostMessageToTopScreen( SM_100Combo, 0 );

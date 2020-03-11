@@ -117,7 +117,7 @@ void Combo::SetCombo( int iCombo, int iMisses )
 	bool bPastMidpoint = GAMESTATE->GetCourseSongIndex()>0 ||
 		GAMESTATE->m_fMusicSeconds > GAMESTATE->m_pCurSong->m_fMusicLengthSeconds/4;
 
-	if( bPastMidpoint )
+	if( bPastMidpoint && !GAMESTATE->m_bEditing )
 	{
 		if( g_CurStageStats.FullComboOfScore(m_PlayerNumber,TNS_MARVELOUS) )
 		{

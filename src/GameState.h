@@ -110,6 +110,7 @@ public:
 	bool			m_bEditing;			// NoteField does special stuff when this is true
 	bool			m_bLoadPackConnect;
 	bool			m_bfastLoadInScreenSelectMusic;
+	bool            m_bUsingAutoPlay;
 	bool			m_bDemonstrationOrJukebox;	// ScreenGameplay does special stuff when this is true
 	bool			m_bJukeboxUsesModifiers;
 	int				m_iNumStagesOfThisSong;
