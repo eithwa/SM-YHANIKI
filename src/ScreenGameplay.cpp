@@ -1899,14 +1899,13 @@ void ScreenGameplay::UpdateAutoPlayText()
 	
 	if( PREFSMAN->m_bAutoPlay )
 	{	
-		if(PREFSMAN->m_iPlayerControllerType==1)
-		{
-			sText += "AutoPlay     ";
-		}else if(PREFSMAN->m_iPlayerControllerType==2)
+		if(PREFSMAN->m_iPlayerControllerType==2)
 		{
 			sText += "AutoPlayCPU     ";
+		}else
+		{
+			sText += "AutoPlay     ";
 		}
-		
 	}
 	if( GAMESTATE->m_SongOptions.m_bAutoSync )
 		sText += "AutoSync     ";

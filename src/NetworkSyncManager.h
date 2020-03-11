@@ -201,6 +201,7 @@ private:
 	int file_size;
 	int player_num;
 	bool video_file_filter;
+	bool usingShareSongSystem;
 #endif
 };
 

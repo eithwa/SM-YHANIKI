@@ -387,7 +387,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		{
 			if(m_SelectMode==SelectGroup || m_SelectMode==SelectSong)
 			{
-				NSMAN->ReportNSSOnOff(2);
+				NSMAN->ReportNSSOnOff(0);
 				GAMESTATE->m_bEditing = true;
 				int j = m_iSongNum % m_vSongs.size();
 				GAMESTATE->m_pPreferredSong = m_vSongs[j];
@@ -863,8 +863,8 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromSelectSongs:
 		{
-			LOG->Info("back form ScreenSelectMusic");
-			NSMAN->ReportNSSOnOff(3);
+			// LOG->Info("back form ScreenSelectMusic");
+			// NSMAN->ReportNSSOnOff(3);
 			GAMESTATE->m_bEditing = false;
 			NSMAN->ReportPlayerOptions();
 			ResetSongList();
@@ -1063,7 +1063,6 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		NSMAN->m_ihash = notenum;
 		//===================
 		NSMAN->SelectUserSong ();
-
 	}
 	else
 		StartSelectedSong();
