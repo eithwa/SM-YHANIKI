@@ -239,9 +239,9 @@ static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
 	{ "Screen Filter",		                    	true, 2, { "NO", "25%", "50%", "75%", "100%" } },
-	{ "Default Scroll",					            true, 1, { "NO","YES" } },
+	{ "Default Scroll Reverse",				        true, 1, { "NO","YES" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
-	{ "AutoSave during time, 0 is Disable(minute)",	true, 5, { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+	{ "AutoSave During Time(minute)",	            true, 5, { "NO", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 																	"11","12","13","14","15","16","17","18","19","20",
 																	"21","22","23","24","25","26","27","28","29","30" } },
 	{ "Play Mode Beats Buffer",					    true, 4, { "0","1","2","3","4","5","6","7","8" } },
@@ -334,6 +334,7 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	if(PREFSMAN->m_bEditorScrollReverse)
 	{
 		GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]=1;
+		GAMESTATE->StoreSelectedOptions();
 	}
 	// Set NoteSkin to note if available.
 	// Change noteskin back to default before loading player.
@@ -725,7 +726,7 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha*2.5/10 );
 			// m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
@@ -2337,7 +2338,7 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 //				float fOldClipboardEndBeat = m_NoteFieldEdit.m_fEndMarker;
 				float fOldClipboardBeats = m_NoteFieldEdit.m_fEndMarker - m_NoteFieldEdit.m_fBeginMarker;
 				float fNewClipboardBeats = fOldClipboardBeats * fScale;
-				float fDeltaBeats = fNewClipboardBeats - fOldClipboardBeats;
+				// float fDeltaBeats = fNewClipboardBeats - fOldClipboardBeats;
 				float fNewClipboardEndBeat = m_NoteFieldEdit.m_fBeginMarker + fNewClipboardBeats;
 				// NoteDataUtil::ShiftRows( m_NoteFieldEdit, m_NoteFieldEdit.m_fBeginMarker, fDeltaBeats );
 				m_pSong->m_Timing.ScaleRegion( fScale, m_NoteFieldEdit.m_fBeginMarker, m_NoteFieldEdit.m_fEndMarker );
