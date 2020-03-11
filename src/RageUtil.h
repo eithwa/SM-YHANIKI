@@ -11,7 +11,7 @@
 
 #define ZERO(x)	memset(&x, 0, sizeof(x))
 #define COPY(a,b) { ASSERT(sizeof(a)==sizeof(b)); memcpy(&(a), &(b), sizeof(a)); }
-#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define RageARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 /* Common harmless mismatches.  All min(T,T) and max(T,T) cases are handled
  * by the generic template we get from <algorithm>. */
@@ -34,7 +34,7 @@ inline unsigned long max(unsigned long a, unsigned int b) { return a > b? a:b; }
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#define clamp(val,low,high)		( max( (low), min((val),(high)) ) )
+#define clamp(val,low,high)		( MAX( (low), MIN((val),(high)) ) )
 
 // Scales x so that l1 corresponds to l2 and h1 corresponds to h2.  Does not modify x, MUST assign the result to something!
 // Do the multiply before the divide to that integer scales have more precision.

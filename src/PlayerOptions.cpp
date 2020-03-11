@@ -13,7 +13,7 @@
 #include "Foreach.h"
 #include "GameState.h"
 
-#define ONE( arr ) { for( unsigned Z = 0; Z < ARRAYSIZE(arr); ++Z ) arr[Z]=1.0f; }
+#define ONE( arr ) { for( unsigned Z = 0; Z < RageARRAYSIZE(arr); ++Z ) arr[Z]=1.0f; }
 
 void PlayerOptions::Init()
 {

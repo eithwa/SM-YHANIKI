@@ -23,9 +23,9 @@
 	#endif
 #elif defined _WINDOWS
 	#ifdef DEBUG
-	#pragma comment(lib, "../ThirdParty/SDL-1.2.6/lib/SDLd.lib")
+	#pragma comment(lib, "./ThirdParty_rebuild/SDL-1.2.6/lib/SDLd.lib")
 	#else
-	#pragma comment(lib, "../ThirdParty/SDL-1.2.6/lib/SDL.lib")
+	#pragma comment(lib, "./ThirdParty_rebuild/SDL-1.2.6/lib/SDL.lib")
 	#endif
 #endif
 

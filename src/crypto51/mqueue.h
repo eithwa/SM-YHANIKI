@@ -64,7 +64,7 @@ private:
 NAMESPACE_END
 
 NAMESPACE_BEGIN(std)
-template<> inline void swap(CryptoPP::MessageQueue &a, CryptoPP::MessageQueue &b)
+template<> inline void swap(CryptoPP::MessageQueue &a, CryptoPP::MessageQueue &b) noexcept
 {
 	a.swap(b);
 }

@@ -115,7 +115,7 @@ struct XAttr
 	void GetValue(unsigned &out) const;
 	void GetValue(DateTime &out) const;
 	
-	XNode*	parent;
+	XNode*	parent = NULL;
 
 	bool GetXML( RageFile &f, DISP_OPT *opt = &optDefault );
 };

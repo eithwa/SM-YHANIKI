@@ -10,8 +10,8 @@
 LuaFunctionList *g_LuaFunctionList = NULL;
 
 #if defined(_WINDOWS)
-	#pragma comment(lib, "../ThirdParty/lua-5.0/lib/LibLua.lib")
-	#pragma comment(lib, "../ThirdParty/lua-5.0/lib/LibLuaLib.lib")
+	#pragma comment(lib, "./ThirdParty_rebuild/lua-5.0/lib/LibLua.lib")
+	#pragma comment(lib, "./ThirdParty_rebuild/lua-5.0/lib/LibLuaLib.lib")
 #endif
 #if defined(_XBOX)
 	#pragma comment(lib, "../ThirdParty/lua-5.0/lib/LibLuaXbox.lib")

@@ -46,7 +46,7 @@ typedef int int32_t;
 typedef unsigned int uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
-static inline int64_t llabs( int64_t i ) { return i >= 0? i: -i; }
+//static inline int64_t llabs( int64_t i ) { return i >= 0? i: -i; }
 
 #pragma warning (disable : 4201) // nonstandard extension used : nameless struct/union (Windows headers do this)
 #pragma warning (disable : 4786) // turn off broken debugger warning
@@ -70,18 +70,18 @@ static inline int64_t llabs( int64_t i ) { return i >= 0? i: -i; }
 #define NEED_STRTOF
 #define MISSING_STDINT_H
 
-inline int lrintf( float f )
-{
-	int retval;
-
-	_asm fld f;
-	_asm fistp retval;
-
-	return retval;
-}
+//inline int lrintf( float f )
+//{
+//	int retval;
+//
+//	_asm fld f;
+//	_asm fistp retval;
+//
+//	return retval;
+//}
 
 /* For RageLog. */
-#define HAVE_VERSION_INFO
+//#define HAVE_VERSION_INFO
 
 /* We implement the crash handler interface (though that interface isn't completely
  * uniform across platforms yet). */

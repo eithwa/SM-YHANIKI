@@ -44,7 +44,7 @@ void GraphDisplay::LoadFromStageStats( const StageStats &s, PlayerNumber pn )
 	memcpy( m_LastValues, m_CurValues, sizeof(m_CurValues) );
 	m_Position = 0;
 	s.GetLifeRecord( pn, m_DestValues, VALUE_RESOLUTION );
-	for( unsigned i=0; i<ARRAYSIZE(m_DestValues); i++ )
+	for( unsigned i=0; i<RageARRAYSIZE(m_DestValues); i++ )
 		CLAMP( m_DestValues[i], 0.f, 1.f );
 	UpdateVerts();
 }
@@ -52,7 +52,7 @@ void GraphDisplay::LoadFromNet(float Graph[100])
 {
 	memcpy( m_LastValues, m_CurValues, sizeof(m_CurValues) );
 	m_Position = 0.9;
-	for( unsigned i=0; i<ARRAYSIZE(m_DestValues); i++ )
+	for( unsigned i=0; i<RageARRAYSIZE(m_DestValues); i++ )
 		m_DestValues[i] = Graph[i];
 	UpdateVerts();	
 }
@@ -135,7 +135,7 @@ void GraphDisplay::DrawPrimitives()
 	DISPLAY->SetTexture( 0, m_pTexture );
 	Actor::SetRenderStates();	// set Actor-specified render states
 
-	DISPLAY->DrawQuads( Slices, ARRAYSIZE(Slices) );
+	DISPLAY->DrawQuads( Slices, RageARRAYSIZE(Slices) );
 	DISPLAY->SetTexture( 0, NULL );
 }
 float GraphDisplay::Get_m_DestValues(int i){
