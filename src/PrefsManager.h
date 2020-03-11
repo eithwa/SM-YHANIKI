@@ -225,6 +225,7 @@ public:
 	/* Editor prefs: */
 	bool			m_bEditorShowBGChangesPlay;
 	int			    m_bEditorShowBGChangesAlpha;
+	bool            m_bEditorScrollReverse;
 	bool			m_bEditorReverseIntuitive;
 	int				m_bEditorAutosaveMinute;
 	int             m_bEditorPlayModeBeatsBuffer;

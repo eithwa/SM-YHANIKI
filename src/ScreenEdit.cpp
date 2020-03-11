@@ -238,7 +238,8 @@ static Menu g_BGChange( "Background Change", g_BGChangeItems );
 static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
-	{ "Alpha of BGA",		                    	true, 5, { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1" } },
+	{ "Screen Filter",		                    	true, 2, { "NO", "25%", "50%", "75%", "100%" } },
+	{ "Default Scroll",					            true, 1, { "NO","YES" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
 	{ "AutoSave during time, 0 is Disable(minute)",	true, 5, { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 																	"11","12","13","14","15","16","17","18","19","20",
@@ -329,12 +330,21 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 
 	m_Clipboard.SetNumTracks( m_NoteFieldEdit.GetNumTracks() );
 
-
 	GAMESTATE->m_PlayerOptions[PLAYER_1].Init();	// don't allow weird options in editor.  It doesn't handle reverse well.
+	if(PREFSMAN->m_bEditorScrollReverse)
+	{
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]=1;
+	}
 	// Set NoteSkin to note if available.
 	// Change noteskin back to default before loading player.
-	if( NOTESKIN->DoesNoteSkinExist("note") )
-		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";
+	// if( NOTESKIN->DoesNoteSkinExist("note") )
+	// 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";
+	//==========
+	PlayerOptions po;
+	po.FromString( PREFSMAN->m_sDefaultModifiers );
+	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
+	//==========
 	GAMESTATE->ResetNoteSkins();
 
 	/* XXX: Do we actually have to send real note data here, and to m_NoteFieldRecord? 
@@ -397,15 +407,7 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 
 	this->HandleScreenMessage( SM_DoUpdateTextInfo );
 	//=========
-	bool bReverse=false;
-	if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]==1 )
-	{
-		bReverse=true;
-	}
-	//LyricsX=320
-	//LyricsY=400
-	//LyricsReverseX=320
-	//LyricsReverseY=100
+	bool bReverse=(bool)GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE];
 	m_LyricDisplay.SetName( ssprintf( "Lyrics%s", bReverse? "Reverse": "") );
 	SET_XY( m_LyricDisplay );
 	if(PREFSMAN->m_bShowLyrics)
@@ -708,7 +710,7 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha*2.5/10 );
 			//m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
@@ -864,39 +866,85 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 				float fNewScrollSpeed = fScrollSpeed;
 				if( DeviceI.button == KEY_UP )
 				{
-					if( fScrollSpeed >= 1 )
-						fNewScrollSpeed -= 0.5;
-					else if( fScrollSpeed == 0.5)
-						fNewScrollSpeed = 0.25;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed == 0.25 )
+							fNewScrollSpeed = 0.5;
+						else if( fScrollSpeed <= 7.5)
+							fNewScrollSpeed += 0.5;
+					}else
+					{
+						if( fScrollSpeed >= 1 )
+							fNewScrollSpeed -= 0.5;
+						else if( fScrollSpeed == 0.5)
+							fNewScrollSpeed = 0.25;
+					}
 				}
 				else if( DeviceI.button == KEY_DOWN )
 				{
-					if( fScrollSpeed == 0.25 )
-						fNewScrollSpeed = 0.5;
-					else if( fScrollSpeed <= 7.5)
-						fNewScrollSpeed += 0.5;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed >= 1 )
+							fNewScrollSpeed -= 0.5;
+						else if( fScrollSpeed == 0.5)
+							fNewScrollSpeed = 0.25;
+					}else
+					{
+						if( fScrollSpeed == 0.25 )
+							fNewScrollSpeed = 0.5;
+						else if( fScrollSpeed <= 7.5)
+							fNewScrollSpeed += 0.5;
+					}
 				}
 
 				if( DeviceI.button == KEY_PGUP )
 				{
-					if( fScrollSpeed >= 4.5 )
-						fNewScrollSpeed = 4;
-					else if ( fScrollSpeed >= 2.5 )
-						fNewScrollSpeed = 2;
-					else if ( fScrollSpeed >= 1.5 )
-						fNewScrollSpeed = 1;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed <= 0.5 )
+							fNewScrollSpeed = 1;
+						else if( fScrollSpeed <= 1.5 )
+							fNewScrollSpeed = 2;
+						else if( fScrollSpeed <= 3.5 )
+							fNewScrollSpeed = 4;
+						else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
+							fNewScrollSpeed = 8;
+					}else
+					{
+						if( fScrollSpeed >= 4.5 )
+							fNewScrollSpeed = 4;
+						else if ( fScrollSpeed >= 2.5 )
+							fNewScrollSpeed = 2;
+						else if ( fScrollSpeed >= 1.5 )
+							fNewScrollSpeed = 1;
+					}
 				}
 
 				if( DeviceI.button == KEY_PGDN )
 				{
-					if( fScrollSpeed <= 0.5 )
-						fNewScrollSpeed = 1;
-					else if( fScrollSpeed <= 1.5 )
-						fNewScrollSpeed = 2;
-					else if( fScrollSpeed <= 3.5 )
-						fNewScrollSpeed = 4;
-					else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
-						fNewScrollSpeed = 8;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed >= 4.5 )
+							fNewScrollSpeed = 4;
+						else if ( fScrollSpeed >= 2.5 )
+							fNewScrollSpeed = 2;
+						else if ( fScrollSpeed >= 1.5 )
+							fNewScrollSpeed = 1;
+					}else
+					{
+						if( fScrollSpeed <= 0.5 )
+							fNewScrollSpeed = 1;
+						else if( fScrollSpeed <= 1.5 )
+							fNewScrollSpeed = 2;
+						else if( fScrollSpeed <= 3.5 )
+							fNewScrollSpeed = 4;
+						else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
+							fNewScrollSpeed = 8;
+					}
 				}
 
 				if( fNewScrollSpeed != fScrollSpeed )
@@ -914,7 +962,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			case KEY_UP:
 			case KEY_DOWN:
 				fBeatsToMove = NoteTypeToBeat( m_SnapDisplay.GetNoteType() );
-				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 				   PREFSMAN->m_bEditorReverseIntuitive == true)
 				{
 					if( DeviceI.button == KEY_DOWN )	
@@ -929,7 +977,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			case KEY_PGUP:
 			case KEY_PGDN:
 				fBeatsToMove = BEATS_PER_MEASURE;
-				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 				   PREFSMAN->m_bEditorReverseIntuitive == true)
 				{
 					if( DeviceI.button == KEY_PGDN )	
@@ -1006,7 +1054,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		}
 		break;
 	case KEY_HOME:
-		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 			PREFSMAN->m_bEditorReverseIntuitive == true)
 		{
 			GAMESTATE->m_fSongBeat = m_NoteFieldEdit.GetLastBeat();
@@ -1019,7 +1067,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		}
 		break;
 	case KEY_END:
-		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 			PREFSMAN->m_bEditorReverseIntuitive == true)
 		{
 			GAMESTATE->m_fSongBeat = 0;
@@ -1580,9 +1628,10 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		HandleBGChangeChoice( (BGChangeChoice)ScreenMiniMenu::s_iLastLine, ScreenMiniMenu::s_iLastAnswers );
 		break;
 	case SM_BackFromPrefs:
-		PREFSMAN->m_bEditorShowBGChangesPlay = !!ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_play];
+		PREFSMAN->m_bEditorShowBGChangesPlay = (bool)ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_play];
 		PREFSMAN->m_bEditorShowBGChangesAlpha = ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_alpha];
-		PREFSMAN->m_bEditorReverseIntuitive = !!ScreenMiniMenu::s_iLastAnswers[pref_reverse_intuitive];
+		PREFSMAN->m_bEditorScrollReverse = (bool)ScreenMiniMenu::s_iLastAnswers[pref_scroll_reverse];
+		PREFSMAN->m_bEditorReverseIntuitive = (bool)ScreenMiniMenu::s_iLastAnswers[pref_reverse_intuitive];
 		PREFSMAN->m_bEditorAutosaveMinute = ScreenMiniMenu::s_iLastAnswers[pref_autosave_minute];
 		PREFSMAN->m_bEditorPlayModeBeatsBuffer = ScreenMiniMenu::s_iLastAnswers[pref_play_mode_beats_buffer];
 		PREFSMAN->SaveGlobalPrefsToDisk();
@@ -2098,6 +2147,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 		case preferences:
 			g_Prefs.rows[pref_show_bgs_play].defaultChoice = PREFSMAN->m_bEditorShowBGChangesPlay;
 			g_Prefs.rows[pref_show_bgs_alpha].defaultChoice = PREFSMAN->m_bEditorShowBGChangesAlpha;
+			g_Prefs.rows[pref_scroll_reverse].defaultChoice = PREFSMAN->m_bEditorScrollReverse;
 			g_Prefs.rows[pref_reverse_intuitive].defaultChoice = PREFSMAN->m_bEditorReverseIntuitive;
 			g_Prefs.rows[pref_autosave_minute].defaultChoice = PREFSMAN->m_bEditorAutosaveMinute;
 			g_Prefs.rows[pref_play_mode_beats_buffer].defaultChoice = PREFSMAN->m_bEditorPlayModeBeatsBuffer;

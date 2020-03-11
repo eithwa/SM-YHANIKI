@@ -851,12 +851,14 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		NSMAN->ReportNSSOnOff(3);
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
+		NSMAN->SendAskSong();
 		break;
 	case SM_BackFromReloadSongs:
 		NSMAN->ReportNSSOnOff(3);
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
 		ResetSongList();
+		NSMAN->SendAskSong();
 		CheckChangeSong();
 		break;
 	case SM_BackFromSelectSongs:
@@ -879,6 +881,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 				}	
 			}
 			NSMAN->SelectUserSong ();
+			NSMAN->SendAskSong();
 			break;
 		}
 		
@@ -894,6 +897,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
 		ResetSongList();
+		NSMAN->SendAskSong();
 		CheckChangeSong();
 		break;
 	}

@@ -868,14 +868,7 @@ void NetworkSyncManager::ProcessInput()
 				server_ip = m_packet.ReadNT();
 				player_num = m_packet.Read1();
 				// LOG->Info("player_num %d",player_num);
-				int filefilterflag = m_packet.Read1();
-				if(filefilterflag == 0)
-				{
-					video_file_filter = false;
-				}else
-				{
-					video_file_filter = true;
-				}
+				video_file_filter = (bool)m_packet.Read1();
 
 				DWORD ThreadID;
 				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSS, (void*) this, 0, &ThreadID);

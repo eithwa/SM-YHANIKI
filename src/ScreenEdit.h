@@ -205,6 +205,7 @@ public:
 	enum PrefsChoice {
 		pref_show_bgs_play,
 		pref_show_bgs_alpha,
+		pref_scroll_reverse,
 		pref_reverse_intuitive,
 		pref_autosave_minute,
 		pref_play_mode_beats_buffer,
