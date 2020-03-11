@@ -261,7 +261,7 @@ void PrefsManager::Init()
 	m_bSignProfileData = false;
 
 	m_bEditorShowBGChangesPlay = true;
-	m_bEditorShowBGChangesAlpha = 2;
+	m_bEditorShowBGChangesAlpha = 4;
 	m_bEditorScrollReverse = false;
 	m_bEditorReverseIntuitive = true;
 	m_bEditorAutosaveMinute = 5;

@@ -238,7 +238,7 @@ static Menu g_BGChange( "Background Change", g_BGChangeItems );
 static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
-	{ "Screen Filter",		                    	true, 2, { "NO", "25%", "50%", "75%", "100%" } },
+	{ "Screen Filter",		                    	true, 4, { "Default", "0%", "20%", "40%", "60%", "80%", "100%" } },
 	{ "Default Scroll Reverse",				        true, 1, { "NO","YES" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
 	{ "AutoSave During Time(minute)",	            true, 5, { "NO", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -303,8 +303,13 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrollSpeed = 1;
 	GAMESTATE->m_SongOptions.m_fMusicRate = 1;
 	/* Not all games have a noteskin named "note" ... */
-	if( NOTESKIN->DoesNoteSkinExist("note") )
-		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";	// change noteskin before loading all of the edit Actors
+	// if( NOTESKIN->DoesNoteSkinExist("note") )
+	// 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";	// change noteskin before loading all of the edit Actors
+	PlayerOptions po;
+	po.FromString( PREFSMAN->m_sDefaultModifiers );
+	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
+	//===========
 	GAMESTATE->ResetNoteSkins();
 	GAMESTATE->StoreSelectedOptions();
 
@@ -341,8 +346,6 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	// if( NOTESKIN->DoesNoteSkinExist("note") )
 	// 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";
 	//==========
-	PlayerOptions po;
-	po.FromString( PREFSMAN->m_sDefaultModifiers );
 	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
 		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
 	//==========
@@ -711,7 +714,15 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha*2.5/10 );
+			if(PREFSMAN->m_bEditorShowBGChangesAlpha==0)
+			{
+				float alpha = 1-PREFSMAN->m_fBGBrightness;
+				m_Background.SetDiffuseAlpha( alpha );
+			}else
+			{
+				float alpha = (float)(PREFSMAN->m_bEditorShowBGChangesAlpha - 1) * 2 / 10;
+				m_Background.SetDiffuseAlpha( alpha );
+			}
 			//m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
@@ -726,7 +737,15 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha*2.5/10 );
+			if(PREFSMAN->m_bEditorShowBGChangesAlpha==0)
+			{
+				float alpha = 1-PREFSMAN->m_fBGBrightness;
+				m_Background.SetDiffuseAlpha( alpha );
+			}else
+			{
+				float alpha = (float)(PREFSMAN->m_bEditorShowBGChangesAlpha - 1) * 2 / 10;
+				m_Background.SetDiffuseAlpha( alpha );
+			}
 			// m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
