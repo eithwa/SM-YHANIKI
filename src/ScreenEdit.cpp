@@ -336,11 +336,7 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	m_Clipboard.SetNumTracks( m_NoteFieldEdit.GetNumTracks() );
 
 	GAMESTATE->m_PlayerOptions[PLAYER_1].Init();	// don't allow weird options in editor.  It doesn't handle reverse well.
-	if(PREFSMAN->m_bEditorScrollReverse)
-	{
-		GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]=1;
-		GAMESTATE->StoreSelectedOptions();
-	}
+	
 	// Set NoteSkin to note if available.
 	// Change noteskin back to default before loading player.
 	// if( NOTESKIN->DoesNoteSkinExist("note") )
@@ -349,6 +345,11 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
 		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
 	//==========
+	if(PREFSMAN->m_bEditorScrollReverse)
+	{
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]=1;
+		GAMESTATE->StoreSelectedOptions();
+	}
 	GAMESTATE->ResetNoteSkins();
 
 	/* XXX: Do we actually have to send real note data here, and to m_NoteFieldRecord? 

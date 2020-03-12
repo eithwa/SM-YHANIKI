@@ -1294,9 +1294,15 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 		if( pSong  &&  pSong->HasMusic() )
 		{
 			SOUND->StopMusic();
-			SOUND->PlayMusic(pSong->GetMusicPath(), true,
+			// SOUND->PlayMusic(pSong->GetMusicPath(), true,
+			// 	pSong->m_fMusicSampleStartSeconds,
+			// 	pSong->m_fMusicSampleLengthSeconds
+			// 	);
+			SOUND->PlayMusic2(pSong->GetMusicPath(), true,
 				pSong->m_fMusicSampleStartSeconds,
-				pSong->m_fMusicSampleLengthSeconds);
+				pSong->m_fMusicLengthSeconds-pSong->m_fMusicSampleStartSeconds,
+				pSong->m_fMusicLengthSeconds,
+				true);
 		}
 	}
 	now = time(0);
