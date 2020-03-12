@@ -63,6 +63,7 @@ enum NSScoreBoardColumn
 #define FOREACH_NSScoreBoardColumn( sc ) FOREACH_ENUM( NSScoreBoardColumn, NUM_NSSB_CATEGORIES, sc )
 
 class EzSockets;
+class IStepManiaLanServer;
 class StepManiaLanServer;
 
 class PacketFunctions
@@ -155,7 +156,7 @@ public:
 	CString			m_sChatText;
 
 	bool isLanServer;	//Must be public for ScreenNetworkOptions
-	StepManiaLanServer *LANserver;
+	IStepManiaLanServer *LANserver;
 private:
 #if !defined(WITHOUT_NETWORKING)
 

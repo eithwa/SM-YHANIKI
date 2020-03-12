@@ -63,7 +63,7 @@ NetworkSyncManager::NetworkSyncManager( LoadingWindow *ld )
 		ld->SetText("Initilizing server...");
 		LANserver = new StepManiaLanServer;
 		isLanServer = true;
-		GetCommandlineArgument( "runserver", &LANserver->servername );
+		GetCommandlineArgument( "runserver", &LANserver->GetServerName());
 	}
 	else
 		isLanServer = false;

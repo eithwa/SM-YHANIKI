@@ -7,142 +7,152 @@
 #include "ezsockets.h"
 #define NETMAXBUFFERSIZE 1020
 
-class LanPlayer
-{
+class LanPlayer {
 public:
-	CString name;
-	long score;
-	int health;
-	int feet;
-	int projgrade;
-	int combo;
-	int currstep;
-	int steps[9];
-	int maxCombo;
-	int Grade;
-	double offset;
-	int PlayerID;
-	int diff;
-	CString options;
-	CString percentage;
-	int Graph[100];
-	LanPlayer();
+    CString name;
+    long score;
+    int health;
+    int feet;
+    int projgrade;
+    int combo;
+    int currstep;
+    int steps[9];
+    int maxCombo;
+    int Grade;
+    double offset;
+    int PlayerID;
+    int diff;
+    CString options;
+    CString percentage;
+    int Graph[100];
+    LanPlayer();
 };
 
-class GameInfo
-{
+class GameInfo {
 public:
-	CString title;
-	CString subtitle;
-	CString artist;
-	CString course;
-	int     hash;
+    CString title;
+    CString subtitle;
+    CString artist;
+    CString course;
+    int     hash;
 };
 
-class GameClient
-{
+class GameClient {
 public:
-	bool GotStartRequest;
-	EzSockets clientSocket;
-	void UpdateStats(PacketFunctions &Packet);
-	void SetClientVersion(int ver, const CString& b);
-	void StartRequest(PacketFunctions &Packet);
-	int GetData(PacketFunctions &Packet);
-	GameClient();
-	LanPlayer Player[2];
-	bool IsPlaying(int Player);
-	void StyleUpdate(PacketFunctions &Packet);
-	bool InGame;
-	int twoPlayers;
-	bool hasSong;
-	bool forceHas;
-	bool inNetMusicSelect;
-	int startPosition;
-	bool isStarting;
-	bool wasIngame;
-	bool lowerJudge;
-	bool shareAll;
-	bool usingShareSongSystem;
-	bool filefilter;
-	int ShareNum;
-	
+    bool GotStartRequest;
+    EzSockets clientSocket;
+    void UpdateStats(PacketFunctions& Packet);
+    void SetClientVersion(int ver, const CString& b);
+    void StartRequest(PacketFunctions& Packet);
+    int GetData(PacketFunctions& Packet);
+    GameClient();
+    LanPlayer Player[2];
+    bool IsPlaying(int Player);
+    void StyleUpdate(PacketFunctions& Packet);
+    bool InGame;
+    int twoPlayers;
+    bool hasSong;
+    bool forceHas;
+    bool inNetMusicSelect;
+    int startPosition;
+    bool isStarting;
+    bool wasIngame;
+    bool lowerJudge;
+    bool shareAll;
+    bool usingShareSongSystem;
+    bool filefilter;
+    int ShareNum;
+
 private:
-	string build;
-	GameInfo gameInfo;
-	int version;
+    string build;
+    GameInfo gameInfo;
+    int version;
 };
 #endif
 
-class StepManiaLanServer
-{
+class IStepManiaLanServer {
 public:
-	bool ServerStart();
-	void ServerStop();
-	void ServerUpdate();
-	StepManiaLanServer();
-	~StepManiaLanServer();
-	CString servername;
-	CString lastError;
-	int lastErrorCode;
+    virtual bool ServerStart() = 0;
+    virtual void ServerStop() = 0;
+    virtual void ServerUpdate() = 0;
+    virtual ~IStepManiaLanServer() {}
+
+    CString GetServerName() { return servername; }
+    void SetServerName(CString newName) { servername = newName; }
+
+    CString lastError;
+    int lastErrorCode;
 
 protected:
+    CString servername;
+};
+
+class StepManiaLanServer : public IStepManiaLanServer {
+public:
+    bool ServerStart();
+    void ServerStop();
+    void ServerUpdate();
+    StepManiaLanServer();
+    ~StepManiaLanServer();
+
+private:
 #if !defined(WITHOUT_NETWORKING)
-	bool stop;
-	PacketFunctions Packet;
-	PacketFunctions Reply;
-	vector<GameClient*> Client; 
-	EzSockets server;
-	int ClientHost;
-	vector<LanPlayer*> playersPtr;
-	time_t statsTime;
-	GameInfo CurrentSongInfo;
-	GameInfo LastSongInfo;
-	bool SecondSameSelect;
-	vector<CString> bannedIPs;
-	bool ChangeHost;
-	void Hello(PacketFunctions& Packet, const unsigned int clientNum);
-	void UpdateClients();
-	void NewClientCheck();
-	void ClientSort(int clientNum);
-	void ParseData(PacketFunctions& Packet, const unsigned int clientNum);
-	void SendValue(uint8_t value, const unsigned int clientNum);
-	void CheckReady();
-	void MoveClientToHost();
-	void StatsComboColumn(PacketFunctions &data, vector<LanPlayer*> &playersPtr);
-	void SendStatsToClients();
-	void StatsProjgradeColumn(PacketFunctions& data, vector<LanPlayer*> &playersPtr);
-	void StatsNameColumn(PacketFunctions& data, vector<LanPlayer*> &playersPtr);
-	void SendNetPacket(const unsigned int clientNum, PacketFunctions &Packet);
-	int SortStats(vector<LanPlayer*> &playresPtr);
-	void RelayChat(CString &passedmessage, const unsigned int clientNum);
-	void SelectSong(PacketFunctions& Packet, const unsigned int clientNum);
-	void ServerChat(const CString& message);
-	void SendToAllClients(PacketFunctions& Packet);
-	bool CheckHasSongState();
-	void ClearHasSong();
-	void AssignPlayerIDs();
-	void SendUserList();
-	void GameOver(PacketFunctions& Packet, const unsigned int clientNum);
-	void ScreenNetMusicSelectStatus(PacketFunctions& Packet, const unsigned int clientNum);
-	void AnalizeChat(PacketFunctions &Packet, const unsigned int clientNum);
-	CString StepManiaLanServer::ListPlayers();
-	void Kick(CString &name);
-	void Ban(CString &name);
-	void Host(CString &name, PacketFunctions& Packet, unsigned int clientNum);
-	bool IsBanned(CString &ip);
-	void ForceStart();
-	void CheckLowerJudge(const unsigned int clientNum);
-	bool CheckConnection(const unsigned int clientNum);
-	void PopulatePlayersPtr(vector<LanPlayer*> &playersPtr);
-	void Disconnect(const unsigned int clientNum);
-	void ClientsSongSelectStart();
-	void ResetLastSongInfo();
-	void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
-	void SendPlayerCondition();
-	void GetHasSong(PacketFunctions&Packet, unsigned int clientNum);
-	void GetAskSong(PacketFunctions&Packet, unsigned int clientNum);
-	void ShareSong(unsigned int ShareSongServerNum, unsigned int ShareSongClientNum, CString ServerIp);
-	void ShareAll(unsigned int ShareSongServerNum, CString ServerIp);
+    bool stop;
+    PacketFunctions Packet;
+    PacketFunctions Reply;
+    vector<GameClient*> Client;
+    EzSockets server;
+    int ClientHost;
+    vector<LanPlayer*> playersPtr;
+    time_t statsTime;
+    GameInfo CurrentSongInfo;
+    GameInfo LastSongInfo;
+    bool SecondSameSelect;
+    vector<CString> bannedIPs;
+    bool ChangeHost;
+    void Hello(PacketFunctions& Packet, const unsigned int clientNum);
+    void UpdateClients();
+    void NewClientCheck();
+    void ClientSort(int clientNum);
+    void ParseData(PacketFunctions& Packet, const unsigned int clientNum);
+    void SendValue(uint8_t value, const unsigned int clientNum);
+    void CheckReady();
+    void MoveClientToHost();
+    void StatsComboColumn(PacketFunctions& data, vector<LanPlayer*>& playersPtr);
+    void SendStatsToClients();
+    void StatsProjgradeColumn(PacketFunctions& data, vector<LanPlayer*>& playersPtr);
+    void StatsNameColumn(PacketFunctions& data, vector<LanPlayer*>& playersPtr);
+    void SendNetPacket(const unsigned int clientNum, PacketFunctions& Packet);
+    int SortStats(vector<LanPlayer*>& playresPtr);
+    void RelayChat(CString& passedmessage, const unsigned int clientNum);
+    void SelectSong(PacketFunctions& Packet, const unsigned int clientNum);
+    void ServerChat(const CString& message);
+    void SendToAllClients(PacketFunctions& Packet);
+    bool CheckHasSongState();
+    void ClearHasSong();
+    void AssignPlayerIDs();
+    void SendUserList();
+    void GameOver(PacketFunctions& Packet, const unsigned int clientNum);
+    void ScreenNetMusicSelectStatus(PacketFunctions& Packet, const unsigned int clientNum);
+    void AnalizeChat(PacketFunctions& Packet, const unsigned int clientNum);
+    CString StepManiaLanServer::ListPlayers();
+    void Kick(CString& name);
+    void Ban(CString& name);
+    void Host(CString& name, PacketFunctions& Packet, unsigned int clientNum);
+    bool IsBanned(CString& ip);
+    void ForceStart();
+    void CheckLowerJudge(const unsigned int clientNum);
+    bool CheckConnection(const unsigned int clientNum);
+    void PopulatePlayersPtr(vector<LanPlayer*>& playersPtr);
+    void Disconnect(const unsigned int clientNum);
+    void ClientsSongSelectStart();
+    void ResetLastSongInfo();
+    void ServerGetGraph(PacketFunctions& Packet, unsigned int clientNum);
+    void SendPlayerCondition();
+    void GetHasSong(PacketFunctions& Packet, unsigned int clientNum);
+    void GetAskSong(PacketFunctions& Packet, unsigned int clientNum);
+    void ShareSong(unsigned int ShareSongServerNum, unsigned int ShareSongClientNum, CString ServerIp);
+    void ShareAll(unsigned int ShareSongServerNum, CString ServerIp);
 #endif
 };
 
@@ -151,7 +161,7 @@ protected:
 /*
  * (c) 2003-2004 Joshua Allen
  * All rights reserved.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -161,7 +171,7 @@ protected:
  * copyright notice(s) and this permission notice appear in all copies of
  * the Software and that both the above copyright notice(s) and this
  * permission notice appear in supporting documentation.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
