@@ -1204,21 +1204,6 @@ CString StepManiaLanServer::ListPlayers()
 		if (Client[x]->inNetMusicSelect)
 			for (int y = 0; y < 2; ++y)
 				if (Client[x]->Player[y].name.length() > 0){
-					if(x==0){
-						list += "[Host] ";
-					}else if(x==1){
-						list +="  [ ";
-						CString x_;
-						x_.Format("%d", x);
-						list +=x_;
-						list +=".]   ";
-					}else{
-						list +="  [";
-						CString x_;
-						x_.Format("%d", x);
-						list +=x_;
-						list +=".]   ";
-					}
 					list += Client[x]->Player[y].name + "\n";
 				}
 	return list;

@@ -1154,11 +1154,14 @@ void ScreenNetSelectMusic::UpdateUsersStates()
 		if(i==0)
 		{
 			Display_Num="[H]";
+		}else if(i==1)
+		{
+			Display_Num="[ 1]";
 		}else
 		{
 			Display_Num="[";
 			Display_Num+=Num;
-			Display_Num+=".]";
+			Display_Num+="]";
 		}
 		m_textUsersNum[i].SetText( Display_Num );
 		//=========
