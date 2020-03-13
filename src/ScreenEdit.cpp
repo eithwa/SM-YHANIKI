@@ -1671,8 +1671,10 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 	}
 	case SM_BackFromPlayerOptions:
 	case SM_BackFromSongOptions:
+		GAMESTATE->ResetNoteSkins();
 		// coming back from PlayerOptions or SongOptions
 		GAMESTATE->StoreSelectedOptions();
+		
 		// stop any music that screen may have been playing
 		SOUND->StopMusic();
 
