@@ -2,6 +2,7 @@
 #define NetworkSyncServer_H
 
 #include "NetworkSyncManager.h"
+#include "IStepManiaLanServer.h"
 
 #if !defined(WITHOUT_NETWORKING)
 #include "ezsockets.h"
@@ -69,23 +70,6 @@ private:
     int version;
 };
 #endif
-
-class IStepManiaLanServer {
-public:
-    virtual bool ServerStart() = 0;
-    virtual void ServerStop() = 0;
-    virtual void ServerUpdate() = 0;
-    virtual ~IStepManiaLanServer() {}
-
-    CString GetServerName() { return servername; }
-    void SetServerName(CString newName) { servername = newName; }
-
-    CString lastError;
-    int lastErrorCode;
-
-protected:
-    CString servername;
-};
 
 class StepManiaLanServer : public IStepManiaLanServer {
 public:

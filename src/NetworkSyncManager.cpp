@@ -136,53 +136,60 @@ void NetworkSyncManager::PostStartUp(const CString& ServerIP)
 	// If network play is desired and the connection works,
 	// halt until we know what server version we're dealing with
 
+	NetPlayerClient->blocking = false;
 	m_packet.ClearPacket();
-
-	m_packet.Write1( NSCHello );	//Hello Packet
-
-	m_packet.Write1(NETPROTOCOLVERSION);
-
-	m_packet.WriteNT(CString(PRODUCT_NAME_VER)); 
-
-	//Block until responce is received
-	//Move mode to blocking in order to give CPU back to the 
-	//system, and not wait.
-	
-	bool dontExit = true;
-
-	//Don't block if the server is running
-	if( isLanServer )
-		NetPlayerClient->blocking = false;
-	else
-		NetPlayerClient->blocking = true;
-
-	//Following packet must get through, so we block for it.
-	//If we are serving we do not block for this.
-	NetPlayerClient->SendPack((char*)m_packet.Data,m_packet.Position);
-
-	//If we are serving, do this so we properly connect
-	//to the server.
 	if( isLanServer )
 		LANserver->ServerUpdate();
-
-	m_packet.ClearPacket();
-
-	while (dontExit)
+	// TODO: ¬O¦b«¢Åo?
 	{
-		m_packet.ClearPacket();
-		if (NetPlayerClient->ReadPack((char *)&m_packet, NETMAXBUFFERSIZE)<1)
-			dontExit=false; // Also allow exit if there is a problem on the socket
-		if (m_packet.Read1() == (NSServerOffset + NSCHello))
-			dontExit=false;
-		//Only allow passing on handshake. 
-		//Otherwise scoreboard updates and such will confuse us.
+		//m_packet.ClearPacket();
+
+		//m_packet.Write1( NSCHello );	//Hello Packet
+
+		//m_packet.Write1(NETPROTOCOLVERSION);
+
+		//m_packet.WriteNT(CString(PRODUCT_NAME_VER)); 
+
+		////Block until responce is received
+		////Move mode to blocking in order to give CPU back to the 
+		////system, and not wait.
+		//
+		//bool dontExit = true;
+
+		////Don't block if the server is running
+		//if( isLanServer )
+		//	NetPlayerClient->blocking = false;
+		//else
+		//	NetPlayerClient->blocking = true;
+
+		////Following packet must get through, so we block for it.
+		////If we are serving we do not block for this.
+		//NetPlayerClient->SendPack((char*)m_packet.Data,m_packet.Position);
+
+		////If we are serving, do this so we properly connect
+		////to the server.
+		//if( isLanServer )
+		//	LANserver->ServerUpdate();
+
+		//m_packet.ClearPacket();
+
+		//while (dontExit)
+		//{
+		//	m_packet.ClearPacket();
+		//	if (NetPlayerClient->ReadPack((char *)&m_packet, NETMAXBUFFERSIZE)<1)
+		//		dontExit=false; // Also allow exit if there is a problem on the socket
+		//	if (m_packet.Read1() == (NSServerOffset + NSCHello))
+		//		dontExit=false;
+		//	//Only allow passing on handshake. 
+		//	//Otherwise scoreboard updates and such will confuse us.
+		//}
+
+		//NetPlayerClient->blocking = false;
+		//m_ServerVersion = m_packet.Read1();
+		//m_ServerName = m_packet.ReadNT();
+
+		//LOG->Info("Server Version: %d %s", m_ServerVersion, m_ServerName.c_str());
 	}
-
-	NetPlayerClient->blocking = false;
-	m_ServerVersion = m_packet.Read1();
-	m_ServerName = m_packet.ReadNT();
-
-	LOG->Info("Server Version: %d %s", m_ServerVersion, m_ServerName.c_str());
 }
 
 

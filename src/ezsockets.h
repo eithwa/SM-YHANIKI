@@ -31,6 +31,7 @@
 #else
 #include <netinet/in.h>
 #endif
+#include <StdString.h>
 
 using namespace std;
 

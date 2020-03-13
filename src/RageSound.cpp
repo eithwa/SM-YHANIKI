@@ -315,7 +315,7 @@ int RageSound::FillBuf( int frames )
 
 		ASSERT(read_size < sizeof(inbuf));
 
-		int cnt = Sample->Read(inbuf, read_size);
+    		int cnt = Sample->Read(inbuf, read_size);
 		if(cnt == 0)
 			return got_something; /* EOF */
 

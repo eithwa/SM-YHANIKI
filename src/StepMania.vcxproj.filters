@@ -79,6 +79,9 @@
     <Filter Include="Crypto\crypto++">
       <UniqueIdentifier>{450c5164-0f82-4034-8788-658933177537}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reimplemetations">
+      <UniqueIdentifier>{dbb1c989-c1ee-4e8c-8070-980261d1aa34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Screen.cpp">
@@ -1166,6 +1169,12 @@
     </ClCompile>
     <ClCompile Include="crypto51\strciphr.cpp">
       <Filter>Crypto\crypto++</Filter>
+    </ClCompile>
+    <ClCompile Include="StepManiaLanServerV2.cpp">
+      <Filter>Reimplemetations</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdPortal.cpp">
+      <Filter>Reimplemetations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2365,6 +2374,18 @@
     </ClInclude>
     <ClInclude Include="crypto51\words.h">
       <Filter>Crypto\crypto++</Filter>
+    </ClInclude>
+    <ClInclude Include="IStepManiaLanServer.h">
+      <Filter>Reimplemetations</Filter>
+    </ClInclude>
+    <ClInclude Include="StepManiaLanServerV2.h">
+      <Filter>Reimplemetations</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdPortal.h">
+      <Filter>Reimplemetations</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientCmd.h">
+      <Filter>Reimplemetations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

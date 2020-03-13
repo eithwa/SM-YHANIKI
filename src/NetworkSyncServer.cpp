@@ -276,7 +276,7 @@ void StepManiaLanServer::Hello(PacketFunctions& Packet, const unsigned int clien
 	Reply.ClearPacket();
 	Reply.Write1( NSCHello + NSServerOffset );
 	Reply.Write1(1);
-	Reply.WriteNT(servername);
+	Reply.WriteNT(serverName_);
 
 	SendNetPacket(clientNum, Reply);
 
@@ -953,7 +953,7 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 		}
 		else
 		{
-			message = servername;
+			message = serverName_;
 			message += ": You do not have permission to pick a song.";
 			Reply.ClearPacket();
 			Reply.Write1(NSCCM + NSServerOffset);
@@ -999,7 +999,7 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 		{
 			if(Client[i]->inNetMusicSelect==false)
 			{
-				message = servername;
+				message = serverName_;
 				message += ": Someone is not ready.";
 				Reply.ClearPacket();
 				Reply.Write1(NSCCM + NSServerOffset);
@@ -1060,7 +1060,7 @@ void StepManiaLanServer::SendToAllClients(PacketFunctions& Packet)
 }
 void StepManiaLanServer::ServerChat(const CString& message)
 {
-	CString x = servername + ": " + message;
+	CString x = serverName_ + ": " + message;
 	Reply.ClearPacket();
 	Reply.Write1(NSCCM + NSServerOffset);
 	Reply.WriteNT(x);

@@ -60,7 +60,7 @@
     <ClCompile>
       <AdditionalOptions>/EHa  /wd4430 /wd4996 /wd4458 /wd4018 /wd4456 /wd4457 /wd4459 /wd4838 /wd4996 /wd26812 /wd26495 /wd4244 /wd4306 /wd4389 /wd4305 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\boost_1_72_0_serialization;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINDOWS;DEBUG;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling />
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -103,7 +103,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\boost_1_72_0_serialization;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINDOWS;RELEASE;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -208,6 +208,7 @@
     <ClCompile Include="CatalogXml.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="CharacterHead.cpp" />
+    <ClCompile Include="CmdPortal.cpp" />
     <ClCompile Include="CodeDetector.cpp" />
     <ClCompile Include="CombinedLifeMeterTug.cpp" />
     <ClCompile Include="Combo.cpp" />
@@ -494,6 +495,7 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StageStats.cpp" />
     <ClCompile Include="StepMania.cpp" />
+    <ClCompile Include="StepManiaLanServerV2.cpp" />
     <ClCompile Include="Steps.cpp" />
     <ClCompile Include="StepsUtil.cpp" />
     <ClCompile Include="Style.cpp" />
@@ -584,6 +586,8 @@
     <ClInclude Include="CatalogXml.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterHead.h" />
+    <ClInclude Include="ClientCmd.h" />
+    <ClInclude Include="CmdPortal.h" />
     <ClInclude Include="CodeDetector.h" />
     <ClInclude Include="CombinedLifeMeter.h" />
     <ClInclude Include="CombinedLifeMeterTug.h" />
@@ -682,6 +686,7 @@
     <ClInclude Include="InputMapper.h" />
     <ClInclude Include="InputQueue.h" />
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="IStepManiaLanServer.h" />
     <ClInclude Include="Judgment.h" />
     <ClInclude Include="JukeboxMenu.h" />
     <ClInclude Include="LifeMeter.h" />
@@ -894,6 +899,7 @@
     <ClInclude Include="StageStats.h" />
     <ClInclude Include="StdString.h" />
     <ClInclude Include="StepMania.h" />
+    <ClInclude Include="StepManiaLanServerV2.h" />
     <ClInclude Include="Steps.h" />
     <ClInclude Include="StepsUtil.h" />
     <ClInclude Include="Style.h" />

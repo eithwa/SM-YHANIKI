@@ -12,6 +12,8 @@
 #include "ScreenPrompt.h"
 #include "NetworkSyncServer.h"
 
+#include "StepManiaLanServerV2.h"
+
 
 enum {
 	PO_CONNECTION,
@@ -85,7 +87,8 @@ void ScreenNetworkOptions::HandleScreenMessage( const ScreenMessage SM )
 		if( !ScreenTextEntry::s_bCancelledLast )
 		{
 			if ( NSMAN->LANserver == NULL)
-				NSMAN->LANserver = new StepManiaLanServer;
+				//NSMAN->LANserver = new StepManiaLanServer;
+				NSMAN->LANserver = Reimplementation::StepManiaLanServerV2::Default();
 			NSMAN->LANserver->SetServerName(ScreenTextEntry::s_sLastAnswer);
 			if (NSMAN->LANserver->ServerStart())
 			{
