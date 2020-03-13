@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Reimplementation {
+namespace Yhaniki {
 
     class ClientCmd {
     public:

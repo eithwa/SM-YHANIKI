@@ -1,31 +1,33 @@
 
 #include "CmdPortal.h"
 
-namespace Reimplementation {
+#include "NetworkSyncServer.h"
+
+namespace Yhaniki {
 
     CmdPortal::CmdPortal(
-        EzSockets* clientSocket) {
-        socket_ = clientSocket;
-    }
+        unique_ptr<EzSockets>&& clientSocket
+        ) :
+        socket_(move(clientSocket)) {}
 
-    CmdPortal* CmdPortal::AcceptBy(EzSockets* const serverSocket) {
-        const auto clientSocket = new EzSockets;
+    unique_ptr<CmdPortal> CmdPortal::AcceptBy(const unique_ptr<EzSockets>& serverSocket) {
+        auto clientSocket = make_unique<EzSockets>();
         clientSocket->blocking = false;
         if (serverSocket->accept(*clientSocket))
-            return new CmdPortal(clientSocket);
-        else return nullptr;
+            return make_unique<CmdPortal>(move(clientSocket));
+        else 
+            return nullptr;
     }
 
-    CmdPortal::~CmdPortal() {
-        delete socket_;
-    }
-
-    template <class TCmd>
-    TCmd* CmdPortal::Receive() {
+    void* CmdPortal::Receive() const {
         if (!socket_->CanRead())
             return nullptr;
 
-        auto str = socket_->ReadStr();
+        char str[NETMAXBUFFERSIZE];
+        socket_->ReadPack(str, NETMAXBUFFERSIZE);
+        if (strcmp(str, "") == 0)
+            int a = 1;
+        return nullptr;
     }
 
     bool CmdPortal::IsError() const {

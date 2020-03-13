@@ -2,22 +2,19 @@
 
 #include "ezsockets.h"
 
-namespace Reimplementation {
+namespace Yhaniki {
 
     class CmdPortal {
 
     public:
-        static CmdPortal* AcceptBy(EzSockets* const serverSocket);
-        ~CmdPortal();
+        static unique_ptr<CmdPortal> AcceptBy(const unique_ptr<EzSockets>& serverSocket);
 
-        template<class TCmd>
-        TCmd* Receive();
-
+        void* Receive() const;
         bool IsError() const;
 
+        CmdPortal(unique_ptr<EzSockets>&& clientSocket);
     private:
-        explicit CmdPortal(EzSockets* clientSocket);
-        // Socket
-        EzSockets* socket_;
+
+        const unique_ptr<EzSockets> socket_;
     };
 }

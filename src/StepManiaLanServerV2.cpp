@@ -1,41 +1,36 @@
-#include <chrono>
-
 #include "StepManiaLanServerV2.h"
-#include "CmdPortal.h"
+
+#include <utility>
 
 using namespace std::chrono;
 
-namespace Reimplementation {
+namespace Yhaniki {
 
     StepManiaLanServerV2::StepManiaLanServerV2(
         const int portNo,
-        EzSockets* listenSocket,
-        std::vector<CmdPortal>&& clients,
+        unique_ptr<EzSockets>&& listenSocket,
+        vector<unique_ptr<CmdPortal>>&& clients,
         const State state,
-        const std::chrono::milliseconds lastInformTime,
-        const std::chrono::milliseconds informTimeSpan
+        const milliseconds lastInformTime,
+        const milliseconds informTimeSpan
         ) :
         portNo_(portNo),
-        listenSocket_(listenSocket),
-        clients_(clients),
+        listenSocket_(move(listenSocket)),
+        clients_(move(clients)),
         state_(state),
         informTimeSpan_(informTimeSpan),
         lastInformTime_(lastInformTime) {
     }
 
-    StepManiaLanServerV2* StepManiaLanServerV2::Default() {
-        return new StepManiaLanServerV2(
+    unique_ptr<StepManiaLanServerV2> StepManiaLanServerV2::Default() {
+        return make_unique<StepManiaLanServerV2>(
             8765,
-            new EzSockets(),
-            std::vector<CmdPortal>{},
+            make_unique<EzSockets>(),
+            vector<unique_ptr<CmdPortal>>{},
             State::Off,
             duration_cast<milliseconds>(system_clock::now().time_since_epoch()),
             milliseconds(100)
-            );
-    }
-    StepManiaLanServerV2::~StepManiaLanServerV2() {
-        ServerStop();
-        delete listenSocket_;
+        );
     }
 
     bool StepManiaLanServerV2::ServerStart() {
@@ -83,23 +78,24 @@ namespace Reimplementation {
         // Remove error clients
         {
             clients_.erase(
-                std::remove_if(
+                remove_if(
                     clients_.begin(), clients_.end(),
-                    [](auto&& client) { return client.IsError(); }
+                    [](auto&& client) { return client->IsError(); }
             ), clients_.end());
         }
 
         // Look for new clients
         {
-            const auto newClient = CmdPortal::AcceptBy(listenSocket_);
-            if (newClient != nullptr)
-                clients_.push_back(move(*newClient));
+            auto portal = CmdPortal::AcceptBy(listenSocket_);
+            if (portal != nullptr)
+                clients_.push_back(move(portal));
         }
 
         // Process client requests and then respond to them
         {
             for (auto&& client : clients_) {
-                // TODO: ...
+                if (client->Receive() == nullptr)
+                    continue;
             }
         }
 

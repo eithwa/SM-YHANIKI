@@ -3,39 +3,36 @@
 #include <chrono>
 
 #include "IStepManiaLanServer.h"
+#include "CmdPortal.h"
 #include "ezsockets.h"
 
-namespace Reimplementation {
-
-    class CmdPortal;
+namespace Yhaniki {
 
     class StepManiaLanServerV2 final : public IStepManiaLanServer {
         enum class State { On, Off };
     public:
-        static StepManiaLanServerV2* Default();
-        ~StepManiaLanServerV2();
-        //StepManiaLanServerV2(const StepManiaLanServerV2&) = delete;
+        static unique_ptr<StepManiaLanServerV2> Default();
 
         bool ServerStart() override;
         void ServerStop() override;
         void ServerUpdate() override;
 
-    private:
         StepManiaLanServerV2(
             const int portNo,
-            EzSockets* listenSocket,
-            std::vector<CmdPortal>&& clients,
+            unique_ptr<EzSockets>&& listenSocket,
+            std::vector<unique_ptr<CmdPortal>>&& clients,
             const State state,
             const std::chrono::milliseconds lastInformTime,
             const std::chrono::milliseconds informTimeSpan
             );
+    private:
 
         // Socket
         const int portNo_;
-        EzSockets* listenSocket_;
+        const unique_ptr<EzSockets> listenSocket_;
 
         // Client 
-        std::vector<CmdPortal> clients_{};
+        std::vector<unique_ptr<CmdPortal>> clients_{};
 
         // On / Off state
         State state_;

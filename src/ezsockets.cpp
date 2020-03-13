@@ -42,8 +42,8 @@ EzSockets::EzSockets()
 EzSockets::~EzSockets()
 {
 	close();
-	delete scks;
-	delete times;
+    delete scks;
+    delete times;
 }
 
 
