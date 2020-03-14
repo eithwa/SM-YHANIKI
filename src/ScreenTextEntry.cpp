@@ -8,6 +8,7 @@
 #include "PrefsManager.h"
 #include "ThemeManager.h"
 #include "FontCharAliases.h"
+#include "GameState.h"
 
 const float QUESTION_X	=	CENTER_X;
 const float QUESTION_Y	=	CENTER_Y - 60;
@@ -105,6 +106,11 @@ void ScreenTextEntry::Input( const DeviceInput& DeviceI, const InputEventType ty
 	case KEY_BACK:
 		if(!m_sAnswer.empty())
 			m_sAnswer = m_sAnswer.erase( m_sAnswer.size()-1 );
+		if(GAMESTATE->m_bClearText == true)
+		{
+			GAMESTATE->m_bClearText = false;
+			m_sAnswer.clear();
+		}
 		UpdateText();
 		break;
 	default:

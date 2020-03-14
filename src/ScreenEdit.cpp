@@ -1766,6 +1766,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromBPMChange:
 		{
+			GAMESTATE->m_bClearText = false;
 			float fBPM = atof( ScreenTextEntry::s_sLastAnswer.c_str() );
 			if ( fBPM <= 0 )
 				break;
@@ -1774,6 +1775,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromStopChange:
 		{
+			GAMESTATE->m_bClearText = false;
 			unsigned i;
 			bool sentinel = false;		//Tricky, we can't break out of this loop safely
 			for( i=0; (i<m_pSong->m_Timing.m_StopSegments.size()) && (!sentinel); i++ )
@@ -2076,6 +2078,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			}
 			break;
 		case edit_bpm:
+			GAMESTATE->m_bClearText = true;
 			SCREENMAN->TextEntry( SM_BackFromBPMChange, "Enter new BPM value.", ssprintf( "%.3f", m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat ) ) );
 			break;
 		case edit_stop:

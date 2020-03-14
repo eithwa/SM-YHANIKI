@@ -517,12 +517,11 @@ void NoteField::DrawPrimitives()
 	//
 
 	float fSelectedRangeGlow = SCALE( cosf(RageTimer::GetTimeSinceStart()*2), -1, 1, 0.1f, 0.3f );
-	//CString noteskin_name = GAMESTATE->m_PlayerOptions[m_PlayerNumber].m_sNoteSkin;
 	string noteskin_name = GAMESTATE->m_PlayerOptions[m_PlayerNumber].m_sNoteSkin;
-	string::size_type position;
-	position = noteskin_name.find("note");
+	bool bReverse=(bool)GAMESTATE->m_CurrentPlayerOptions[m_PlayerNumber].m_fScrolls[PlayerOptions::SCROLL_REVERSE];
 	bool IsNote = false;
-	if (position != noteskin_name.npos)
+	if( (noteskin_name.find("note") != noteskin_name.npos && !bReverse)||
+		(noteskin_name.find("note(rv)") != noteskin_name.npos && bReverse))
 	{
 		IsNote = true;
 	}
