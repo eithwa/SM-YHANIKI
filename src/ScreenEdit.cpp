@@ -361,7 +361,6 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	GAMESTATE->m_PlayerController[PLAYER_1] = PC_HUMAN;
 	m_Player.SetX( PLAYER_X );
 	
-	m_Player.m_Foreground.LoadFromSong( m_pSong );
 	m_Player.m_Foreground.SetX(m_Player.m_Foreground.GetX()-PLAYER_X);
 	
 	/* Why was this here?  Nothing ever sets Player Y values; this was causing
@@ -2459,7 +2458,8 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 				m_rectRecordBack.SetDiffuse( RageColor(0,0,0,0.8f) );
 				const float fStartSeconds = m_pSong->GetElapsedTimeFromBeat(GAMESTATE->m_fSongBeat) ;
 				LOG->Trace( "Starting playback at %f", fStartSeconds );
-			
+				FOREACH_PotentialCpuPlayer(p)
+        			GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[PLAYER_1];
 				if( PREFSMAN->m_bEditorShowBGChangesPlay )
 				{
 					/* FirstBeat affects backgrounds, so commit changes to memory (not to disk)
