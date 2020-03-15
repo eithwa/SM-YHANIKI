@@ -273,7 +273,8 @@ float g_fLastInsertAttackDurationSeconds = -1;
 ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 {
 	LOG->Trace( "ScreenEdit::ScreenEdit()" );
-
+	FOREACH_PotentialCpuPlayer(p)
+        GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[ GAMESTATE->GetFirstHumanPlayer() ];
 	/* We do this ourself. */
 	SOUND->HandleSongTimer( false );
 
