@@ -85,9 +85,15 @@ PlayerMinus::PlayerMinus()
 	this->AddChild( &m_Combo );
 	this->AddChild( &m_AttackDisplay );
 	for( int c=0; c<MAX_NOTE_TRACKS; c++ )
+	{
+		m_HoldJudgment[c].SetDrawOrder( -1 );
 		this->AddChild( &m_HoldJudgment[c] );
+	}
+		
 
 	combo_Editing = 0;
+	m_Foreground.SetDrawOrder( DRAW_ORDER_AFTER_EVERYTHING );	// on top of everything else, including transitions
+	this->AddChild( &m_Foreground );
 	PlayerAI::InitFromDisk();
 }
 
@@ -241,6 +247,7 @@ void PlayerMinus::Load( PlayerNumber pn, const NoteData* pNoteData, LifeMeter* p
 	m_soundMine.SetParams( p );
 	m_soundAttackLaunch.SetParams( p );
 	m_soundAttackEnding.SetParams( p );
+
 }
 
 void PlayerMinus::Update( float fDeltaTime )
@@ -555,19 +562,20 @@ void PlayerMinus::DrawPrimitives()
 	m_pNoteField->SetY( fOriginalY + fYOffset );
 	m_pNoteField->SetZoom( fZoom );
 	m_pNoteField->SetRotationX( fTiltDegrees );
+	m_pNoteField->SetDrawOrder( -1 );
 	m_pNoteField->Draw();
-
+	
 	m_pNoteField->SetY( fOriginalY );
 
 	DISPLAY->CameraPopMatrix();
 	DISPLAY->PopMatrix();
 
-
-	if( !TAP_JUDGMENTS_UNDER_FIELD )
-		DrawTapJudgments();
-
 	if( !TAP_JUDGMENTS_UNDER_FIELD )
 		DrawHoldJudgments();
+	if(!GAMESTATE->m_bEditing||(GAMESTATE->m_bEditing && PREFSMAN->m_bEditorShowBGChangesPlay))
+		m_Foreground.Draw();
+	if( !TAP_JUDGMENTS_UNDER_FIELD )
+		DrawTapJudgments();
 	
 	m_ArrowBackdrop.Draw();
 	if( GAMESTATE->m_PlayerOptions[m_PlayerNumber].m_fBlind == 0 )

@@ -274,6 +274,8 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 {
 	LOG->Trace( "ScreenEdit::ScreenEdit()" );
 
+	FOREACH_PotentialCpuPlayer(p)
+        GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[ GAMESTATE->GetFirstHumanPlayer() ];
 	/* We do this ourself. */
 	SOUND->HandleSongTimer( false );
 
@@ -286,6 +288,7 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 
 	m_pSong = GAMESTATE->m_pCurSong;
 	m_pSteps = GAMESTATE->m_pCurSteps[PLAYER_1];
+	
 	m_pAttacksFromCourse = NULL;
 
 	NoteData noteData;
@@ -357,6 +360,10 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	m_Player.Load( PLAYER_1, &noteData, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 	GAMESTATE->m_PlayerController[PLAYER_1] = PC_HUMAN;
 	m_Player.SetX( PLAYER_X );
+	
+	m_Player.m_Foreground.LoadFromSong( m_pSong );
+	m_Player.m_Foreground.SetX(m_Player.m_Foreground.GetX()-PLAYER_X);
+	
 	/* Why was this here?  Nothing ever sets Player Y values; this was causing
 	 * the display in play mode to be offset half a screen down. */
 //	m_Player.SetXY( PLAYER_X, PLAYER_Y );
@@ -561,7 +568,8 @@ void ScreenEdit::Update( float fDeltaTime )
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.Update( fDeltaTime );
-			m_Foreground.Update( fDeltaTime );	
+			// m_Foreground.Update( fDeltaTime );
+			m_Player.m_Foreground.Update( fDeltaTime );	
 		}
 
 		// check for end of playback/record
@@ -731,8 +739,8 @@ void ScreenEdit::DrawPrimitives()
 			m_BGAnimation.Draw();
 
 		m_NoteFieldRecord.Draw();
-		if( PREFSMAN->m_bEditorShowBGChangesPlay )
-			m_Foreground.Draw();
+		// if( PREFSMAN->m_bEditorShowBGChangesPlay )
+		// 	m_Foreground.Draw();
 		break;
 	case MODE_PLAYING:
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
@@ -752,11 +760,10 @@ void ScreenEdit::DrawPrimitives()
 		}
 		else
 			m_BGAnimation.Draw();
-
 		m_Player.Draw();
 		m_textAutoPlay.Draw();
-		if( PREFSMAN->m_bEditorShowBGChangesPlay )
-			m_Foreground.Draw();
+		// if( PREFSMAN->m_bEditorShowBGChangesPlay )
+		// 	m_Foreground.Draw();
 		break;
 	default:
 		ASSERT(0);
@@ -1576,7 +1583,8 @@ void ScreenEdit::TransitionToEdit()
 
 	/* Important: people will stop playing, change the BG and start again; make sure we reload */
 	m_Background.Unload();
-	m_Foreground.Unload();
+	// m_Foreground.Unload();
+	m_Player.m_Foreground.Unload();	
 
 	m_EditMode = MODE_EDITING;
 	GAMESTATE->m_bPastHereWeGo = false;
@@ -2464,8 +2472,10 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 					m_Background.Unload();
 					m_Background.LoadFromSong( m_pSong );
 
-					m_Foreground.Unload();
-					m_Foreground.LoadFromSong( m_pSong );
+					// m_Foreground.Unload();
+					// m_Foreground.LoadFromSong( m_pSong );
+					m_Player.m_Foreground.Unload();
+					m_Player.m_Foreground.LoadFromSong( m_pSong );
 
 				}
 

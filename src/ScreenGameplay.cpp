@@ -323,6 +323,8 @@ void ScreenGameplay::Init()
 
 		m_Player[p].SetName( ssprintf("Player%i", p+1) );
 		m_Player[p].SetX( fPlayerX );
+		m_Player[p].m_Foreground.SetX(m_Foreground.GetX()-fPlayerX);
+		m_Player[p].m_Foreground.LoadFromSong( GAMESTATE->m_pCurSong );
 		this->AddChild( &m_Player[p] );
 	
 		m_sprOniGameOver[p].SetName( ssprintf("OniGameOver%i", p+1) );
@@ -1080,8 +1082,8 @@ void ScreenGameplay::LoadNextSong()
 			m_Background.FadeToActualBrightness();
 		}
 	}
-
-	m_Foreground.LoadFromSong( GAMESTATE->m_pCurSong );
+	
+	// m_Foreground.LoadFromSong( GAMESTATE->m_pCurSong );
 
 	m_fTimeSinceLastDancingComment = 0;
 

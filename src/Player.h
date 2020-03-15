@@ -19,6 +19,7 @@
 #include "RageSound.h"
 #include "AttackDisplay.h"
 #include "NoteField.h"
+#include "Foreground.h"
 
 class ScoreDisplay;
 class LifeMeter;
@@ -50,6 +51,7 @@ public:
 
 	static float GetMaxStepDistanceSeconds();
 	int combo_Editing;
+	Foreground		m_Foreground;
 protected:
 	void UpdateTapNotesMissedOlderThan( float fMissIfOlderThanThisBeat );
 	void OnRowCompletelyJudged( int iStepIndex );

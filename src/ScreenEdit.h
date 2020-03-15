@@ -18,7 +18,8 @@
 #include "LyricDisplay.h"
 #include "LyricsLoader.h"
 #include <sstream>
-
+#include "LifeMeter.h"
+#include "ScoreDisplay.h"
 
 const int NUM_ACTION_MENU_ITEMS = 23;
 const int NUM_NAMING_MENU_ITEMS = 6;
@@ -92,6 +93,7 @@ protected:
 // for MODE_PLAY
 	void SetupCourseAttacks();
 	Player			m_Player;
+	Player			m_Player2;
 	Background		m_Background;
 	Foreground		m_Foreground;
 	Course			*m_pAttacksFromCourse;
