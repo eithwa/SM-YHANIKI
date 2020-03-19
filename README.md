@@ -28,16 +28,13 @@
     + Using C++14 now. Currently there are some problems with C++17.
     + Old assets pack won't work with this source. Please contact devs for updated assets pack.
   ```
-
-
  
-
 ## 一般模式
- | 快速鍵     | 功能                 |
- | ----      | ----                 |
- | F4        | 更新指定歌曲          |
- | F5        | 快速重讀歌曲          |
- | Ctrl + F5 | 指定資料夾快速重讀歌曲 |
+  | 快速鍵     | 功能                 |
+  | -----     | -----                |
+  | F4        | 更新指定歌曲          |
+  | F5        | 快速重讀歌曲          |
+  | Ctrl + F5 | 指定資料夾快速重讀歌曲 |
  
   + note流速不因歌曲倍速改變
   + 結算成績畫面顯示歌曲倍速
@@ -79,10 +76,10 @@
     - 測試前緩衝調整選項(Preferences->play mode beats buffer)
     - Preferences加入背景影片亮度調整功能(Screen Filter)
     - Preferences加入預設Reverse功能(Default Scroll Reverse)
+    - 使用玩家預設NoteSkin(針對使用note(RV)玩家)
     - 測試譜面時顯示歌詞、判定與連擊數
     - 修正部分情況使用長條結尾當作假鍵(3號鍵)時閃退問題
     - 修正add/edit bg change檔案名稱過長顯示跑版問題
-    - 使用玩家預設NoteSkin(針對note(RV)使用玩家)
 
 ## 連線模式
 
@@ -96,10 +93,10 @@
   
   | 指令                      | 功能                                                  |
   | -----                    | -----                                                 |
-  | /list                    | 顯示玩家編號與名稱
   | /host {玩家名稱或玩家編號} | 更換房主                                               |
   | /share [玩家編號]         | 傳送歌曲(過濾影片) 若不加玩家編號則傳送檔案給所有缺檔案玩家 |
   | /sharefull [玩家編號]     | 傳送歌曲(包含影片) 若不加玩家編號則傳送檔案給所有缺檔案玩家 |
+  
   + 缺歌檔案傳送功能(/share /sharefull)
   + 修正CyberiaStyle 6連線模式無法顯示玩家名稱問題
   + 修正歌包跳回ALL GROUPS問題
@@ -108,8 +105,8 @@
   + 結算成績畫面傳送玩家血量graph
   + 遊戲強制變更為不關門模式
   + StandAloneServer(獨立執行伺服器)
-  + 選擇曲目相同性判斷(判斷譜面按鍵數)
-  + 大廳顯示玩家狀態
+  + 確認所有玩家連線譜面相同(判斷譜面按鍵數)
+  + 大廳顯示玩家狀態(按F8開關)
   + 不是置中的玩家，遊戲中成績列表會顯示在上方
   + 大廳播放完整歌曲
 
