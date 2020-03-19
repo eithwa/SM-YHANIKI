@@ -1,5 +1,6 @@
 
 ## VS-2019 Migration Notes
+  ```
     + In order to support modern libraries, we've moved to VS2019 with MSVC140.
         VS2005/2008 will not work now.
     + To ease maintenance, this version of YHANIKI targets only modern windows OSs.
@@ -8,7 +9,7 @@
     + LibLua and SDL have been rebuilt with MSVC140 and are included in this repository (in folder ThirdParty_rebuild).
     + Using C++14 now. Currently there are some problems with C++17.
     + Old assets pack won't work with this source. Please contact devs for updated assets pack.
-
+  ```
 
 # StepMania 3.9 永和金城武版(YHANIKI)
   + fork from [stepmania](https://github.com/stepmania/stepmania)
