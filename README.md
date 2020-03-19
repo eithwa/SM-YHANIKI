@@ -1,4 +1,22 @@
+# StepMania 3.9 永和金城武版(YHANIKI)
+  + fork from [stepmania](https://github.com/stepmania/stepmania)
+    - [tag v390release](https://github.com/stepmania/stepmania/releases/tag/v390release)
+  + 部分功能沿用ddrtime編輯器版本StepMania
+    - [STEPMANIA 3.9 編輯器我流版](https://forum.gamer.com.tw/C.php?bsn=16862&snA=1184)
 
+<!-- TOC -->
+
+- [StepMania 3.9 永和金城武版(YHANIKI)](#stepmania-39-%e6%b0%b8%e5%92%8c%e9%87%91%e5%9f%8e%e6%ad%a6%e7%89%88yhaniki)
+  - [VS-2019 Migration Notes](#vs-2019-migration-notes)
+  - [一般模式](#%e4%b8%80%e8%88%ac%e6%a8%a1%e5%bc%8f)
+  - [作譜模式](#%e4%bd%9c%e8%ad%9c%e6%a8%a1%e5%bc%8f)
+  - [連線模式](#%e9%80%a3%e7%b7%9a%e6%a8%a1%e5%bc%8f)
+  - [其他](#%e5%85%b6%e4%bb%96)
+  - [TODO](#todo)
+  - [偉大貢獻者](#%e5%81%89%e5%a4%a7%e8%b2%a2%e7%8d%bb%e8%80%85)
+
+<!-- /TOC -->
+ 
 ## VS-2019 Migration Notes
   ```
     + In order to support modern libraries, we've moved to VS2019 with MSVC140.
@@ -11,23 +29,9 @@
     + Old assets pack won't work with this source. Please contact devs for updated assets pack.
   ```
 
-# StepMania 3.9 永和金城武版(YHANIKI)
-  + fork from [stepmania](https://github.com/stepmania/stepmania)
-    - [tag v390release](https://github.com/stepmania/stepmania/releases/tag/v390release)
-  + 部分功能沿用ddrtime編輯器版本StepMania
-    - [STEPMANIA 3.9 編輯器我流版](https://forum.gamer.com.tw/C.php?bsn=16862&snA=1184)
-<!-- TOC -->
 
-    - [VS-2019 Migration Notes](#vs-2019-migration-notes)
-- [StepMania 3.9 永和金城武版(YHANIKI)](#stepmania-39-%e6%b0%b8%e5%92%8c%e9%87%91%e5%9f%8e%e6%ad%a6%e7%89%88yhaniki)
-  - [一般模式](#%e4%b8%80%e8%88%ac%e6%a8%a1%e5%bc%8f)
-  - [作譜模式](#%e4%bd%9c%e8%ad%9c%e6%a8%a1%e5%bc%8f)
-  - [連線模式](#%e9%80%a3%e7%b7%9a%e6%a8%a1%e5%bc%8f)
-  - [其他](#%e5%85%b6%e4%bb%96)
-  - [TODO](#todo)
-  - [偉大貢獻者](#%e5%81%89%e5%a4%a7%e8%b2%a2%e7%8d%bb%e8%80%85)
+ 
 
-<!-- /TOC -->
 ## 一般模式
  | 快速鍵     | 功能                 |
  | ----      | ----                 |
