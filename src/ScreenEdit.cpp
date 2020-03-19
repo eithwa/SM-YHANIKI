@@ -2453,7 +2453,7 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 				const float fStartSeconds = m_pSong->GetElapsedTimeFromBeat(GAMESTATE->m_fSongBeat) ;
 				LOG->Trace( "Starting playback at %f", fStartSeconds );
 				FOREACH_PotentialCpuPlayer(p)
-        			GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[PLAYER_1];
+					GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[PLAYER_1];
 				if( PREFSMAN->m_bEditorShowBGChangesPlay )
 				{
 					/* FirstBeat affects backgrounds, so commit changes to memory (not to disk)
