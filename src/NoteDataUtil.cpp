@@ -1,5 +1,8 @@
 #include "global.h"
 #include "NoteDataUtil.h"
+
+#include <random>
+
 #include "RageUtil.h"
 #include "RageLog.h"
 #include "PlayerOptions.h"
@@ -690,8 +693,9 @@ static void GetTrackMapping( StepsType st, NoteDataUtil::TrackMapping tt, int Nu
 
 			int iShuffleSeed = GAMESTATE->m_iRoundSeed;
 			do {
-				RandomGen rnd( iShuffleSeed );
-				random_shuffle( &iTakeFromTrack[0], &iTakeFromTrack[NumTracks], rnd );
+				//RandomGen rnd( iShuffleSeed );
+				static std::random_device rd{}; // std::mt19937(rd())
+				shuffle( &iTakeFromTrack[0], &iTakeFromTrack[NumTracks], std::mt19937(rd()));
 				iShuffleSeed++;
 			}
 			while ( !memcmp( iOrig, iTakeFromTrack, sizeof(iOrig) ) );

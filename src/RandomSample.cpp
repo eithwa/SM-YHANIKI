@@ -1,5 +1,8 @@
 #include "global.h"
 #include "RandomSample.h"
+
+#include <random>
+
 #include "RageSound.h"
 #include "RageUtil.h"
 #include "RageLog.h"
@@ -56,7 +59,8 @@ bool RandomSample::LoadSoundDir( CString sDir, int iMaxToLoad )
 	GetDirListing( sDir + "*.ogg", arraySoundFiles );
 	GetDirListing( sDir + "*.wav", arraySoundFiles );
 
-	random_shuffle( arraySoundFiles.begin(), arraySoundFiles.end() );
+	static std::random_device rd{}; // 
+	shuffle(arraySoundFiles.begin(), arraySoundFiles.end(), std::mt19937(rd()));
 	arraySoundFiles.resize( min( arraySoundFiles.size(), (unsigned)iMaxToLoad ) );
 
 	for( unsigned i=0; i<arraySoundFiles.size(); i++ )

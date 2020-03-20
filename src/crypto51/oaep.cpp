@@ -93,7 +93,7 @@ DecodingResult OAEP<H,MGF,P,PLen>::Unpad(const byte *oaepBlock, unsigned int oae
 
 	byte *M = std::find(maskedDB+hLen, maskedDB+dbLen, 0x01);
 	invalid = (M == maskedDB+dbLen) || invalid;
-	invalid = (std::find_if(maskedDB+hLen, M, std::bind2nd(std::not_equal_to<byte>(), 0)) != M) || invalid;
+	invalid = (std::find_if(maskedDB+hLen, M, std::bind(not_equal_to<>(), placeholders::_1, 0)) != M) || invalid;
 	invalid = (memcmp(maskedDB, PHash<H,P,PLen>(), hLen) != 0) || invalid;
 
 	if (invalid)

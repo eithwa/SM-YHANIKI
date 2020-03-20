@@ -1,5 +1,8 @@
 #include "global.h"
 #include "SongManager.h"
+
+#include <random>
+
 #include "IniFile.h"
 #include "RageLog.h"
 #include "MsdFile.h"
@@ -1190,12 +1193,14 @@ void SongManager::UpdateBest()
 
 void SongManager::UpdateShuffled()
 {
+	static std::random_device rd{}; // 
+	//
 	// update shuffled
 	m_pShuffledSongs = m_pSongs;
-	random_shuffle( m_pShuffledSongs.begin(), m_pShuffledSongs.end() );
+	shuffle( m_pShuffledSongs.begin(), m_pShuffledSongs.end(), std::mt19937(rd()));
 
 	m_pShuffledCourses = m_pCourses;
-	random_shuffle( m_pShuffledCourses.begin(), m_pShuffledCourses.end() );
+	shuffle( m_pShuffledCourses.begin(), m_pShuffledCourses.end(), std::mt19937(rd()));
 }
 
 void SongManager::SortSongs()

@@ -1,5 +1,8 @@
 #include "global.h"
 #include "MusicWheel.h"
+
+#include <random>
+
 #include "RageUtil.h"
 #include "SongManager.h"
 #include "GameManager.h"
@@ -1314,8 +1317,9 @@ void MusicWheel::StartRoulette()
 void MusicWheel::StartRandom()
 {
 	/* Shuffle the roulette wheel. */
-	RandomGen rnd;
-	random_shuffle( m_WheelItemDatas[SORT_ROULETTE].begin(), m_WheelItemDatas[SORT_ROULETTE].end(), rnd );
+	//RandomGen rnd;
+	static std::random_device rd{}; // 
+	shuffle( m_WheelItemDatas[SORT_ROULETTE].begin(), m_WheelItemDatas[SORT_ROULETTE].end(), std::mt19937(rd()));
 
 	SetOpenGroup("", SortOrder(SORT_ROULETTE));
 

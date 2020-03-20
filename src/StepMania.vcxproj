@@ -61,7 +61,7 @@
       <AdditionalOptions>/EHa  /wd4430 /wd4996 /wd4458 /wd4018 /wd4456 /wd4457 /wd4459 /wd4838 /wd4996 /wd26812 /wd26495 /wd4244 /wd4306 /wd4389 /wd4305 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\boost_1_72_0_serialization;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINDOWS;DEBUG;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_HAS_STD_BYTE=0;_DEBUG;_WINDOWS;WINDOWS;DEBUG;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling />
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -75,7 +75,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -104,7 +104,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);.;.\ThirdParty_rebuild\SDL-1.2.6\include;..\ThirdParty\boost_1_72_0_serialization;..\ThirdParty\vorbis;..\ThirdParty\libjpeg;.\ThirdParty_rebuild\lua-5.0\include;..\ThirdParty\dx80\include;..\ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINDOWS;RELEASE;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_HAS_STD_BYTE=0;NDEBUG;_WINDOWS;WINDOWS;RELEASE;_USING_V110_SDK71_;WINDOWS_IGNORE_PACKING_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling />
@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

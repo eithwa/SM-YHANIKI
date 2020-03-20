@@ -1,5 +1,8 @@
 #include "global.h"
 #include "Course.h"
+
+#include <random>
+
 #include "PrefsManager.h"
 #include "song.h"
 #include "GameManager.h"
@@ -471,8 +474,9 @@ void Course::AutogenOniFromArtist( CString sArtistName, CString sArtistNameTrans
 	/* Shuffle the list to determine which songs we'll use.  Shuffle it deterministically,
 	 * so we always get the same set of songs unless the song set changes. */
 	{
-		RandomGen rng( GetHashForString( sArtistName ) + aSongs.size() );
-		random_shuffle( aSongs.begin(), aSongs.end(), rng );
+		//RandomGen rng( GetHashForString( sArtistName ) + aSongs.size() );
+		static std::random_device rd{}; // std::mt19937(rd())
+		shuffle( aSongs.begin(), aSongs.end(), std::mt19937(rd()));
 	}
 
 	/* Only use up to four songs. */
@@ -691,7 +695,8 @@ bool Course::GetTrailUnsorted( StepsType st, CourseDifficulty cd, Trail &trail )
 		 * will change every time it's viewed, and the displayed order will have no
 		 * bearing on what you'll actually play. */
 		tmp_entries = m_entries;
-		random_shuffle( tmp_entries.begin(), tmp_entries.end(), rnd );
+	    static std::random_device rd{}; // std::mt19937(rd())
+		shuffle( tmp_entries.begin(), tmp_entries.end(), std::mt19937(rd()) );
 	}
 
 	const vector<CourseEntry> &entries = m_bRandomize? tmp_entries:m_entries;
@@ -745,7 +750,8 @@ bool Course::GetTrailUnsorted( StepsType st, CourseDifficulty cd, Trail &trail )
 				if( !bShuffledSet )
 				{
 					AllSongsShuffled = SONGMAN->GetAllSongs();
-					random_shuffle( AllSongsShuffled.begin(), AllSongsShuffled.end(), rnd );
+					static std::random_device rd{}; // std::mt19937(rd())
+					shuffle( AllSongsShuffled.begin(), AllSongsShuffled.end(), std::mt19937(rd()) );
 					bShuffledSet = true;
 				}
 

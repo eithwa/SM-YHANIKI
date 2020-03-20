@@ -1281,14 +1281,14 @@ typedef CStdStr<char>		CStdStringA;	// a better std::string
 #define StdStringEqualsNoCase		SSENCA
 
 struct StdStringLessNoCaseA
-	: std::binary_function<CStdStringA, CStdStringA, bool>
+	//: std::binary_function<CStdStringA, CStdStringA, bool>
 {
 	inline
 	bool operator()(const CStdStringA& sLeft, const CStdStringA& sRight) const
 	{ return ssicmp(sLeft.c_str(), sRight.c_str()) < 0; }
 };
 struct StdStringEqualsNoCaseA
-	: std::binary_function<CStdStringA, CStdStringA, bool>
+	//: std::binary_function<CStdStringA, CStdStringA, bool>
 {
 	inline
 	bool operator()(const CStdStringA& sLeft, const CStdStringA& sRight) const

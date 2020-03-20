@@ -1,5 +1,8 @@
 #include "global.h"
 #include "Background.h"
+
+#include <random>
+
 #include "RageUtil.h"
 #include "GameConstantsAndTypes.h"
 #include "RageException.h"
@@ -233,7 +236,8 @@ CString Background::CreateRandomBGA()
 	if( arrayPaths.empty() )
 		return "";
 
-	random_shuffle( arrayPaths.begin(), arrayPaths.end() );
+	std::random_device rd{}; // std::mt19937(rd())
+	shuffle( arrayPaths.begin(), arrayPaths.end(), std::mt19937(rd()));
 
 	/* Find the first file in arrayPaths we havn't already loaded. */
 	CString file;
