@@ -199,6 +199,7 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Banner.cpp" />
     <ClCompile Include="BannerCache.cpp" />
+    <ClCompile Include="BasicCmds.hpp" />
     <ClCompile Include="BeginnerHelper.cpp" />
     <ClCompile Include="BGAnimation.cpp" />
     <ClCompile Include="BGAnimationLayer.cpp" />
@@ -208,7 +209,7 @@
     <ClCompile Include="CatalogXml.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="CharacterHead.cpp" />
-    <ClCompile Include="CmdPortal.cpp" />
+    <ClCompile Include="ClientSerializationFactory.cpp" />
     <ClCompile Include="CodeDetector.cpp" />
     <ClCompile Include="CombinedLifeMeterTug.cpp" />
     <ClCompile Include="Combo.cpp" />
@@ -498,6 +499,7 @@
     <ClCompile Include="StepManiaLanServerV2.cpp" />
     <ClCompile Include="Steps.cpp" />
     <ClCompile Include="StepsUtil.cpp" />
+    <ClCompile Include="StringStack.cpp" />
     <ClCompile Include="Style.cpp" />
     <ClCompile Include="StyleUtil.cpp" />
     <ClCompile Include="TextBanner.cpp" />
@@ -586,8 +588,10 @@
     <ClInclude Include="CatalogXml.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterHead.h" />
-    <ClInclude Include="ClientCmd.h" />
-    <ClInclude Include="CmdPortal.h" />
+    <ClInclude Include="CmdDtoStruct.h" />
+    <ClInclude Include="CmdSerializationFactory.h" />
+    <ClInclude Include="IClientCmd.h" />
+    <ClInclude Include="CmdPortal.hpp" />
     <ClInclude Include="CodeDetector.h" />
     <ClInclude Include="CombinedLifeMeter.h" />
     <ClInclude Include="CombinedLifeMeterTug.h" />
@@ -902,6 +906,7 @@
     <ClInclude Include="StepManiaLanServerV2.h" />
     <ClInclude Include="Steps.h" />
     <ClInclude Include="StepsUtil.h" />
+    <ClInclude Include="StringStack.h" />
     <ClInclude Include="Style.h" />
     <ClInclude Include="StyleInput.h" />
     <ClInclude Include="StyleUtil.h" />

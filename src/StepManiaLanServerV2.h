@@ -3,7 +3,7 @@
 #include <chrono>
 
 #include "IStepManiaLanServer.h"
-#include "CmdPortal.h"
+#include "CmdPortal.hpp"
 #include "ezsockets.h"
 
 namespace Yhaniki {
@@ -18,12 +18,12 @@ namespace Yhaniki {
         void ServerUpdate() override;
 
         StepManiaLanServerV2(
-            const int portNo,
-            unique_ptr<EzSockets>&& listenSocket,
-            std::vector<unique_ptr<CmdPortal>>&& clients,
-            const State state,
-            const std::chrono::milliseconds lastInformTime,
-            const std::chrono::milliseconds informTimeSpan
+            int portNo,
+            unique_ptr<EzSockets> listenSocket,
+            std::vector<unique_ptr<CmdPortal>> clients,
+            State state,
+            std::chrono::milliseconds lastInformTime,
+            std::chrono::milliseconds informTimeSpan
             );
     private:
 
@@ -37,7 +37,7 @@ namespace Yhaniki {
         // On / Off state
         State state_;
 
-        // Periodic inform
+        // Periodic inform setup
         const std::chrono::milliseconds informTimeSpan_{};
         std::chrono::milliseconds lastInformTime_{};
     };

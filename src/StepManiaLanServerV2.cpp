@@ -2,14 +2,16 @@
 
 #include <utility>
 
+#include "IClientCmd.h"
+
 using namespace std::chrono;
 
 namespace Yhaniki {
 
     StepManiaLanServerV2::StepManiaLanServerV2(
         const int portNo,
-        unique_ptr<EzSockets>&& listenSocket,
-        vector<unique_ptr<CmdPortal>>&& clients,
+        unique_ptr<EzSockets> listenSocket,
+        vector<unique_ptr<CmdPortal>> clients,
         const State state,
         const milliseconds lastInformTime,
         const milliseconds informTimeSpan
@@ -19,8 +21,7 @@ namespace Yhaniki {
         clients_(move(clients)),
         state_(state),
         informTimeSpan_(informTimeSpan),
-        lastInformTime_(lastInformTime) {
-    }
+        lastInformTime_(lastInformTime) {}
 
     unique_ptr<StepManiaLanServerV2> StepManiaLanServerV2::Default() {
         return make_unique<StepManiaLanServerV2>(
@@ -30,7 +31,7 @@ namespace Yhaniki {
             State::Off,
             duration_cast<milliseconds>(system_clock::now().time_since_epoch()),
             milliseconds(100)
-        );
+            );
     }
 
     bool StepManiaLanServerV2::ServerStart() {
@@ -94,8 +95,14 @@ namespace Yhaniki {
         // Process client requests and then respond to them
         {
             for (auto&& client : clients_) {
-                if (client->Receive() == nullptr)
+                auto clientCmd = client->Receive<IClientCmd>();
+                if (clientCmd == nullptr)
                     continue;
+                else
+                    continue;
+                //dynamic_cast<Nop*>(clientCmd.get())
+                //if (auto cmd = dynamic_cast<Nop*>(clientCmd.release()))
+                // TODO: ...
             }
         }
 

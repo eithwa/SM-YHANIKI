@@ -11,10 +11,10 @@ public:
     CString GetServerName() const { return serverName_; }
     void SetServerName(const CString& newName) { serverName_ = newName; }
 
-    CString lastError;
-    int lastErrorCode;
+    CString lastError = "";
+    int lastErrorCode = 0;
 
 protected:
-    CString serverName_;
+    CString serverName_ = "";
 };
 
