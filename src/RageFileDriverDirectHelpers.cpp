@@ -233,6 +233,25 @@ DirectFilenameDB::DirectFilenameDB( CString root_ )
 		root = "";
 }
 
+char* wideCharToMultiByte(wchar_t* pWCStrKey) {
+	int pSize = WideCharToMultiByte(CP_UTF8, 0, pWCStrKey, wcslen(pWCStrKey), NULL, 0, NULL, NULL);
+	char* pCStrKey = new char[pSize + 1];
+	
+	WideCharToMultiByte(CP_UTF8, 0, pWCStrKey, wcslen(pWCStrKey), pCStrKey, pSize, NULL, NULL);
+	pCStrKey[pSize] = '\0';
+	
+	return pCStrKey;	
+}
+
+wchar_t* ToWide(CStdStringA aStr) {
+	auto buf = aStr.GetBuffer();
+	auto len = aStr.GetLength();
+	wchar_t* dest = new wchar_t[len+1];
+	mbstowcs(dest, buf, len);
+	dest[len] = L'\0';
+	
+	return dest;
+}
 
 void DirectFilenameDB::PopulateFileSet( FileSet &fs, const CString &path )
 {
@@ -245,29 +264,33 @@ void DirectFilenameDB::PopulateFileSet( FileSet &fs, const CString &path )
 	fs.files.clear();
 
 #if defined(WIN32)
-	WIN32_FIND_DATA fd;
+	WIN32_FIND_DATAW fd;
 
 	if ( sPath.size() > 0  && sPath.Right(1) == "/" )
 		sPath.erase( sPath.size() - 1 );
 
-	HANDLE hFind = DoFindFirstFile( root+sPath+"/*", &fd );
+	auto w = ToWide(root + sPath + "/*");
+
+	HANDLE hFind = FindFirstFileW(ToWide(root+sPath+"/*"), &fd );
 	CHECKPOINT_M( root+sPath+"/*" );
 
 	if( hFind == INVALID_HANDLE_VALUE )
 		return;
 
 	do {
-		if(!strcmp(fd.cFileName, ".") || !strcmp(fd.cFileName, ".."))
+		if(!wcscmp(fd.cFileName, L".") || !wcscmp(fd.cFileName, L".."))
 			continue;
 
+		auto w2 = wideCharToMultiByte(fd.cFileName);
+
 		File f;
-		f.SetName( fd.cFileName );
+		f.SetName(wideCharToMultiByte(fd.cFileName));
 		f.dir = !!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 		f.size = fd.nFileSizeLow;
 		f.hash = fd.ftLastWriteTime.dwLowDateTime;
 
 		fs.files.insert(f);
-	} while( FindNextFile( hFind, &fd ) );
+	} while( FindNextFileW( hFind, &fd ) );
 	FindClose(hFind);
 #else
 	int OldDir = DoOpen(".", O_RDONLY);
