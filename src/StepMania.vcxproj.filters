@@ -91,6 +91,9 @@
     <Filter Include="Reimplemetations\LanServerV2\ClientCmd">
       <UniqueIdentifier>{c5d3efa2-cf75-4211-b2dd-7612d59abeff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reimplemetations\LanServerV2\ServerCmd">
+      <UniqueIdentifier>{5ad6533f-0910-49ed-a3a3-6ff3d50233c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Screen.cpp">
@@ -1185,11 +1188,11 @@
     <ClCompile Include="BasicCmds.hpp">
       <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
     </ClCompile>
-    <ClCompile Include="ClientSerializationFactory.cpp">
-      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
-    </ClCompile>
     <ClCompile Include="StringStack.cpp">
       <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Factory.cpp">
+      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2402,14 +2405,17 @@
     <ClInclude Include="IStepManiaLanServer.h">
       <Filter>Reimplemetations\LanServerV2</Filter>
     </ClInclude>
-    <ClInclude Include="IClientCmd.h">
-      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
-    </ClInclude>
     <ClInclude Include="CmdPortal.hpp">
       <Filter>Reimplemetations\LanServerV2</Filter>
     </ClInclude>
     <ClInclude Include="StringStack.h">
       <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="IClientCmd.h">
+      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="IServerCmd.h">
+      <Filter>Reimplemetations\LanServerV2\ServerCmd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

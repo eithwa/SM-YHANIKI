@@ -209,7 +209,7 @@
     <ClCompile Include="CatalogXml.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="CharacterHead.cpp" />
-    <ClCompile Include="ClientSerializationFactory.cpp" />
+    <ClCompile Include="Factory.cpp" />
     <ClCompile Include="CodeDetector.cpp" />
     <ClCompile Include="CombinedLifeMeterTug.cpp" />
     <ClCompile Include="Combo.cpp" />
@@ -690,6 +690,7 @@
     <ClInclude Include="InputMapper.h" />
     <ClInclude Include="InputQueue.h" />
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="IServerCmd.h" />
     <ClInclude Include="IStepManiaLanServer.h" />
     <ClInclude Include="Judgment.h" />
     <ClInclude Include="JukeboxMenu.h" />

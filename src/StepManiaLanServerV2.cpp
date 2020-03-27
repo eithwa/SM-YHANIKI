@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "IClientCmd.h"
+#include "BasicCmds.hpp"
 
 using namespace std::chrono;
 
@@ -11,7 +11,7 @@ namespace Yhaniki {
     StepManiaLanServerV2::StepManiaLanServerV2(
         const int portNo,
         unique_ptr<EzSockets> listenSocket,
-        vector<unique_ptr<CmdPortal>> clients,
+        vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients,
         const State state,
         const milliseconds lastInformTime,
         const milliseconds informTimeSpan
@@ -27,7 +27,7 @@ namespace Yhaniki {
         return make_unique<StepManiaLanServerV2>(
             8765,
             make_unique<EzSockets>(),
-            vector<unique_ptr<CmdPortal>>{},
+            vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>>{},
             State::Off,
             duration_cast<milliseconds>(system_clock::now().time_since_epoch()),
             milliseconds(100)
@@ -87,7 +87,7 @@ namespace Yhaniki {
 
         // Look for new clients
         {
-            auto portal = CmdPortal::AcceptBy(listenSocket_);
+            auto portal = CmdPortal<IClientCmd, IServerCmd>::AcceptBy(listenSocket_);
             if (portal != nullptr)
                 clients_.push_back(move(portal));
         }
@@ -95,14 +95,17 @@ namespace Yhaniki {
         // Process client requests and then respond to them
         {
             for (auto&& client : clients_) {
-                auto clientCmd = client->Receive<IClientCmd>();
-                if (clientCmd == nullptr)
-                    continue;
-                else
-                    continue;
-                //dynamic_cast<Nop*>(clientCmd.get())
-                //if (auto cmd = dynamic_cast<Nop*>(clientCmd.release()))
-                // TODO: ...
+                auto clientCmds = client->ReceiveCmds();
+                for (auto && clientCmd : clientCmds) {
+                    if (clientCmd == nullptr)
+                        continue;
+                    if (auto cmd = dynamic_cast<ClientCmd::Nop*>(clientCmd.get())) {
+                        continue;
+                    }
+                    if (auto cmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get())) {
+                        continue;
+                    }                    
+                }
             }
         }
 

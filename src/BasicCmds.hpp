@@ -6,19 +6,16 @@
 
 #include "IClientCmd.h"
 
-namespace Yhaniki {
+namespace Yhaniki::ClientCmd {
 
-    class Nop : public IClientCmd {
-    public:
-        Type GetType() const override { return Type::Nop; }
-    };
+    class Nop : public IClientCmd {};
 
     class Chat : public IClientCmd {
     public:
-        Type GetType() const override { return Type::Chat; }
-
         Chat(std::string message) : message_(std::move(message)) {}
+        [[nodiscard]] std::string GetMessage() const { return message_; }
     private:
         std::string message_;
     };
+
 }

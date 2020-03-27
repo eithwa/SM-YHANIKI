@@ -23,6 +23,8 @@ namespace Yhaniki {
 
         std::string ToString() const;
 
+        std::string operator[](std::size_t idx) const;
+
     private:
         const std::vector<std::string> stack_;
     };

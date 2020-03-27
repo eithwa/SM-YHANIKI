@@ -1,10 +1,10 @@
 #pragma once
 
-namespace Yhaniki {
+namespace Yhaniki::ClientCmd {
 
     class IClientCmd {
     public:
-        enum class Type {
+        /*enum class Type {
             Nop,
             Ping, PingR,
             Hello,
@@ -22,8 +22,10 @@ namespace Yhaniki {
             UpdateHasSong,
             StartFileTransfer
         };
+        */
 
         virtual ~IClientCmd() = default;
-        virtual Type GetType() const = 0;
+
+        //virtual Type GetType() const = 0;
     };
 }

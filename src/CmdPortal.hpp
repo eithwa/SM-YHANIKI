@@ -6,6 +6,7 @@
 
 namespace Yhaniki {
 
+    template<class TIRecvCmd, class TISendCmd>
     class CmdPortal {
 
     public:
@@ -19,26 +20,29 @@ namespace Yhaniki {
             else return nullptr;
         }
 
-        template<class TICmd>
-        unique_ptr<TICmd> Receive() const {
+        vector<unique_ptr<TIRecvCmd>> ReceiveCmds() const {
 
             if (!socket_->CanRead())
-                return nullptr;
+                return {};
 
+            vector<unique_ptr<TIRecvCmd>> cmds = {};
             char cStr[NETMAXBUFFERSIZE];
-            socket_->ReadPack(cStr, NETMAXBUFFERSIZE);
 
-            return CmdSerializationFactory<TICmd>::Deserialize(
-                StringStack::FromString(string(cStr)));
+            while (socket_->ReadPack(cStr, NETMAXBUFFERSIZE) > 0) {
+                cmds.push_back(
+                    CmdSerializationFactory<TIRecvCmd>::Deserialize(
+                        StringStack::FromString(string(cStr))));
+            }
+
+            return cmds;
         }
 
-        template<class TICmd>
-        bool Send(unique_ptr<TICmd> cmd) const {
+        bool SendCmd(unique_ptr<TISendCmd> cmd) const {
 
             if (!socket_->CanWrite())
                 return false;
 
-            auto strStack = CmdSerializationFactory<TICmd>::Serialize(cmd);
+            auto strStack = CmdSerializationFactory<TISendCmd>::Serialize(cmd);
             socket_->SendPack(strStack.ToString().c_str());
 
             return true;
@@ -49,7 +53,8 @@ namespace Yhaniki {
             return socket_->IsError();
         }
 
-        CmdPortal(unique_ptr<EzSockets> clientSocket) :
+        CmdPortal(
+            unique_ptr<EzSockets> clientSocket) :
             socket_(move(clientSocket)) {}
 
     private:

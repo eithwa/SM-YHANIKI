@@ -1,11 +1,10 @@
 #pragma once
-#include <string>
 
-namespace Yhaniki {
+namespace Yhaniki::ServerCmd {
 
-    typedef struct CmdDtoStruct {
-
-        enum class Type {
+    class IServerCmd {
+    public:
+        /*enum class Type {
             Nop,
             Ping, PingR,
             Hello,
@@ -23,13 +22,10 @@ namespace Yhaniki {
             UpdateHasSong,
             StartFileTransfer
         };
+        */
 
-        typedef struct BodyStruct {
-            std::string content;
-        } Body;
+        virtual ~IServerCmd() = default;
 
-        Type cmdType = Type::Nop;
-        Body cmdBody = { "" };
-
-    } CmdDto;
+        //virtual Type GetType() const = 0;
+    };
 }
