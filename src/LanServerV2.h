@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-#include "IStepManiaLanServer.h"
+#include "ILanServer.h"
 #include "CmdPortal.hpp"
 #include "IClientCmd.h"
 #include "ezsockets.h"
@@ -13,16 +13,16 @@ namespace Yhaniki {
     using ClientCmd::IClientCmd;
     using ServerCmd::IServerCmd;
 
-    class StepManiaLanServerV2 final : public IStepManiaLanServer {
+    class LanServerV2 final : public ILanServer {
         enum class State { On, Off };
     public:
-        static unique_ptr<StepManiaLanServerV2> Default();
+        static unique_ptr<LanServerV2> Default();
 
         bool ServerStart() override;
         void ServerStop() override;
         void ServerUpdate() override;
 
-        StepManiaLanServerV2(
+        LanServerV2(
             int portNo,
             unique_ptr<EzSockets> listenSocket,
             std::vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients,
@@ -31,6 +31,7 @@ namespace Yhaniki {
             std::chrono::milliseconds informTimeSpan
             );
     private:
+        void ProcessCommand(unique_ptr<IClientCmd> clientCmd);
 
         // Socket
         const int portNo_;

@@ -12,7 +12,7 @@
 #include "ScreenPrompt.h"
 #include "NetworkSyncServer.h"
 
-#include "StepManiaLanServerV2.h"
+#include "LanServerV2.h"
 
 
 enum {
@@ -88,7 +88,7 @@ void ScreenNetworkOptions::HandleScreenMessage( const ScreenMessage SM )
 		{
 			if ( NSMAN->LANserver == NULL)
 				//NSMAN->LANserver = new StepManiaLanServer;
-				NSMAN->LANserver = Yhaniki::StepManiaLanServerV2::Default().release();
+				NSMAN->LANserver = Yhaniki::LanServerV2::Default().release();
 			NSMAN->LANserver->SetServerName(ScreenTextEntry::s_sLastAnswer);
 			if (NSMAN->LANserver->ServerStart())
 			{

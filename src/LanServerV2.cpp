@@ -1,4 +1,4 @@
-#include "StepManiaLanServerV2.h"
+#include "LanServerV2.h"
 
 #include <utility>
 
@@ -8,7 +8,7 @@ using namespace std::chrono;
 
 namespace Yhaniki {
 
-    StepManiaLanServerV2::StepManiaLanServerV2(
+    LanServerV2::LanServerV2(
         const int portNo,
         unique_ptr<EzSockets> listenSocket,
         vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients,
@@ -23,8 +23,8 @@ namespace Yhaniki {
         informTimeSpan_(informTimeSpan),
         lastInformTime_(lastInformTime) {}
 
-    unique_ptr<StepManiaLanServerV2> StepManiaLanServerV2::Default() {
-        return make_unique<StepManiaLanServerV2>(
+    unique_ptr<LanServerV2> LanServerV2::Default() {
+        return make_unique<LanServerV2>(
             8765,
             make_unique<EzSockets>(),
             vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>>{},
@@ -34,7 +34,7 @@ namespace Yhaniki {
             );
     }
 
-    bool StepManiaLanServerV2::ServerStart() {
+    bool LanServerV2::ServerStart() {
 
         listenSocket_->blocking = false;
 
@@ -61,7 +61,7 @@ namespace Yhaniki {
         return true;
     }
 
-    void StepManiaLanServerV2::ServerStop() {
+    void LanServerV2::ServerStop() {
 
         state_ = State::Off;
 
@@ -69,7 +69,7 @@ namespace Yhaniki {
         listenSocket_->close();
     }
 
-    void StepManiaLanServerV2::ServerUpdate() {
+    void LanServerV2::ServerUpdate() {
 
         // Return if server is off
         {
@@ -96,16 +96,8 @@ namespace Yhaniki {
         {
             for (auto&& client : clients_) {
                 auto clientCmds = client->ReceiveCmds();
-                for (auto && clientCmd : clientCmds) {
-                    if (clientCmd == nullptr)
-                        continue;
-                    if (auto cmd = dynamic_cast<ClientCmd::Nop*>(clientCmd.get())) {
-                        continue;
-                    }
-                    if (auto cmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get())) {
-                        continue;
-                    }                    
-                }
+                for (auto && clientCmd : clientCmds)
+                    ProcessCommand(move(clientCmd));
             }
         }
 
@@ -120,5 +112,16 @@ namespace Yhaniki {
                 // TODO: ...
             }
         }
+    }
+
+    void LanServerV2::ProcessCommand(const unique_ptr<IClientCmd> clientCmd) {
+        if (clientCmd == nullptr)
+            return;
+        if (auto cmd = dynamic_cast<ClientCmd::Nop*>(clientCmd.get())) {
+            return;
+        }
+        if (auto cmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get())) {
+            return;
+        }                
     }
 }

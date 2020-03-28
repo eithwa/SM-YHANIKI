@@ -82,16 +82,16 @@
     <Filter Include="Reimplemetations">
       <UniqueIdentifier>{dbb1c989-c1ee-4e8c-8070-980261d1aa34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Reimplemetations\LanServerV2">
+    <Filter Include="Reimplemetations\LanV2">
       <UniqueIdentifier>{67633603-553a-4edb-be6f-9a274a103591}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Reimplemetations\LanServerV2\Serialization">
+    <Filter Include="Reimplemetations\LanV2\Serialization">
       <UniqueIdentifier>{96030255-c3a1-4ce2-bb71-d12d6682786d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Reimplemetations\LanServerV2\ClientCmd">
+    <Filter Include="Reimplemetations\LanV2\ClientCmd">
       <UniqueIdentifier>{c5d3efa2-cf75-4211-b2dd-7612d59abeff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Reimplemetations\LanServerV2\ServerCmd">
+    <Filter Include="Reimplemetations\LanV2\ServerCmd">
       <UniqueIdentifier>{5ad6533f-0910-49ed-a3a3-6ff3d50233c1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -1182,17 +1182,17 @@
     <ClCompile Include="crypto51\strciphr.cpp">
       <Filter>Crypto\crypto++</Filter>
     </ClCompile>
-    <ClCompile Include="StepManiaLanServerV2.cpp">
-      <Filter>Reimplemetations\LanServerV2</Filter>
-    </ClCompile>
     <ClCompile Include="BasicCmds.hpp">
-      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
+      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
     </ClCompile>
     <ClCompile Include="StringStack.cpp">
-      <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Factory.cpp">
-      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
+      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="LanServerV2.cpp">
+      <Filter>Reimplemetations\LanV2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2393,29 +2393,29 @@
     <ClInclude Include="crypto51\words.h">
       <Filter>Crypto\crypto++</Filter>
     </ClInclude>
-    <ClInclude Include="StepManiaLanServerV2.h">
-      <Filter>Reimplemetations\LanServerV2</Filter>
-    </ClInclude>
     <ClInclude Include="CmdSerializationFactory.h">
-      <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="CmdDtoStruct.h">
-      <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="IStepManiaLanServer.h">
-      <Filter>Reimplemetations\LanServerV2</Filter>
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="CmdPortal.hpp">
-      <Filter>Reimplemetations\LanServerV2</Filter>
+      <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
     <ClInclude Include="StringStack.h">
-      <Filter>Reimplemetations\LanServerV2\Serialization</Filter>
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="IClientCmd.h">
-      <Filter>Reimplemetations\LanServerV2\ClientCmd</Filter>
+      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
     </ClInclude>
     <ClInclude Include="IServerCmd.h">
-      <Filter>Reimplemetations\LanServerV2\ServerCmd</Filter>
+      <Filter>Reimplemetations\LanV2\ServerCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="LanServerV2.h">
+      <Filter>Reimplemetations\LanV2</Filter>
+    </ClInclude>
+    <ClInclude Include="ILanServer.h">
+      <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

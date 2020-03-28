@@ -496,7 +496,7 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StageStats.cpp" />
     <ClCompile Include="StepMania.cpp" />
-    <ClCompile Include="StepManiaLanServerV2.cpp" />
+    <ClCompile Include="LanServerV2.cpp" />
     <ClCompile Include="Steps.cpp" />
     <ClCompile Include="StepsUtil.cpp" />
     <ClCompile Include="StringStack.cpp" />
@@ -691,7 +691,7 @@
     <ClInclude Include="InputQueue.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="IServerCmd.h" />
-    <ClInclude Include="IStepManiaLanServer.h" />
+    <ClInclude Include="ILanServer.h" />
     <ClInclude Include="Judgment.h" />
     <ClInclude Include="JukeboxMenu.h" />
     <ClInclude Include="LifeMeter.h" />
@@ -904,7 +904,7 @@
     <ClInclude Include="StageStats.h" />
     <ClInclude Include="StdString.h" />
     <ClInclude Include="StepMania.h" />
-    <ClInclude Include="StepManiaLanServerV2.h" />
+    <ClInclude Include="LanServerV2.h" />
     <ClInclude Include="Steps.h" />
     <ClInclude Include="StepsUtil.h" />
     <ClInclude Include="StringStack.h" />

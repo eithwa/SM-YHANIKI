@@ -2,7 +2,7 @@
 #define NetworkSyncServer_H
 
 #include "NetworkSyncManager.h"
-#include "IStepManiaLanServer.h"
+#include "ILanServer.h"
 
 #if !defined(WITHOUT_NETWORKING)
 #include "ezsockets.h"
@@ -71,7 +71,7 @@ private:
 };
 #endif
 
-class StepManiaLanServer : public IStepManiaLanServer {
+class StepManiaLanServer : public ILanServer {
 public:
     bool ServerStart();
     void ServerStop();

@@ -1,12 +1,12 @@
 #pragma once
 #include <StdString.h>
 
-class IStepManiaLanServer {
+class ILanServer {
 public:
     virtual bool ServerStart() = 0;
     virtual void ServerStop() = 0;
     virtual void ServerUpdate() = 0;
-    virtual ~IStepManiaLanServer() = default;
+    virtual ~ILanServer() = default;
 
     CString GetServerName() const { return serverName_; }
     void SetServerName(const CString& newName) { serverName_ = newName; }
