@@ -71,7 +71,7 @@ private:
 };
 #endif
 
-class StepManiaLanServer : public ILanServer {
+class StepManiaLanServer : public Yhaniki::ILanServer {
 public:
     bool ServerStart();
     void ServerStop();

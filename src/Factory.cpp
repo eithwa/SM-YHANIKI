@@ -1,6 +1,6 @@
 
 #include "BasicCmds.hpp"
-#include "CmdSerializationFactory.h"
+#include "ISerializationFactory.h"
 #include "IClientCmd.h"
 #include "StringStack.h"
 
@@ -11,7 +11,7 @@ namespace Yhaniki {
     using namespace Yhaniki::ClientCmd;
 
     template <>
-    StringStack CmdSerializationFactory<IClientCmd>::Serialize(
+    StringStack ISerializationFactory<IClientCmd>::Serialize(
         unique_ptr<IClientCmd> cmd) {
 
         auto builder = StringStack::Builder::New();
@@ -34,7 +34,7 @@ namespace Yhaniki {
     }
 
     template <>
-    unique_ptr<IClientCmd> CmdSerializationFactory<IClientCmd>::Deserialize(
+    unique_ptr<IClientCmd> ISerializationFactory<IClientCmd>::Deserialize(
         StringStack str) {
 
         if (str[0] == "NOP")

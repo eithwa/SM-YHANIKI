@@ -1,20 +1,23 @@
 #pragma once
 #include <StdString.h>
 
-class ILanServer {
-public:
-    virtual bool ServerStart() = 0;
-    virtual void ServerStop() = 0;
-    virtual void ServerUpdate() = 0;
-    virtual ~ILanServer() = default;
+namespace Yhaniki {
 
-    CString GetServerName() const { return serverName_; }
-    void SetServerName(const CString& newName) { serverName_ = newName; }
+    class ILanServer {
+    public:
+        virtual bool ServerStart() = 0;
+        virtual void ServerStop() = 0;
+        virtual void ServerUpdate() = 0;
+        virtual ~ILanServer() = default;
 
-    CString lastError = "";
-    int lastErrorCode = 0;
+        CString GetServerName() const { return serverName_; }
+        void SetServerName(const CString& newName) { serverName_ = newName; }
 
-protected:
-    CString serverName_ = "";
-};
+        CString lastError = "";
+        int lastErrorCode = 0;
+
+    protected:
+        CString serverName_ = "";
+    };
+}
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmdSerializationFactory.h"
+#include "ISerializationFactory.h"
 #include "ezsockets.h"
 #include "NetworkSyncServer.h"
 
@@ -15,9 +15,24 @@ namespace Yhaniki {
             auto clientSocket = make_unique<EzSockets>();
             clientSocket->blocking = false;
 
-            if (serverSocket->accept(*clientSocket))
-                return make_unique<CmdPortal>(move(clientSocket));
-            else return nullptr;
+            if (!serverSocket->accept(*clientSocket))
+                return nullptr;
+
+            return make_unique<CmdPortal>(move(clientSocket));
+        }
+
+        static unique_ptr<CmdPortal> ConnectTo(const CString& addy, unsigned short port) {
+
+            auto clientSocket = make_unique<EzSockets>();
+            clientSocket->blocking = false;
+
+            if (!clientSocket->create())
+                return nullptr;
+
+            if (!clientSocket->connect(addy, port))
+                return nullptr;
+
+            return make_unique<CmdPortal>(move(clientSocket));
         }
 
         vector<unique_ptr<TIRecvCmd>> ReceiveCmds() const {
@@ -30,7 +45,7 @@ namespace Yhaniki {
 
             while (socket_->ReadPack(cStr, NETMAXBUFFERSIZE) > 0) {
                 cmds.push_back(
-                    CmdSerializationFactory<TIRecvCmd>::Deserialize(
+                    ISerializationFactory<TIRecvCmd>::Deserialize(
                         StringStack::FromString(string(cStr))));
             }
 
@@ -42,7 +57,7 @@ namespace Yhaniki {
             if (!socket_->CanWrite())
                 return false;
 
-            auto strStack = CmdSerializationFactory<TISendCmd>::Serialize(cmd);
+            auto strStack = ISerializationFactory<TISendCmd>::Serialize(cmd);
             socket_->SendPack(strStack.ToString().c_str());
 
             return true;

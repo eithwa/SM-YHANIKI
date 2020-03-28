@@ -7,6 +7,10 @@
 #include "Difficulty.h"
 #include <windows.h>
 
+
+#include "ILanClient.h"
+#include "ILanServer.h"
+
 class LoadingWindow;
 
 #define NETMAXPLAYERS 32
@@ -63,8 +67,6 @@ enum NSScoreBoardColumn
 #define FOREACH_NSScoreBoardColumn( sc ) FOREACH_ENUM( NSScoreBoardColumn, NUM_NSSB_CATEGORIES, sc )
 
 class EzSockets;
-class ILanServer;
-class StepManiaLanServer;
 
 class PacketFunctions
 {
@@ -156,7 +158,7 @@ public:
 	CString			m_sChatText;
 
 	bool isLanServer;	//Must be public for ScreenNetworkOptions
-	ILanServer *LANserver;
+    Yhaniki::ILanServer *LANserver;
 private:
 #if !defined(WITHOUT_NETWORKING)
 
@@ -178,11 +180,12 @@ private:
 
 	CString m_ServerName;
  
-    EzSockets *NetPlayerClient;
+	Yhaniki::ILanClient* NetPlayerClient;
+	//EzSockets* NetPlayerClient;
 
 	int m_ServerVersion; //ServerVersion
 
-	bool Listen(unsigned short port);
+	//bool Listen(unsigned short port);
 
 	PacketFunctions m_packet;
 	static DWORD WINAPI StaticThreadStartNSSSS(void* Param)

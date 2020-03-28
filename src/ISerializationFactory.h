@@ -6,7 +6,7 @@
 namespace Yhaniki {
 
     template<class TICmd>
-    class CmdSerializationFactory {
+    class ISerializationFactory {
     public:
         static StringStack Serialize(std::unique_ptr<TICmd> cmd);
         static std::unique_ptr<TICmd> Deserialize(StringStack str);

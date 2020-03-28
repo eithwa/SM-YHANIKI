@@ -296,6 +296,7 @@
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Judgment.cpp" />
     <ClCompile Include="JukeboxMenu.cpp" />
+    <ClCompile Include="LanClientV2.cpp" />
     <ClCompile Include="LifeMeterBar.cpp" />
     <ClCompile Include="LifeMeterBattery.cpp" />
     <ClCompile Include="LightsManager.cpp" />
@@ -588,8 +589,8 @@
     <ClInclude Include="CatalogXml.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterHead.h" />
-    <ClInclude Include="CmdDtoStruct.h" />
-    <ClInclude Include="CmdSerializationFactory.h" />
+    <ClInclude Include="ILanClient.h" />
+    <ClInclude Include="ISerializationFactory.h" />
     <ClInclude Include="IClientCmd.h" />
     <ClInclude Include="CmdPortal.hpp" />
     <ClInclude Include="CodeDetector.h" />
@@ -694,6 +695,7 @@
     <ClInclude Include="ILanServer.h" />
     <ClInclude Include="Judgment.h" />
     <ClInclude Include="JukeboxMenu.h" />
+    <ClInclude Include="LanClientV2.h" />
     <ClInclude Include="LifeMeter.h" />
     <ClInclude Include="LifeMeterBar.h" />
     <ClInclude Include="LifeMeterBattery.h" />

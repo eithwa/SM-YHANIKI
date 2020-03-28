@@ -1194,6 +1194,9 @@
     <ClCompile Include="LanServerV2.cpp">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClCompile>
+    <ClCompile Include="LanClientV2.cpp">
+      <Filter>Reimplemetations\LanV2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Screen.h">
@@ -2393,12 +2396,6 @@
     <ClInclude Include="crypto51\words.h">
       <Filter>Crypto\crypto++</Filter>
     </ClInclude>
-    <ClInclude Include="CmdSerializationFactory.h">
-      <Filter>Reimplemetations\LanV2\Serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="CmdDtoStruct.h">
-      <Filter>Reimplemetations\LanV2\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="CmdPortal.hpp">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
@@ -2415,6 +2412,15 @@
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
     <ClInclude Include="ILanServer.h">
+      <Filter>Reimplemetations\LanV2</Filter>
+    </ClInclude>
+    <ClInclude Include="ISerializationFactory.h">
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="ILanClient.h">
+      <Filter>Reimplemetations\LanV2</Filter>
+    </ClInclude>
+    <ClInclude Include="LanClientV2.h">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
   </ItemGroup>
