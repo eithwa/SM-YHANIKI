@@ -199,7 +199,7 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Banner.cpp" />
     <ClCompile Include="BannerCache.cpp" />
-    <ClCompile Include="BasicCmds.hpp" />
+    <ClCompile Include="ClientCmds.hpp" />
     <ClCompile Include="BeginnerHelper.cpp" />
     <ClCompile Include="BGAnimation.cpp" />
     <ClCompile Include="BGAnimationLayer.cpp" />
@@ -209,7 +209,7 @@
     <ClCompile Include="CatalogXml.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="CharacterHead.cpp" />
-    <ClCompile Include="Factory.cpp" />
+    <ClCompile Include="ClientCmdSerializationFactory.cpp" />
     <ClCompile Include="CodeDetector.cpp" />
     <ClCompile Include="CombinedLifeMeterTug.cpp" />
     <ClCompile Include="Combo.cpp" />
@@ -487,6 +487,7 @@
     <ClCompile Include="SDL_rotozoom.cpp" />
     <ClCompile Include="SDL_SaveJPEG.cpp" />
     <ClCompile Include="SDL_utils.cpp" />
+    <ClCompile Include="ServerCmdSerializationFactory.cpp" />
     <ClCompile Include="SnapDisplay.cpp" />
     <ClCompile Include="Song.cpp" />
     <ClCompile Include="SongCacheIndex.cpp" />
@@ -590,7 +591,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterHead.h" />
     <ClInclude Include="ILanClient.h" />
-    <ClInclude Include="ISerializationFactory.h" />
+    <ClInclude Include="SerializationFactory.h" />
     <ClInclude Include="IClientCmd.h" />
     <ClInclude Include="CmdPortal.hpp" />
     <ClInclude Include="CodeDetector.h" />
@@ -895,6 +896,7 @@
     <ClInclude Include="SDL_rotozoom.h" />
     <ClInclude Include="SDL_SaveJPEG.h" />
     <ClInclude Include="SDL_utils.h" />
+    <ClInclude Include="ServerCmds.hpp" />
     <ClInclude Include="SnapDisplay.h" />
     <ClInclude Include="Song.h" />
     <ClInclude Include="SongCacheIndex.h" />

@@ -35,5 +35,12 @@ namespace Yhaniki {
     }
 
     void LanClientV2::close() {}
-    vector<unique_ptr<IClientCmd>> LanClientV2::ReceiveCmds() { return {}; }
+
+    vector<unique_ptr<IServerCmd>> LanClientV2::ReceiveCmds() {
+        return portal_->ReceiveCmds();
+    }
+
+    bool LanClientV2::SendCmd(unique_ptr<IClientCmd> cmd) {
+        return portal_->SendCmd(move(cmd));
+    }
 }

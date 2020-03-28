@@ -2,7 +2,8 @@
 
 #include <utility>
 
-#include "BasicCmds.hpp"
+#include "ClientCmds.hpp"
+#include "ServerCmds.hpp"
 
 using namespace std::chrono;
 
@@ -115,13 +116,17 @@ namespace Yhaniki {
     }
 
     void LanServerV2::ProcessCommand(const unique_ptr<IClientCmd> clientCmd) {
+
         if (clientCmd == nullptr)
             return;
-        if (auto cmd = dynamic_cast<ClientCmd::Nop*>(clientCmd.get())) {
+
+        if (auto _ = dynamic_cast<ClientCmd::Nop*>(clientCmd.get()))
             return;
-        }
-        if (auto cmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get())) {
-            return;
-        }                
+
+        if (const auto chatCmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get()))
+            for (auto&& client : clients_)
+                client->SendCmd(
+                    make_unique<ServerCmd::SomeoneChatted>(
+                        chatCmd->GetMsg()));
     }
 }

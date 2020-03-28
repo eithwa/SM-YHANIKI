@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ISerializationFactory.h"
+#include "SerializationFactory.h"
 #include "ezsockets.h"
 #include "NetworkSyncServer.h"
 
@@ -45,7 +45,7 @@ namespace Yhaniki {
 
             while (socket_->ReadPack(cStr, NETMAXBUFFERSIZE) > 0) {
                 cmds.push_back(
-                    ISerializationFactory<TIRecvCmd>::Deserialize(
+                    SerializationFactory<TIRecvCmd>::Deserialize(
                         StringStack::FromString(string(cStr))));
             }
 
@@ -57,8 +57,10 @@ namespace Yhaniki {
             if (!socket_->CanWrite())
                 return false;
 
-            auto strStack = ISerializationFactory<TISendCmd>::Serialize(cmd);
-            socket_->SendPack(strStack.ToString().c_str());
+            auto strStack = SerializationFactory<TISendCmd>::Serialize(move(cmd));
+            socket_->SendPack(
+                strStack.ToString().c_str(), 
+                strStack.ToString().length());
 
             return true;
         }

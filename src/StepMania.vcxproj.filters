@@ -1182,20 +1182,23 @@
     <ClCompile Include="crypto51\strciphr.cpp">
       <Filter>Crypto\crypto++</Filter>
     </ClCompile>
-    <ClCompile Include="BasicCmds.hpp">
-      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
-    </ClCompile>
     <ClCompile Include="StringStack.cpp">
       <Filter>Reimplemetations\LanV2\Serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="Factory.cpp">
-      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
     </ClCompile>
     <ClCompile Include="LanServerV2.cpp">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClCompile>
     <ClCompile Include="LanClientV2.cpp">
       <Filter>Reimplemetations\LanV2</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientCmds.hpp">
+      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientCmdSerializationFactory.cpp">
+      <Filter>Reimplemetations\LanV2\ClientCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerCmdSerializationFactory.cpp">
+      <Filter>Reimplemetations\LanV2\ServerCmd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2414,14 +2417,17 @@
     <ClInclude Include="ILanServer.h">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
-    <ClInclude Include="ISerializationFactory.h">
-      <Filter>Reimplemetations\LanV2\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="ILanClient.h">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
     <ClInclude Include="LanClientV2.h">
       <Filter>Reimplemetations\LanV2</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerCmds.hpp">
+      <Filter>Reimplemetations\LanV2\ServerCmd</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializationFactory.h">
+      <Filter>Reimplemetations\LanV2\Serialization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

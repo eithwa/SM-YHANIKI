@@ -1,9 +1,11 @@
 #include "global.h"
 #include "NetworkSyncManager.h"
 
+#include "ClientCmds.hpp"
 #include "LanClientV2.h"
 #include "NetworkSyncServer.h"
 #include "LuaFunctions.h"
+#include "ServerCmds.hpp"
 
 NetworkSyncManager *NSMAN;
 
@@ -716,220 +718,235 @@ void NetworkSyncManager::ProcessInput()
 
 	m_packet.ClearPacket();
 
+	auto cmds = NetPlayerClient->ReceiveCmds();
+
 	//while (NetPlayerClient->ReadPack((char *)&m_packet, NETMAXBUFFERSIZE)>0)
-	if (false)
-	{
-		int command = m_packet.Read1();
-		//Check to make sure command is valid from server
-		if (command < NSServerOffset)
-		{		
-			LOG->Trace("CMD (below 128) Invalid> %d",command);
- 			//break;
+    for (auto && servercmd : cmds) {
+
+		if (servercmd == nullptr)
+			return;
+
+		if (auto _ = dynamic_cast<Yhaniki::ServerCmd::Nop*>(servercmd.get()))
+			return;
+
+		if (const auto chatCmd = dynamic_cast<Yhaniki::ServerCmd::SomeoneChatted*>(servercmd.get())) {
+			m_sChatText += chatCmd->GetMsg() + " \n ";
+			//10000 chars backlog should be more than enough
+			m_sChatText = m_sChatText.Right(10000);
+			SCREENMAN->SendMessageToTopScreen( SM_AddToChat );
 		}
 
-		command = command - NSServerOffset;
+		//int command = m_packet.Read1();
+		////Check to make sure command is valid from server
+		//if (command < NSServerOffset)
+		//{		
+		//	LOG->Trace("CMD (below 128) Invalid> %d",command);
+ 	//		//break;
+		//}
 
-		switch (command)
-		{
-		case NSCPing: //Ping packet responce
-			m_packet.ClearPacket();
-			m_packet.Write1( NSCPingR );
-			//NetPlayerClient->SendPack((char*)m_packet.Data,m_packet.Position);
-			break;
-		case NSCPingR:	//These are in responce to when/if we send packet 0's
-		case NSCHello: //This is already taken care of by the blocking code earlier on
-		case NSCGSR: //This is taken care of by the blocking start code
-			break;
-		case NSCGON: 
-			{
-				int PlayersInPack = m_packet.Read1();
-				for (int i=0; i<PlayersInPack; ++i)
-					m_EvalPlayerData[i].name = m_packet.Read1();
-				for (int i=0; i<PlayersInPack; ++i)
-					m_EvalPlayerData[i].score = m_packet.Read4();
-				for (int i=0; i<PlayersInPack; ++i)
-					m_EvalPlayerData[i].grade = m_packet.Read1();
-				for (int i=0; i<PlayersInPack; ++i)
-					m_EvalPlayerData[i].difficulty = (Difficulty) m_packet.Read1();
-				for (int j=0; j<NETNUMTAPSCORES; ++j) 
-					for (int i=0; i<PlayersInPack; ++i)
-						m_EvalPlayerData[i].tapScores[j] = m_packet.Read2();
-				for (int i=0; i<PlayersInPack; ++i)
-					// m_EvalPlayerData[i].percentage = m_packet.ReadNT();
-					m_EvalPlayerData[i].playerOptions = m_packet.ReadNT();
-				for (int i=0; i<PlayersInPack; ++i)
-					m_EvalPlayerData[i].percentage = m_packet.ReadNT();
-				SCREENMAN->SendMessageToTopScreen( SM_GotEval );
-			}
-			break;
-		case NSCGSU: //Scoreboard Update
-			{	//Ease scope
-				int ColumnNumber=m_packet.Read1();
-				int NumberPlayers=m_packet.Read1();
-				CString ColumnData;
-				int i;
-				switch (ColumnNumber)
-				{
-				case NSSB_NAMES:
-					ColumnData = "Names\n";
-					for (i=0; i<NumberPlayers; ++i)
-					{
-						unsigned int k = m_packet.Read1();
-						if ( k < m_PlayerNames.size() )
-							ColumnData += m_PlayerNames[k] + "\n";
-					}
-					break;
-				case NSSB_COMBO:
-					ColumnData = "Combo\n";
-					for (i=0; i<NumberPlayers; ++i)
-						ColumnData += ssprintf("%d\n",m_packet.Read2());
-					break;
-				case NSSB_GRADE:
-					ColumnData = "Grade\n";
-					for (i=0;i<NumberPlayers;i++)
-						switch (m_packet.Read1())
-						{
-						case 0:
-							ColumnData+="AAAA\n"; break;
-						case 1:
-							ColumnData+="AAA\n"; break;
-						case 2:
-							ColumnData+="AA\n"; break;
-						case 3:
-							ColumnData+="A\n"; break;
-						case 4:
-							ColumnData+="B\n"; break;
-						case 5:
-							ColumnData+="C\n"; break;
-						case 6:
-							ColumnData+="D\n"; break;
-						case 7: 
-							ColumnData+="E\n";	break;	//Is there a better way?
-						}
-					break;
-				}
-				m_Scoreboard[ColumnNumber] = ColumnData;
-				m_scoreboardchange[ColumnNumber]=true;
-			}
-			break;
-		case NSCSU:	//System message from server
-			{
-				CString SysMSG = m_packet.ReadNT();
-				SCREENMAN->SystemMessage( SysMSG );
-			}
-			break;
-		case NSCCM:	//Chat message from server
-			{
-				m_sChatText += m_packet.ReadNT() + " \n ";
-				//10000 chars backlog should be more than enough
-				m_sChatText = m_sChatText.Right(10000);
-				SCREENMAN->SendMessageToTopScreen( SM_AddToChat );
-			}
-			break;
-		case NSCRSG: //Select Song/Play song
-			{
-				m_iSelectMode = m_packet.Read1();
-				m_sMainTitle = m_packet.ReadNT();
-				m_sArtist = m_packet.ReadNT();
-				m_sSubTitle = m_packet.ReadNT();
-				int temp_hash = m_packet.Read4();
-				if(temp_hash!=0)
-				{
-					m_ihash = temp_hash;
-				}
-				m_sCurMainTitle=m_sMainTitle;
-				m_sCurArtist=m_sArtist;
-				m_sCurSubTitle=m_sSubTitle;
-				SCREENMAN->SendMessageToTopScreen( SM_ChangeSong );
-			}
-			break;
-		case NSCUUL:
-			{
-				/*int ServerMaxPlayers=*/m_packet.Read1();
-				int PlayersInThisPacket=m_packet.Read1();
-				m_PlayerStatus.clear();
-				m_PlayerNames.clear();
-				m_ActivePlayers = 0;
-				for (int i=0; i<PlayersInThisPacket; ++i)
-				{
-					int PStatus = m_packet.Read1();
-					if ( PStatus > 0 )
-					{
-						m_ActivePlayers++;
-						m_ActivePlayer.push_back( i );
-					}
-					m_PlayerStatus.push_back( PStatus );
-					m_PlayerNames.push_back( m_packet.ReadNT() );	
-				}
-			}
-			break;
-		case NSCSMS:
-			{
-				CString StyleName, GameName;
-				GameName = m_packet.ReadNT();
-				StyleName = m_packet.ReadNT();
+		//command = command - NSServerOffset;
 
-				GAMESTATE->m_pCurGame = GAMEMAN->StringToGameType( GameName );
-				GAMESTATE->m_pCurStyle = GAMEMAN->GameAndStringToStyle( GAMESTATE->m_pCurGame, StyleName );
+		//switch (command)
+		//{
+		//case NSCPing: //Ping packet responce
+		//	m_packet.ClearPacket();
+		//	m_packet.Write1( NSCPingR );
+		//	//NetPlayerClient->SendPack((char*)m_packet.Data,m_packet.Position);
+		//	break;
+		//case NSCPingR:	//These are in responce to when/if we send packet 0's
+		//case NSCHello: //This is already taken care of by the blocking code earlier on
+		//case NSCGSR: //This is taken care of by the blocking start code
+		//	break;
+		//case NSCGON: 
+		//	{
+		//		int PlayersInPack = m_packet.Read1();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			m_EvalPlayerData[i].name = m_packet.Read1();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			m_EvalPlayerData[i].score = m_packet.Read4();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			m_EvalPlayerData[i].grade = m_packet.Read1();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			m_EvalPlayerData[i].difficulty = (Difficulty) m_packet.Read1();
+		//		for (int j=0; j<NETNUMTAPSCORES; ++j) 
+		//			for (int i=0; i<PlayersInPack; ++i)
+		//				m_EvalPlayerData[i].tapScores[j] = m_packet.Read2();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			// m_EvalPlayerData[i].percentage = m_packet.ReadNT();
+		//			m_EvalPlayerData[i].playerOptions = m_packet.ReadNT();
+		//		for (int i=0; i<PlayersInPack; ++i)
+		//			m_EvalPlayerData[i].percentage = m_packet.ReadNT();
+		//		SCREENMAN->SendMessageToTopScreen( SM_GotEval );
+		//	}
+		//	break;
+		//case NSCGSU: //Scoreboard Update
+		//	{	//Ease scope
+		//		int ColumnNumber=m_packet.Read1();
+		//		int NumberPlayers=m_packet.Read1();
+		//		CString ColumnData;
+		//		int i;
+		//		switch (ColumnNumber)
+		//		{
+		//		case NSSB_NAMES:
+		//			ColumnData = "Names\n";
+		//			for (i=0; i<NumberPlayers; ++i)
+		//			{
+		//				unsigned int k = m_packet.Read1();
+		//				if ( k < m_PlayerNames.size() )
+		//					ColumnData += m_PlayerNames[k] + "\n";
+		//			}
+		//			break;
+		//		case NSSB_COMBO:
+		//			ColumnData = "Combo\n";
+		//			for (i=0; i<NumberPlayers; ++i)
+		//				ColumnData += ssprintf("%d\n",m_packet.Read2());
+		//			break;
+		//		case NSSB_GRADE:
+		//			ColumnData = "Grade\n";
+		//			for (i=0;i<NumberPlayers;i++)
+		//				switch (m_packet.Read1())
+		//				{
+		//				case 0:
+		//					ColumnData+="AAAA\n"; break;
+		//				case 1:
+		//					ColumnData+="AAA\n"; break;
+		//				case 2:
+		//					ColumnData+="AA\n"; break;
+		//				case 3:
+		//					ColumnData+="A\n"; break;
+		//				case 4:
+		//					ColumnData+="B\n"; break;
+		//				case 5:
+		//					ColumnData+="C\n"; break;
+		//				case 6:
+		//					ColumnData+="D\n"; break;
+		//				case 7: 
+		//					ColumnData+="E\n";	break;	//Is there a better way?
+		//				}
+		//			break;
+		//		}
+		//		m_Scoreboard[ColumnNumber] = ColumnData;
+		//		m_scoreboardchange[ColumnNumber]=true;
+		//	}
+		//	break;
+		//case NSCSU:	//System message from server
+		//	{
+		//		CString SysMSG = m_packet.ReadNT();
+		//		SCREENMAN->SystemMessage( SysMSG );
+		//	}
+		//	break;
+		//case NSCCM:	//Chat message from server
+		//	{
+		//		m_sChatText += m_packet.ReadNT() + " \n ";
+		//		//10000 chars backlog should be more than enough
+		//		m_sChatText = m_sChatText.Right(10000);
+		//		SCREENMAN->SendMessageToTopScreen( SM_AddToChat );
+		//	}
+		//	break;
+		//case NSCRSG: //Select Song/Play song
+		//	{
+		//		m_iSelectMode = m_packet.Read1();
+		//		m_sMainTitle = m_packet.ReadNT();
+		//		m_sArtist = m_packet.ReadNT();
+		//		m_sSubTitle = m_packet.ReadNT();
+		//		int temp_hash = m_packet.Read4();
+		//		if(temp_hash!=0)
+		//		{
+		//			m_ihash = temp_hash;
+		//		}
+		//		m_sCurMainTitle=m_sMainTitle;
+		//		m_sCurArtist=m_sArtist;
+		//		m_sCurSubTitle=m_sSubTitle;
+		//		SCREENMAN->SendMessageToTopScreen( SM_ChangeSong );
+		//	}
+		//	break;
+		//case NSCUUL:
+		//	{
+		//		/*int ServerMaxPlayers=*/m_packet.Read1();
+		//		int PlayersInThisPacket=m_packet.Read1();
+		//		m_PlayerStatus.clear();
+		//		m_PlayerNames.clear();
+		//		m_ActivePlayers = 0;
+		//		for (int i=0; i<PlayersInThisPacket; ++i)
+		//		{
+		//			int PStatus = m_packet.Read1();
+		//			if ( PStatus > 0 )
+		//			{
+		//				m_ActivePlayers++;
+		//				m_ActivePlayer.push_back( i );
+		//			}
+		//			m_PlayerStatus.push_back( PStatus );
+		//			m_PlayerNames.push_back( m_packet.ReadNT() );	
+		//		}
+		//	}
+		//	break;
+		//case NSCSMS:
+		//	{
+		//		CString StyleName, GameName;
+		//		GameName = m_packet.ReadNT();
+		//		StyleName = m_packet.ReadNT();
 
-				SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" ); //Should this be metric'd out?
-			}
-			break;
-		case NSSSS:
-			{
-				server_ip = m_packet.ReadNT();
-				player_num = m_packet.Read1();
-				// LOG->Info("player_num %d",player_num);
-				int filefilterflag = m_packet.Read1();
-				if(filefilterflag == 0)
-				{
-					video_file_filter = false;
-				}else
-				{
-					video_file_filter = true;
-				}
+		//		GAMESTATE->m_pCurGame = GAMEMAN->StringToGameType( GameName );
+		//		GAMESTATE->m_pCurStyle = GAMEMAN->GameAndStringToStyle( GAMESTATE->m_pCurGame, StyleName );
 
-				DWORD ThreadID;
-				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSS, (void*) this, 0, &ThreadID);
-				CloseHandle(thread);
-			}
-			break;
-		case NSSSC:
-			{
-				server_ip = m_packet.ReadNT();
-				file_size = m_packet.Read4();
-				// LOG->Info("server_ip %s",server_ip.c_str());
-				// LOG->Info("file_size %d",file_size);
-				DWORD ThreadID;
-				HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSC, (void*) this, 0, &ThreadID);
-				CloseHandle(thread);
-			}
-			break;
-		case NSCGraph:
-			{
-				int PlayersInPack = m_packet.Read1();
-				int PlayerNum = m_packet.Read1();
-				if(PlayerNum<PlayersInPack)
-				{
-					for(int i=0; i<100; i++)
-					{
-						m_EvalPlayerData[PlayerNum].Graph[i] = (float)m_packet.Read4()/10000;
-					}
-				}
-			}
-			break;
-		case NSCPC:
-			{	
-				m_PlayerCondition.clear();
-				int player_number = m_packet.Read1();
-				for(int i=0; i<player_number; i++)
-				{
-					m_PlayerCondition.push_back(m_packet.Read1());
-				}
-				ClientNum = m_packet.Read1();
-			}
-		}
-		m_packet.ClearPacket();
+		//		SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" ); //Should this be metric'd out?
+		//	}
+		//	break;
+		//case NSSSS:
+		//	{
+		//		server_ip = m_packet.ReadNT();
+		//		player_num = m_packet.Read1();
+		//		// LOG->Info("player_num %d",player_num);
+		//		int filefilterflag = m_packet.Read1();
+		//		if(filefilterflag == 0)
+		//		{
+		//			video_file_filter = false;
+		//		}else
+		//		{
+		//			video_file_filter = true;
+		//		}
+
+		//		DWORD ThreadID;
+		//		HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSS, (void*) this, 0, &ThreadID);
+		//		CloseHandle(thread);
+		//	}
+		//	break;
+		//case NSSSC:
+		//	{
+		//		server_ip = m_packet.ReadNT();
+		//		file_size = m_packet.Read4();
+		//		// LOG->Info("server_ip %s",server_ip.c_str());
+		//		// LOG->Info("file_size %d",file_size);
+		//		DWORD ThreadID;
+		//		HANDLE thread = CreateThread(NULL, 0, StaticThreadStartNSSSC, (void*) this, 0, &ThreadID);
+		//		CloseHandle(thread);
+		//	}
+		//	break;
+		//case NSCGraph:
+		//	{
+		//		int PlayersInPack = m_packet.Read1();
+		//		int PlayerNum = m_packet.Read1();
+		//		if(PlayerNum<PlayersInPack)
+		//		{
+		//			for(int i=0; i<100; i++)
+		//			{
+		//				m_EvalPlayerData[PlayerNum].Graph[i] = (float)m_packet.Read4()/10000;
+		//			}
+		//		}
+		//	}
+		//	break;
+		//case NSCPC:
+		//	{	
+		//		m_PlayerCondition.clear();
+		//		int player_number = m_packet.Read1();
+		//		for(int i=0; i<player_number; i++)
+		//		{
+		//			m_PlayerCondition.push_back(m_packet.Read1());
+		//		}
+		//		ClientNum = m_packet.Read1();
+		//	}
+		//}
+		//m_packet.ClearPacket();
 	}
 }
 
@@ -946,7 +963,9 @@ void NetworkSyncManager::SendChat(const CString& message)
 	m_packet.ClearPacket();
 	m_packet.Write1( NSCCM );
 	m_packet.WriteNT( message );
-	//NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position); 
+	//NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
+	NetPlayerClient->SendCmd(
+		make_unique<Yhaniki::ClientCmd::Chat>(message));
 }
 
 void NetworkSyncManager::ReportPlayerOptions()

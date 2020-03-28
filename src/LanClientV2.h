@@ -18,7 +18,8 @@ namespace Yhaniki {
         bool connect(const CString& addy, unsigned short port) override;
         void close() override;
 
-        vector<unique_ptr<IClientCmd>> ReceiveCmds() override;
+        vector<unique_ptr<IServerCmd>> ReceiveCmds() override;
+        bool SendCmd(unique_ptr<IClientCmd> cmd) override;
 
         LanClientV2(unique_ptr<CmdPortal<IServerCmd, IClientCmd>> portal);
 
