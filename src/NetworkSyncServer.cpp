@@ -998,7 +998,7 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 			{
 				if(use==0)
 				{
-					message = servername;
+					message = serverName_;
 					message += ": Someone is not ready.";
 					Reply.ClearPacket();
 					Reply.Write1(NSCCM + NSServerOffset);
