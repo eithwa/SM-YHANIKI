@@ -934,7 +934,7 @@ void ScreenEvaluation::CommitScores(
 		FOREACH_HumanPlayer( p )
 		{
 			// don't save scores if the player is disqualified
-			if( GAMESTATE->IsDisqualified(p) )
+			if( GAMESTATE->IsDisqualified(p) || GAMESTATE->m_bUsingAutoPlay)
 				continue;
 
 			Song* pSong = GAMESTATE->m_pCurSong;

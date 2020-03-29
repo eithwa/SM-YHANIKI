@@ -261,7 +261,8 @@ void PrefsManager::Init()
 	m_bSignProfileData = false;
 
 	m_bEditorShowBGChangesPlay = true;
-	m_bEditorShowBGChangesAlpha = 5;
+	m_bEditorShowBGChangesAlpha = 4;
+	m_bEditorScrollReverse = false;
 	m_bEditorReverseIntuitive = true;
 	m_bEditorAutosaveMinute = 5;
 	m_bEditorPlayModeBeatsBuffer = 4;
@@ -577,6 +578,7 @@ void PrefsManager::ReadPrefsFromFile( CString sIni )
 
 	ini.GetValue( "Editor", "ShowBGChangesPlay",				m_bEditorShowBGChangesPlay );
 	ini.GetValue( "Editor", "ShowBGChangesAlpha",				m_bEditorShowBGChangesAlpha );
+	ini.GetValue( "Editor", "ScrollReverse",			    	m_bEditorScrollReverse );
 	ini.GetValue( "Editor", "ReverseIntuitive",				    m_bEditorReverseIntuitive );
 	ini.GetValue( "Editor", "AutosaveMinute",				    m_bEditorAutosaveMinute );
 	ini.GetValue( "Editor", "PlayModeBeatsBuffer",			    m_bEditorPlayModeBeatsBuffer );
@@ -816,6 +818,7 @@ void PrefsManager::SaveGlobalPrefsToDisk() const
 
 	ini.SetValue( "Editor", "ShowBGChangesPlay",				m_bEditorShowBGChangesPlay );
 	ini.SetValue( "Editor", "ShowBGChangesAlpha",				m_bEditorShowBGChangesAlpha );
+	ini.SetValue( "Editor", "ScrollReverse",			    	m_bEditorScrollReverse );
 	ini.SetValue( "Editor", "ReverseIntuitive",				    m_bEditorReverseIntuitive );
 	ini.SetValue( "Editor", "AutosaveMinute",				    m_bEditorAutosaveMinute );
 	ini.SetValue( "Editor", "PlayModeBeatsBuffer",			    m_bEditorPlayModeBeatsBuffer );

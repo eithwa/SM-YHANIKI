@@ -489,6 +489,12 @@ bool RageSound::GetDataToPlay( int16_t *buffer, int size, int &sound_frame, int 
 
 			case RageSoundParams::M_LOOP:
 				/* Rewind and restart. */
+				if(m_Param.FromZero==true)
+				{
+					m_Param.FromZero=false;
+					m_Param.m_StartSecond=0;
+					m_Param.m_LengthSeconds= m_Param.m_FullLengthSeconds;
+				}
 				NumRewindsThisCall++;
 				if(NumRewindsThisCall > 3)
 				{

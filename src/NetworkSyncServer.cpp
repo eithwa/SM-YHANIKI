@@ -762,7 +762,7 @@ void StepManiaLanServer::AnalizeChat(PacketFunctions &Packet, const unsigned int
 			{
 				Client[clientNum]->filefilter=false;
 			}
-			if(command.GetLength() == 5||command.GetLength() == 9)//no arg, share all
+			if(message.GetLength() == 6||message.GetLength() == 10)//no arg, share all
 			{
 				Client[clientNum]->shareAll=true;
 				ShareAll(clientNum, Packet.fromIp);
@@ -870,11 +870,8 @@ void StepManiaLanServer::ShareAll(unsigned int ShareSongServerNum, CString Serve
 		   }
 		   Client[ShareSongServerNum]->ShareNum=i;
 	}
-	if(Client[ShareSongServerNum]->ShareNum>=Client.size()-1)
-	{
-		Client[ShareSongServerNum]->shareAll=false;
-		Client[ShareSongServerNum]->ShareNum=0;
-	}
+	Client[ShareSongServerNum]->shareAll=false;
+	Client[ShareSongServerNum]->ShareNum=0;
 }
 void StepManiaLanServer::RelayChat(CString &passedmessage, const unsigned int clientNum)
 {
@@ -999,12 +996,15 @@ void StepManiaLanServer::SelectSong(PacketFunctions& Packet, unsigned int client
 		{
 			if(Client[i]->inNetMusicSelect==false)
 			{
-				message = serverName_;
-				message += ": Someone is not ready.";
-				Reply.ClearPacket();
-				Reply.Write1(NSCCM + NSServerOffset);
-				Reply.WriteNT(message);
-				SendNetPacket(clientNum, Reply);
+				if(use==0)
+				{
+					message = servername;
+					message += ": Someone is not ready.";
+					Reply.ClearPacket();
+					Reply.Write1(NSCCM + NSServerOffset);
+					Reply.WriteNT(message);
+					SendNetPacket(clientNum, Reply);
+				}
 				return;
 			}
 		}
@@ -1204,21 +1204,6 @@ CString StepManiaLanServer::ListPlayers()
 		if (Client[x]->inNetMusicSelect)
 			for (int y = 0; y < 2; ++y)
 				if (Client[x]->Player[y].name.length() > 0){
-					if(x==0){
-						list += "[Host] ";
-					}else if(x==1){
-						list +="  [ ";
-						CString x_;
-						x_.Format("%d", x);
-						list +=x_;
-						list +=".]   ";
-					}else{
-						list +="  [";
-						CString x_;
-						x_.Format("%d", x);
-						list +=x_;
-						list +=".]   ";
-					}
 					list += Client[x]->Player[y].name + "\n";
 				}
 	return list;

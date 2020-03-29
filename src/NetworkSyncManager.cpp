@@ -60,6 +60,7 @@ unsigned long GetFileLength ( FILE * fileName)
 }
 NetworkSyncManager::NetworkSyncManager( LoadingWindow *ld )
 {
+	usingShareSongSystem=false;
 	ClientNum=0;
 	LANserver = NULL;	//So we know if it has been created yet
 	if( GetCommandlineArgument( "runserver" ))
@@ -649,6 +650,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSS(void)
 			server_cmd+="\"";
 	LOG->Info("server_cmd %s",server_cmd.c_str());
 	system(server_cmd.c_str());//winsocket_server.exe "{server_ip}" "C:\\StepMania\\connect\\temp.zip"
+	usingShareSongSystem=false;
 	ReportShareSongFinish();
     return 0L;
 }
@@ -697,6 +699,7 @@ DWORD NetworkSyncManager::ThreadProcNSSSC(void)
 			zip_cmd+="\"";
 	LOG->Info("zip_cmd %s",zip_cmd.c_str());
 	system(zip_cmd.c_str());//7za.exe x "C:\\StepMania\\Songs\\connect\\temp.zip" -y -aos -o"C:\\StepMania\\Songs\\connect"
+	usingShareSongSystem=false;
 	ReportShareSongFinish();
 	SCREENMAN->SendMessageToTopScreen( SM_ReloadConnectPack );
 	return 0L;

@@ -387,7 +387,7 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 		{
 			if(m_SelectMode==SelectGroup || m_SelectMode==SelectSong)
 			{
-				NSMAN->ReportNSSOnOff(2);
+				NSMAN->ReportNSSOnOff(0);
 				GAMESTATE->m_bEditing = true;
 				int j = m_iSongNum % m_vSongs.size();
 				GAMESTATE->m_pPreferredSong = m_vSongs[j];
@@ -851,18 +851,20 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		NSMAN->ReportNSSOnOff(3);
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
+		NSMAN->SendAskSong();
 		break;
 	case SM_BackFromReloadSongs:
 		NSMAN->ReportNSSOnOff(3);
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
 		ResetSongList();
+		NSMAN->SendAskSong();
 		CheckChangeSong();
 		break;
 	case SM_BackFromSelectSongs:
 		{
-			LOG->Info("back form ScreenSelectMusic");
-			NSMAN->ReportNSSOnOff(3);
+			// LOG->Info("back form ScreenSelectMusic");
+			// NSMAN->ReportNSSOnOff(3);
 			GAMESTATE->m_bEditing = false;
 			NSMAN->ReportPlayerOptions();
 			ResetSongList();
@@ -879,6 +881,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 				}	
 			}
 			NSMAN->SelectUserSong ();
+			NSMAN->SendAskSong();
 			break;
 		}
 		
@@ -894,6 +897,7 @@ void ScreenNetSelectMusic::HandleScreenMessage( const ScreenMessage SM )
 		GAMESTATE->m_bEditing = false;
 		NSMAN->ReportPlayerOptions();
 		ResetSongList();
+		NSMAN->SendAskSong();
 		CheckChangeSong();
 		break;
 	}
@@ -1059,7 +1063,6 @@ void ScreenNetSelectMusic::MenuStart( PlayerNumber pn )
 		NSMAN->m_ihash = notenum;
 		//===================
 		NSMAN->SelectUserSong ();
-
 	}
 	else
 		StartSelectedSong();
@@ -1150,12 +1153,11 @@ void ScreenNetSelectMusic::UpdateUsersStates()
 		CString Display_Num;
 		if(i==0)
 		{
-			Display_Num="[H]";
+			Display_Num="HOST";
 		}else
 		{
-			Display_Num="[";
 			Display_Num+=Num;
-			Display_Num+=".]";
+			Display_Num+=".";
 		}
 		m_textUsersNum[i].SetText( Display_Num );
 		//=========
@@ -1288,9 +1290,15 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 		if( pSong  &&  pSong->HasMusic() )
 		{
 			SOUND->StopMusic();
-			SOUND->PlayMusic(pSong->GetMusicPath(), true,
+			// SOUND->PlayMusic(pSong->GetMusicPath(), true,
+			// 	pSong->m_fMusicSampleStartSeconds,
+			// 	pSong->m_fMusicSampleLengthSeconds
+			// 	);
+			SOUND->PlayMusic2(pSong->GetMusicPath(), true,
 				pSong->m_fMusicSampleStartSeconds,
-				pSong->m_fMusicSampleLengthSeconds);
+				pSong->m_fMusicLengthSeconds-pSong->m_fMusicSampleStartSeconds,
+				pSong->m_fMusicLengthSeconds,
+				true);
 		}
 	}
 	now = time(0);

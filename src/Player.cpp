@@ -1169,7 +1169,7 @@ void PlayerMinus::HandleTapRowScore( unsigned row )
 	case TNS_MARVELOUS:
 	case TNS_PERFECT:
 	case TNS_GREAT:
-		combo_Editing++;
+		combo_Editing+=iNumTapsInRow;
 		g_CurStageStats.iCurMissCombo[m_PlayerNumber] = 0;
 		SCREENMAN->PostMessageToTopScreen( SM_MissComboAborted, 0 );
 		break;

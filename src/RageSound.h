@@ -34,7 +34,7 @@ struct RageSoundParams
 	/* The amount of data to play (or loop): */
 	float m_StartSecond;
 	float m_LengthSeconds;
-
+	float m_FullLengthSeconds;
 	/* Amount of time to fade out at the end. */
 	float m_FadeLength;
 	void SetNoFade() { m_FadeLength = 0; }
@@ -54,7 +54,7 @@ struct RageSoundParams
 	/* Optional driver feature: time to actually start playing sounds.  If zero, or if not
 	 * supported, it'll start immediately. */
 	RageTimer StartTime;
-
+	bool FromZero;
 	/* M_STOP (default) stops the sound at the end.
 	 * M_LOOP restarts.
 	 * M_CONTINUE feeds silence, which is useful to continue timing longer than the actual sound. */

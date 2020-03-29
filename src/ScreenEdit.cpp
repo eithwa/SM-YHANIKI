@@ -238,9 +238,10 @@ static Menu g_BGChange( "Background Change", g_BGChangeItems );
 static const MenuRow g_PrefsItems[] =
 {
 	{ "Show BGChanges during Play/Record",			true, 0, { "NO","YES" } },
-	{ "Alpha of BGA",		                    	true, 5, { "0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1" } },
+	{ "Screen Filter",		                    	true, 4, { "Default", "0%", "20%", "40%", "60%", "80%", "100%" } },
+	{ "Default Scroll Reverse",				        true, 1, { "NO","YES" } },
 	{ "Reverse Control Intuitive",					true, 1, { "NO","YES" } },
-	{ "AutoSave during time, 0 is Disable(minute)",	true, 5, { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+	{ "AutoSave During Time(minute)",	            true, 5, { "NO", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 																	"11","12","13","14","15","16","17","18","19","20",
 																	"21","22","23","24","25","26","27","28","29","30" } },
 	{ "Play Mode Beats Buffer",					    true, 4, { "0","1","2","3","4","5","6","7","8" } },
@@ -272,7 +273,8 @@ float g_fLastInsertAttackDurationSeconds = -1;
 ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 {
 	LOG->Trace( "ScreenEdit::ScreenEdit()" );
-
+	FOREACH_PotentialCpuPlayer(p)
+        GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[ GAMESTATE->GetFirstHumanPlayer() ];
 	/* We do this ourself. */
 	SOUND->HandleSongTimer( false );
 
@@ -302,8 +304,13 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrollSpeed = 1;
 	GAMESTATE->m_SongOptions.m_fMusicRate = 1;
 	/* Not all games have a noteskin named "note" ... */
-	if( NOTESKIN->DoesNoteSkinExist("note") )
-		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";	// change noteskin before loading all of the edit Actors
+	// if( NOTESKIN->DoesNoteSkinExist("note") )
+	// 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";	// change noteskin before loading all of the edit Actors
+	PlayerOptions po;
+	po.FromString( PREFSMAN->m_sDefaultModifiers );
+	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
+	//===========
 	GAMESTATE->ResetNoteSkins();
 	GAMESTATE->StoreSelectedOptions();
 
@@ -329,12 +336,21 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 
 	m_Clipboard.SetNumTracks( m_NoteFieldEdit.GetNumTracks() );
 
-
 	GAMESTATE->m_PlayerOptions[PLAYER_1].Init();	// don't allow weird options in editor.  It doesn't handle reverse well.
+	
 	// Set NoteSkin to note if available.
 	// Change noteskin back to default before loading player.
-	if( NOTESKIN->DoesNoteSkinExist("note") )
-		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";
+	// if( NOTESKIN->DoesNoteSkinExist("note") )
+	// 	GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = "note";
+	//==========
+	if( NOTESKIN->DoesNoteSkinExist(po.m_sNoteSkin) )
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_sNoteSkin = po.m_sNoteSkin;
+	//==========
+	if(PREFSMAN->m_bEditorScrollReverse)
+	{
+		GAMESTATE->m_PlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]=1;
+		GAMESTATE->StoreSelectedOptions();
+	}
 	GAMESTATE->ResetNoteSkins();
 
 	/* XXX: Do we actually have to send real note data here, and to m_NoteFieldRecord? 
@@ -397,15 +413,7 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 
 	this->HandleScreenMessage( SM_DoUpdateTextInfo );
 	//=========
-	bool bReverse=false;
-	if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]==1 )
-	{
-		bReverse=true;
-	}
-	//LyricsX=320
-	//LyricsY=400
-	//LyricsReverseX=320
-	//LyricsReverseY=100
+	bool bReverse=(bool)GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE];
 	m_LyricDisplay.SetName( ssprintf( "Lyrics%s", bReverse? "Reverse": "") );
 	SET_XY( m_LyricDisplay );
 	if(PREFSMAN->m_bShowLyrics)
@@ -431,12 +439,12 @@ void ScreenEdit::UpdateAutoPlayText()
 	{
 		if( PREFSMAN->m_bAutoPlay )
 		{	
-			if(PREFSMAN->m_iPlayerControllerType==1)
-			{
-				sText += "AutoPlay     ";
-			}else if(PREFSMAN->m_iPlayerControllerType==2)
+			if(PREFSMAN->m_iPlayerControllerType==2)
 			{
 				sText += "AutoPlayCPU     ";
+			}else
+			{
+				sText += "AutoPlay     ";
 			}
 		}
 	}
@@ -708,7 +716,15 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			if(PREFSMAN->m_bEditorShowBGChangesAlpha==0)
+			{
+				float alpha = 1-PREFSMAN->m_fBGBrightness;
+				m_Background.SetDiffuseAlpha( alpha );
+			}else
+			{
+				float alpha = (float)(PREFSMAN->m_bEditorShowBGChangesAlpha - 1) * 2 / 10;
+				m_Background.SetDiffuseAlpha( alpha );
+			}
 			//m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
@@ -723,7 +739,15 @@ void ScreenEdit::DrawPrimitives()
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.SetDiffuse( RageColor(0,0,0,1) );
-			m_Background.SetDiffuseAlpha( (float)PREFSMAN->m_bEditorShowBGChangesAlpha/10 );
+			if(PREFSMAN->m_bEditorShowBGChangesAlpha==0)
+			{
+				float alpha = 1-PREFSMAN->m_fBGBrightness;
+				m_Background.SetDiffuseAlpha( alpha );
+			}else
+			{
+				float alpha = (float)(PREFSMAN->m_bEditorShowBGChangesAlpha - 1) * 2 / 10;
+				m_Background.SetDiffuseAlpha( alpha );
+			}
 			// m_Background.SetDiffuseAlpha( 0.5 );
 			m_Background.Draw();
 		}
@@ -864,39 +888,85 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 				float fNewScrollSpeed = fScrollSpeed;
 				if( DeviceI.button == KEY_UP )
 				{
-					if( fScrollSpeed >= 1 )
-						fNewScrollSpeed -= 0.5;
-					else if( fScrollSpeed == 0.5)
-						fNewScrollSpeed = 0.25;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed == 0.25 )
+							fNewScrollSpeed = 0.5;
+						else if( fScrollSpeed <= 7.5)
+							fNewScrollSpeed += 0.5;
+					}else
+					{
+						if( fScrollSpeed >= 1 )
+							fNewScrollSpeed -= 0.5;
+						else if( fScrollSpeed == 0.5)
+							fNewScrollSpeed = 0.25;
+					}
 				}
 				else if( DeviceI.button == KEY_DOWN )
 				{
-					if( fScrollSpeed == 0.25 )
-						fNewScrollSpeed = 0.5;
-					else if( fScrollSpeed <= 7.5)
-						fNewScrollSpeed += 0.5;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed >= 1 )
+							fNewScrollSpeed -= 0.5;
+						else if( fScrollSpeed == 0.5)
+							fNewScrollSpeed = 0.25;
+					}else
+					{
+						if( fScrollSpeed == 0.25 )
+							fNewScrollSpeed = 0.5;
+						else if( fScrollSpeed <= 7.5)
+							fNewScrollSpeed += 0.5;
+					}
 				}
 
 				if( DeviceI.button == KEY_PGUP )
 				{
-					if( fScrollSpeed >= 4.5 )
-						fNewScrollSpeed = 4;
-					else if ( fScrollSpeed >= 2.5 )
-						fNewScrollSpeed = 2;
-					else if ( fScrollSpeed >= 1.5 )
-						fNewScrollSpeed = 1;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed <= 0.5 )
+							fNewScrollSpeed = 1;
+						else if( fScrollSpeed <= 1.5 )
+							fNewScrollSpeed = 2;
+						else if( fScrollSpeed <= 3.5 )
+							fNewScrollSpeed = 4;
+						else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
+							fNewScrollSpeed = 8;
+					}else
+					{
+						if( fScrollSpeed >= 4.5 )
+							fNewScrollSpeed = 4;
+						else if ( fScrollSpeed >= 2.5 )
+							fNewScrollSpeed = 2;
+						else if ( fScrollSpeed >= 1.5 )
+							fNewScrollSpeed = 1;
+					}
 				}
 
 				if( DeviceI.button == KEY_PGDN )
 				{
-					if( fScrollSpeed <= 0.5 )
-						fNewScrollSpeed = 1;
-					else if( fScrollSpeed <= 1.5 )
-						fNewScrollSpeed = 2;
-					else if( fScrollSpeed <= 3.5 )
-						fNewScrollSpeed = 4;
-					else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
-						fNewScrollSpeed = 8;
+					if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
+						PREFSMAN->m_bEditorReverseIntuitive == true)
+					{
+						if( fScrollSpeed >= 4.5 )
+							fNewScrollSpeed = 4;
+						else if ( fScrollSpeed >= 2.5 )
+							fNewScrollSpeed = 2;
+						else if ( fScrollSpeed >= 1.5 )
+							fNewScrollSpeed = 1;
+					}else
+					{
+						if( fScrollSpeed <= 0.5 )
+							fNewScrollSpeed = 1;
+						else if( fScrollSpeed <= 1.5 )
+							fNewScrollSpeed = 2;
+						else if( fScrollSpeed <= 3.5 )
+							fNewScrollSpeed = 4;
+						else if ( (fScrollSpeed <= 7.5) && (fScrollSpeed <= 8.5) ) // After 8.5x is custom speed, don't change. 
+							fNewScrollSpeed = 8;
+					}
 				}
 
 				if( fNewScrollSpeed != fScrollSpeed )
@@ -914,7 +984,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			case KEY_UP:
 			case KEY_DOWN:
 				fBeatsToMove = NoteTypeToBeat( m_SnapDisplay.GetNoteType() );
-				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 				   PREFSMAN->m_bEditorReverseIntuitive == true)
 				{
 					if( DeviceI.button == KEY_DOWN )	
@@ -929,7 +999,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			case KEY_PGUP:
 			case KEY_PGDN:
 				fBeatsToMove = BEATS_PER_MEASURE;
-				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+				if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 				   PREFSMAN->m_bEditorReverseIntuitive == true)
 				{
 					if( DeviceI.button == KEY_PGDN )	
@@ -1006,7 +1076,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		}
 		break;
 	case KEY_HOME:
-		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 			PREFSMAN->m_bEditorReverseIntuitive == true)
 		{
 			GAMESTATE->m_fSongBeat = m_NoteFieldEdit.GetLastBeat();
@@ -1019,7 +1089,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		}
 		break;
 	case KEY_END:
-		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].SCROLL_REVERSE]>0 && 
+		if(GAMESTATE->m_CurrentPlayerOptions[PLAYER_1].m_fScrolls[PlayerOptions::SCROLL_REVERSE]>0 && 
 			PREFSMAN->m_bEditorReverseIntuitive == true)
 		{
 			GAMESTATE->m_fSongBeat = 0;
@@ -1580,9 +1650,10 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		HandleBGChangeChoice( (BGChangeChoice)ScreenMiniMenu::s_iLastLine, ScreenMiniMenu::s_iLastAnswers );
 		break;
 	case SM_BackFromPrefs:
-		PREFSMAN->m_bEditorShowBGChangesPlay = !!ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_play];
+		PREFSMAN->m_bEditorShowBGChangesPlay = (bool)ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_play];
 		PREFSMAN->m_bEditorShowBGChangesAlpha = ScreenMiniMenu::s_iLastAnswers[pref_show_bgs_alpha];
-		PREFSMAN->m_bEditorReverseIntuitive = !!ScreenMiniMenu::s_iLastAnswers[pref_reverse_intuitive];
+		PREFSMAN->m_bEditorScrollReverse = (bool)ScreenMiniMenu::s_iLastAnswers[pref_scroll_reverse];
+		PREFSMAN->m_bEditorReverseIntuitive = (bool)ScreenMiniMenu::s_iLastAnswers[pref_reverse_intuitive];
 		PREFSMAN->m_bEditorAutosaveMinute = ScreenMiniMenu::s_iLastAnswers[pref_autosave_minute];
 		PREFSMAN->m_bEditorPlayModeBeatsBuffer = ScreenMiniMenu::s_iLastAnswers[pref_play_mode_beats_buffer];
 		PREFSMAN->SaveGlobalPrefsToDisk();
@@ -1601,8 +1672,10 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 	}
 	case SM_BackFromPlayerOptions:
 	case SM_BackFromSongOptions:
+		GAMESTATE->ResetNoteSkins();
 		// coming back from PlayerOptions or SongOptions
 		GAMESTATE->StoreSelectedOptions();
+		
 		// stop any music that screen may have been playing
 		SOUND->StopMusic();
 
@@ -1694,6 +1767,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromBPMChange:
 		{
+			GAMESTATE->m_bClearText = false;
 			float fBPM = atof( ScreenTextEntry::s_sLastAnswer.c_str() );
 			if ( fBPM <= 0 )
 				break;
@@ -1702,6 +1776,7 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_BackFromStopChange:
 		{
+			GAMESTATE->m_bClearText = false;
 			unsigned i;
 			bool sentinel = false;		//Tricky, we can't break out of this loop safely
 			for( i=0; (i<m_pSong->m_Timing.m_StopSegments.size()) && (!sentinel); i++ )
@@ -2004,6 +2079,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			}
 			break;
 		case edit_bpm:
+			GAMESTATE->m_bClearText = true;
 			SCREENMAN->TextEntry( SM_BackFromBPMChange, "Enter new BPM value.", ssprintf( "%.3f", m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat ) ) );
 			break;
 		case edit_stop:
@@ -2098,6 +2174,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 		case preferences:
 			g_Prefs.rows[pref_show_bgs_play].defaultChoice = PREFSMAN->m_bEditorShowBGChangesPlay;
 			g_Prefs.rows[pref_show_bgs_alpha].defaultChoice = PREFSMAN->m_bEditorShowBGChangesAlpha;
+			g_Prefs.rows[pref_scroll_reverse].defaultChoice = PREFSMAN->m_bEditorScrollReverse;
 			g_Prefs.rows[pref_reverse_intuitive].defaultChoice = PREFSMAN->m_bEditorReverseIntuitive;
 			g_Prefs.rows[pref_autosave_minute].defaultChoice = PREFSMAN->m_bEditorAutosaveMinute;
 			g_Prefs.rows[pref_play_mode_beats_buffer].defaultChoice = PREFSMAN->m_bEditorPlayModeBeatsBuffer;
@@ -2287,7 +2364,7 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 //				float fOldClipboardEndBeat = m_NoteFieldEdit.m_fEndMarker;
 				float fOldClipboardBeats = m_NoteFieldEdit.m_fEndMarker - m_NoteFieldEdit.m_fBeginMarker;
 				float fNewClipboardBeats = fOldClipboardBeats * fScale;
-				float fDeltaBeats = fNewClipboardBeats - fOldClipboardBeats;
+				// float fDeltaBeats = fNewClipboardBeats - fOldClipboardBeats;
 				float fNewClipboardEndBeat = m_NoteFieldEdit.m_fBeginMarker + fNewClipboardBeats;
 				// NoteDataUtil::ShiftRows( m_NoteFieldEdit, m_NoteFieldEdit.m_fBeginMarker, fDeltaBeats );
 				m_pSong->m_Timing.ScaleRegion( fScale, m_NoteFieldEdit.m_fBeginMarker, m_NoteFieldEdit.m_fEndMarker );
@@ -2375,7 +2452,8 @@ void ScreenEdit::HandleAreaMenuChoice( AreaMenuChoice c, int* iAnswers )
 				m_rectRecordBack.SetDiffuse( RageColor(0,0,0,0.8f) );
 				const float fStartSeconds = m_pSong->GetElapsedTimeFromBeat(GAMESTATE->m_fSongBeat) ;
 				LOG->Trace( "Starting playback at %f", fStartSeconds );
-			
+				FOREACH_PotentialCpuPlayer(p)
+					GAMESTATE->m_pCurSteps[p] = GAMESTATE->m_pCurSteps[PLAYER_1];
 				if( PREFSMAN->m_bEditorShowBGChangesPlay )
 				{
 					/* FirstBeat affects backgrounds, so commit changes to memory (not to disk)

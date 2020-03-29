@@ -14,6 +14,7 @@
 #include "NoteFieldPositioning.h"
 #include "NoteSkinManager.h"
 #include "song.h"
+#include <regex>
 
 NoteField::NoteField()
 {	
@@ -516,7 +517,14 @@ void NoteField::DrawPrimitives()
 	//
 
 	float fSelectedRangeGlow = SCALE( cosf(RageTimer::GetTimeSinceStart()*2), -1, 1, 0.1f, 0.3f );
-
+	string noteskin_name = GAMESTATE->m_PlayerOptions[m_PlayerNumber].m_sNoteSkin;
+	bool bReverse=(bool)GAMESTATE->m_CurrentPlayerOptions[m_PlayerNumber].m_fScrolls[PlayerOptions::SCROLL_REVERSE];
+	bool IsNote = false;
+	if( (noteskin_name.find("note") != noteskin_name.npos && !bReverse)||
+		(noteskin_name.find("note(rv)") != noteskin_name.npos && bReverse))
+	{
+		IsNote = true;
+	}
 	for( int c=0; c<GetNumTracks(); c++ )	// for each arrow column
 	{
 		g_NoteFieldMode[m_PlayerNumber].BeginDrawTrack(c);
@@ -584,9 +592,12 @@ void NoteField::DrawPrimitives()
 			TapNote tn = GetTapNote(c, i);
 			if( tn.type == TapNote::empty )	// no note here
 				continue;	// skip
+			if(!IsNote)
+			{
+				if( tn.type == TapNote::hold_head )	// this is a HoldNote begin marker.  Grade it, but don't draw
+					continue;	// skip
+			}
 			
-			if( tn.type == TapNote::hold_head )	// this is a HoldNote begin marker.  Grade it, but don't draw
-				continue;	// skip
 
 			// TRICKY: If boomerang is on, then all notes in the range 
 			// [iFirstIndexToDraw,iLastIndexToDraw] aren't necessarily visible.
@@ -599,15 +610,18 @@ void NoteField::DrawPrimitives()
 
 			// See if there is a hold step that begins on this index.
 			bool bHoldNoteBeginsOnThisBeat = false;
-			for( int c2=0; c2<GetNumTracks(); c2++ )
+			if(!IsNote)
 			{
-				if( GetTapNote(c2, i).type == TapNote::hold_head)
+				for( int c2=0; c2<GetNumTracks(); c2++ )
 				{
-					bHoldNoteBeginsOnThisBeat = true;
-					break;
+					if( GetTapNote(c2, i).type == TapNote::hold_head)
+					{
+						bHoldNoteBeginsOnThisBeat = true;
+						break;
+					}
 				}
 			}
-
+			
 			bool bIsInSelectionRange = false;
 			if( m_fBeginMarker!=-1 && m_fEndMarker!=-1 )
 			{

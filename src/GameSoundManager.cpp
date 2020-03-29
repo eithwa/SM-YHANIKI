@@ -73,8 +73,9 @@ struct MusicToPlay
 	bool HasTiming;
 	TimingData timing_data;
 	bool force_loop;
-	float start_sec, length_sec, fade_len;
+	float start_sec, length_sec, full_sec, fade_len;
 	bool align_beat;
+	bool from_zero;
 	MusicToPlay()
 	{
 		HasTiming = false;
@@ -222,6 +223,11 @@ CHECKPOINT;
 		p.m_StartSecond = ToPlay.start_sec;
 		p.m_LengthSeconds = ToPlay.length_sec;
 		p.m_FadeLength = ToPlay.fade_len;
+		if(ToPlay.from_zero == true)
+		{
+			p.FromZero = ToPlay.from_zero;
+			p.m_FullLengthSeconds = ToPlay.full_sec;
+		}
 		p.StartTime = when;
 		if( ToPlay.force_loop )
 			p.StopMode = RageSoundParams::M_LOOP;
@@ -528,6 +534,31 @@ void GameSoundManager::PlayMusic( const CString &file, TimingData *pTiming, bool
 	ToPlay->length_sec = length_sec;
 	ToPlay->fade_len = fade_len;
 	ToPlay->align_beat = align_beat;
+
+	/* Add the MusicToPlay to the g_MusicsToPlay queue. */
+	if( !g_MusicsToPlay.write( &ToPlay, 1 ) )
+		delete ToPlay;
+
+	if( !g_ThreadedMusicStart )
+		StartQueuedSounds();
+}
+void GameSoundManager::PlayMusic2( const CString &file, bool force_loop, float start_sec, float length_sec, float full_sec, bool from_zero)
+{
+	MusicToPlay *ToPlay = new MusicToPlay;
+
+	ToPlay->file = file;
+	ToPlay->force_loop = force_loop;
+	ToPlay->start_sec = start_sec;
+	ToPlay->length_sec = length_sec;
+	ToPlay->fade_len = 0;
+	ToPlay->timing_file = "";
+	ToPlay->align_beat = true;
+	ToPlay->from_zero = from_zero;
+	ToPlay->full_sec = full_sec;
+
+	/* If no timing file was specified, look for one in the same place as the music file. */
+	if( ToPlay->timing_file == "" )
+		ToPlay->timing_file = SetExtension( file, "sm" );
 
 	/* Add the MusicToPlay to the g_MusicsToPlay queue. */
 	if( !g_MusicsToPlay.write( &ToPlay, 1 ) )
