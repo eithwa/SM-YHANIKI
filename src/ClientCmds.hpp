@@ -21,4 +21,15 @@ namespace Yhaniki::ClientCmd {
         string message_;
     };
 
+    class ReportState : public IClientCmd {
+    public:
+        enum State {
+            IDLE,
+            SelectMusic,
+        };
+        ReportState(bool on) : on_(on) {}
+        [[nodiscard]] bool IsOn() const { return on_; }
+    private:
+        bool on_;
+    };
 }

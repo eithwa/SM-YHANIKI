@@ -23,7 +23,7 @@ namespace Yhaniki {
         if (cmd == nullptr) {
             builder.PushBack(s_NOP);
 
-        } else if (auto _ = dynamic_cast<Nop*>(cmd.get())) {
+        } else if (auto _ = dynamic_cast<ServerNop*>(cmd.get())) {
             builder.PushBack(s_NOP);
 
         } else if (const auto chatCmd = dynamic_cast<SomeoneChatted*>(cmd.get())) {
@@ -42,12 +42,12 @@ namespace Yhaniki {
         StringStack str) {
 
         if (str[0] == s_NOP)
-            return make_unique<Nop>();
+            return make_unique<ServerNop>();
 
         if (str[0] == s_CHAT)
             return make_unique<SomeoneChatted>(str[1]);
 
         // TODO: Warn "Unknown or invalid command!"
-        return make_unique<Nop>();
+        return make_unique<ServerNop>();
     }
 }

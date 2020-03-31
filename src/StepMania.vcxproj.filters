@@ -94,6 +94,9 @@
     <Filter Include="Reimplemetations\LanV2\ServerCmd">
       <UniqueIdentifier>{5ad6533f-0910-49ed-a3a3-6ff3d50233c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reimplemetations\Utilities">
+      <UniqueIdentifier>{77965424-8094-4a24-a63a-239d7a9c2824}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Screen.cpp">
@@ -1199,6 +1202,9 @@
     </ClCompile>
     <ClCompile Include="ServerCmdSerializationFactory.cpp">
       <Filter>Reimplemetations\LanV2\ServerCmd</Filter>
+    </ClCompile>
+    <ClCompile Include="LanServerV2.Client.cpp">
+      <Filter>Reimplemetations\LanV2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2414,9 +2420,6 @@
     <ClInclude Include="LanServerV2.h">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
-    <ClInclude Include="ILanServer.h">
-      <Filter>Reimplemetations\LanV2</Filter>
-    </ClInclude>
     <ClInclude Include="ILanClient.h">
       <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
@@ -2428,6 +2431,15 @@
     </ClInclude>
     <ClInclude Include="SerializationFactory.h">
       <Filter>Reimplemetations\LanV2\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="As.hpp">
+      <Filter>Reimplemetations\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ILanServer.h">
+      <Filter>Reimplemetations\LanV2</Filter>
+    </ClInclude>
+    <ClInclude Include="LanServerV2.Client.h">
+      <Filter>Reimplemetations\LanV2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

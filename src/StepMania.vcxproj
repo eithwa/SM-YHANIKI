@@ -297,6 +297,7 @@
     <ClCompile Include="Judgment.cpp" />
     <ClCompile Include="JukeboxMenu.cpp" />
     <ClCompile Include="LanClientV2.cpp" />
+    <ClCompile Include="LanServerV2.Client.cpp" />
     <ClCompile Include="LifeMeterBar.cpp" />
     <ClCompile Include="LifeMeterBattery.cpp" />
     <ClCompile Include="LightsManager.cpp" />
@@ -576,6 +577,7 @@
     <ClInclude Include="arch\Threads\Threads_Win32.h" />
     <ClInclude Include="ArrowBackdrop.h" />
     <ClInclude Include="ArrowEffects.h" />
+    <ClInclude Include="As.hpp" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="AttackDisplay.h" />
     <ClInclude Include="Background.h" />
@@ -591,6 +593,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterHead.h" />
     <ClInclude Include="ILanClient.h" />
+    <ClInclude Include="LanServerV2.Client.h" />
     <ClInclude Include="SerializationFactory.h" />
     <ClInclude Include="IClientCmd.h" />
     <ClInclude Include="CmdPortal.hpp" />

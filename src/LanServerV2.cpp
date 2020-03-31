@@ -2,8 +2,7 @@
 
 #include <utility>
 
-#include "ClientCmds.hpp"
-#include "ServerCmds.hpp"
+#include "LanServerV2.Client.h"
 
 using namespace std::chrono;
 
@@ -12,7 +11,7 @@ namespace Yhaniki {
     LanServerV2::LanServerV2(
         const int portNo,
         unique_ptr<EzSockets> listenSocket,
-        vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients,
+        vector<Client> clients,
         const State state,
         const milliseconds lastInformTime,
         const milliseconds informTimeSpan
@@ -28,7 +27,7 @@ namespace Yhaniki {
         return make_unique<LanServerV2>(
             8765,
             make_unique<EzSockets>(),
-            vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>>{},
+            vector<Client>{},
             State::Off,
             duration_cast<milliseconds>(system_clock::now().time_since_epoch()),
             milliseconds(100)
@@ -82,7 +81,7 @@ namespace Yhaniki {
             clients_.erase(
                 remove_if(
                     clients_.begin(), clients_.end(),
-                    [](auto&& client) { return client->IsError(); }
+                    [](auto&& client) { return client.IsError(); }
             ), clients_.end());
         }
 
@@ -90,15 +89,14 @@ namespace Yhaniki {
         {
             auto portal = CmdPortal<IClientCmd, IServerCmd>::AcceptBy(listenSocket_);
             if (portal != nullptr)
-                clients_.push_back(move(portal));
+                clients_.emplace_back(move(portal));
         }
 
         // Process client requests and then respond to them
         {
             for (auto&& client : clients_) {
-                auto clientCmds = client->ReceiveCmds();
-                for (auto && clientCmd : clientCmds)
-                    ProcessCommand(move(clientCmd));
+                if (client.HasSomethingToDo())
+                    ProcessClientRequest(client);
             }
         }
 
@@ -115,18 +113,15 @@ namespace Yhaniki {
         }
     }
 
-    void LanServerV2::ProcessCommand(const unique_ptr<IClientCmd> clientCmd) {
+    void LanServerV2::ProcessClientRequest(Client& client) {
 
-        if (clientCmd == nullptr)
+        if (client.Nothing()) 
             return;
 
-        if (auto _ = dynamic_cast<ClientCmd::Nop*>(clientCmd.get()))
+        if (const auto message = client.Chatted()) {
+            for (const auto& other : clients_)
+                other.SomeoneChat("123 " + *message);
             return;
-
-        if (const auto chatCmd = dynamic_cast<ClientCmd::Chat*>(clientCmd.get()))
-            for (auto&& client : clients_)
-                client->SendCmd(
-                    make_unique<ServerCmd::SomeoneChatted>(
-                        chatCmd->GetMsg()));
+        }
     }
 }

@@ -34,7 +34,13 @@ namespace Yhaniki {
         return true;
     }
 
-    void LanClientV2::close() {}
+    void LanClientV2::close() {
+        portal_ = nullptr;
+    }
+
+    bool LanClientV2::IsError() {
+        return portal_->IsError();
+    }
 
     vector<unique_ptr<IServerCmd>> LanClientV2::ReceiveCmds() {
         return portal_->ReceiveCmds();

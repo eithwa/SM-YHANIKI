@@ -16,6 +16,7 @@ namespace Yhaniki {
     class LanServerV2 final : public ILanServer {
         enum class State { On, Off };
     public:
+        class Client;
         static unique_ptr<LanServerV2> Default();
 
         bool ServerStart() override;
@@ -25,20 +26,21 @@ namespace Yhaniki {
         LanServerV2(
             int portNo,
             unique_ptr<EzSockets> listenSocket,
-            std::vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients,
+            std::vector<Client> clients,
             State state,
             std::chrono::milliseconds lastInformTime,
             std::chrono::milliseconds informTimeSpan
             );
+
     private:
-        void ProcessCommand(unique_ptr<IClientCmd> clientCmd);
+        void ProcessClientRequest(Client& client);
 
         // Socket
         const int portNo_;
         const unique_ptr<EzSockets> listenSocket_;
 
         // Client 
-        std::vector<unique_ptr<CmdPortal<IClientCmd, IServerCmd>>> clients_{};
+        std::vector<Client> clients_{};
 
         // On / Off state
         State state_;
@@ -48,3 +50,5 @@ namespace Yhaniki {
         std::chrono::milliseconds lastInformTime_{};
     };
 }
+
+#include "LanServerV2.Client.h"

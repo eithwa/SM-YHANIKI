@@ -1,6 +1,8 @@
 #include "global.h"
 #include "NetworkSyncManager.h"
 
+
+#include "As.hpp"
 #include "ClientCmds.hpp"
 #include "LanClientV2.h"
 #include "NetworkSyncServer.h"
@@ -68,7 +70,7 @@ NetworkSyncManager::NetworkSyncManager( LoadingWindow *ld )
 		ld->SetText("Initilizing server...");
 		LANserver = new StepManiaLanServer;
 		isLanServer = true;
-		GetCommandlineArgument( "runserver", &LANserver->GetServerName());
+		GetCommandlineArgument( "runserver", LANserver->GetServerName());
 	}
 	else
 		isLanServer = false;
@@ -499,7 +501,8 @@ void NetworkSyncManager::DisplayStartupStatus()
 		//Networking wasn't attepmpted
 		return;
 	case 1:
-		sMessage = "Connection to " + m_ServerName + " sucessful.";
+		//sMessage = "Connection to " + m_ServerName + " sucessful.";
+		sMessage = "Connection sucessful.";
 		break;
 	case 2:
 		sMessage = "Connection failed.";
@@ -708,13 +711,13 @@ void NetworkSyncManager::ProcessInput()
 {
 	//If we're disconnected, just exit
 	/*if ((NetPlayerClient->state!=NetPlayerClient->skCONNECTED) || 
-			NetPlayerClient->IsError())
-	{
+			NetPlayerClient->IsError())*/
+	if (NetPlayerClient->IsError()) {
 		SCREENMAN->SystemMessageNoAnimate("Connection to server dropped.");
 		useSMserver=false;
 		m_sChatText="";
 		return;
-	}*/
+	}
 
 	//load new data into buffer
 	//NetPlayerClient->update();
@@ -726,13 +729,16 @@ void NetworkSyncManager::ProcessInput()
 	//while (NetPlayerClient->ReadPack((char *)&m_packet, NETMAXBUFFERSIZE)>0)
     for (auto && servercmd : cmds) {
 
+		using namespace Yhaniki::ServerCmd;
+		using Yhaniki::As;
+
 		if (servercmd == nullptr)
 			return;
 
-		if (auto _ = dynamic_cast<Yhaniki::ServerCmd::Nop*>(servercmd.get()))
-			return;
+		if (auto _ = As<ServerNop>(servercmd))
+			return;		
 
-		if (const auto chatCmd = dynamic_cast<Yhaniki::ServerCmd::SomeoneChatted*>(servercmd.get())) {
+		if (const auto chatCmd = As<SomeoneChatted>(servercmd)) {
 			m_sChatText += chatCmd->GetMsg() + " \n ";
 			//10000 chars backlog should be more than enough
 			m_sChatText = m_sChatText.Right(10000);

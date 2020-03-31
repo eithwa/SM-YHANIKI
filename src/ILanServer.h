@@ -10,7 +10,7 @@ namespace Yhaniki {
         virtual void ServerUpdate() = 0;
         virtual ~ILanServer() = default;
 
-        CString GetServerName() const { return serverName_; }
+        CString* GetServerName() { return &serverName_; }
         void SetServerName(const CString& newName) { serverName_ = newName; }
 
         CString lastError = "";

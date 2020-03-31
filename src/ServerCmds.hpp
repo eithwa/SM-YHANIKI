@@ -8,7 +8,7 @@ namespace Yhaniki::ServerCmd {
     using std::string;
     using std::move;
 
-    class Nop : public IServerCmd {};
+    class ServerNop : public IServerCmd {};
 
     class SomeoneChatted : public IServerCmd {
     public:

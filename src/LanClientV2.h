@@ -14,9 +14,10 @@ namespace Yhaniki {
     public:
         static unique_ptr<LanClientV2> New();
 
-        bool connected() const;
+        bool connected() const override;
         bool connect(const CString& addy, unsigned short port) override;
         void close() override;
+        bool IsError() override;
 
         vector<unique_ptr<IServerCmd>> ReceiveCmds() override;
         bool SendCmd(unique_ptr<IClientCmd> cmd) override;
