@@ -222,6 +222,11 @@ RageTextureID BannerCache::LoadCachedBanner( CString BannerPath )
 	if( g_BannerPathToImage.find(BannerPath) == g_BannerPathToImage.end() )
 	{
 		/* Oops, the image is missing.  Warn and continue. */
+		string BannerPath_ = BannerPath.c_str();
+		std::size_t pos = BannerPath_.find_last_of(".");
+  		std::string Extension = BannerPath_.substr (pos);
+		if(Extension==".avi"||Extension==".AVI"||Extension==".PNG" || Extension == ".mpg" || Extension == ".MPG") return ID;
+
 		LOG->Warn( "Banner cache for '%s' wasn't loaded", BannerPath.c_str() );
 		return ID;
 	}
@@ -308,6 +313,10 @@ void BannerCache::CacheBannerInternal( CString BannerPath )
 	RageSurface *img = RageSurfaceUtils::LoadFile( BannerPath, error );
 	if( img == NULL )
 	{
+		string BannerPath_ = BannerPath.c_str();
+		std::size_t pos = BannerPath_.find_last_of(".");
+  		std::string Extension = BannerPath_.substr (pos);
+		if(Extension==".avi"||Extension==".AVI"||Extension==".PNG"|| Extension == ".mpg" ||Extension==".MPG") return;
 		LOG->Warn( "BannerCache::CacheBanner: Couldn't load %s: %s", BannerPath.c_str(), error.c_str() );
 		return;
 	}

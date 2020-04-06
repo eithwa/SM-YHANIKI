@@ -1752,6 +1752,10 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		m_pSteps = GAMESTATE->m_pCurSteps[PLAYER_1] = pSteps;
 		m_pSteps->GetNoteData( &m_NoteFieldEdit );
 
+		LyricsLoader LL;
+		if( GAMESTATE->m_pCurSong->HasLyrics()  )
+			LL.LoadFromLRCFile(GAMESTATE->m_pCurSong->GetLyricsPath(), *GAMESTATE->m_pCurSong);
+	
 		break;
 	}
 	case SM_DoUpdateTextInfo:
@@ -2090,6 +2094,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			break;
 		case edit_stop:
 			{
+				GAMESTATE->m_bClearText = true;
 				unsigned i;
 				for( i=0; i<m_pSong->m_Timing.m_StopSegments.size(); i++ )
 				{

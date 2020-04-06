@@ -20,6 +20,7 @@
 #include "RageLog.h"
 
 #include "SongUtil.h"
+#include "InputMapper.h"
 //==========
 #include "NoteField.h"
 #include <iostream>
@@ -375,13 +376,16 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 	if( (type != IET_FIRST_PRESS) && (type != IET_SLOW_REPEAT) && (type != IET_FAST_REPEAT ) )
 		return;
 
-	if( DeviceI.button == KEY_RIGHT || DeviceI.button == KEY_LEFT )
+	if( (DeviceI.button == KEY_RIGHT || DeviceI.button == KEY_LEFT) ||
+	    (MenuI.button == MENU_BUTTON_RIGHT || MenuI.button == MENU_BUTTON_LEFT) )
 	{
 		// TRICKY:  There's lots of weirdness that can happen here when tapping 
 		// Left and Right quickly, like when changing sort.
 		bool bLeftAndRightPressed = 
-			INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LEFT)) &&
-			INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RIGHT));
+			(INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LEFT)) &&
+			INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RIGHT))) ||
+			(INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_LEFT) ) &&
+			INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_RIGHT) ));
 
 		if(bLeftAndRightPressed)
 		{
@@ -1239,7 +1243,7 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 	for (i=m_iSongNum-m_iShowSongs; i<=m_iSongNum+m_iShowSongs; ++i)
 	{
 		j= i % m_vSongs.size();
-		SongsDisplay+=m_vSongs.at(j)->GetTranslitMainTitle();
+		SongsDisplay+=m_vSongs.at(j)->GetDisplayMainTitle();
 		if (i<m_iSongNum+m_iShowSongs)
 			SongsDisplay+='\n';
 	}
@@ -1247,8 +1251,8 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 
 	j= m_iSongNum % m_vSongs.size();
 
-	m_textArtist.SetText( m_vSongs[j]->GetTranslitArtist() );
-	m_textSubtitle.SetText( m_vSongs[j]->GetTranslitSubTitle() );
+	m_textArtist.SetText( m_vSongs[j]->GetDisplayArtist() );
+	m_textSubtitle.SetText( m_vSongs[j]->GetDisplaySubTitle() );
 	GAMESTATE->m_pCurSong = m_vSongs[j];
 
 	//Update the difficulty Icons

@@ -857,7 +857,8 @@ float MovieTexture_FFMpeg::CheckFrameTime()
 		m_FrameSkipMode = true;
 	}
 
-	if( m_FrameSkipMode && decoder->m_stream->codec.frame_number % 1000 ){
+	// if( m_FrameSkipMode && decoder->m_stream->codec.frame_number % 1000 ){
+	if( m_FrameSkipMode && decoder->m_stream->codec.frame_number % 2 ||(-Offset >= 5&& decoder->m_stream->codec.frame_number % 1000)){
 		// LOG->Info( "decoder->m_stream->codec.frame_number %d", decoder->m_stream->codec.frame_number% 10000);
 		return -1; /* skip */
 	}
