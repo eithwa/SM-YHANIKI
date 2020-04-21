@@ -23,6 +23,7 @@ private:
 	BitmapText		m_textUsers[NETMAXPLAYERS];
 	int				m_iCurrentPlayer;
 	int				m_iActivePlayers;
+	vector<CString> PlayerNames_temp;
 	
 	PlayerNumber	m_pActivePlayer;
 

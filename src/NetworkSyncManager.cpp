@@ -369,12 +369,20 @@ void NetworkSyncManager::StartRequest(short position)
 	Steps * tSteps;
 	tSteps = GAMESTATE->m_pCurSteps[PLAYER_1];
 	if ((tSteps!=NULL) && (GAMESTATE->IsPlayerEnabled(PLAYER_1)))
-		ctr = uint8_t(ctr+tSteps->GetMeter()*16);
-
+	{
+		int tmp = tSteps->GetMeter();
+		if(tmp>0 && tmp%16==0)tmp = 1;
+		ctr = uint8_t(ctr+tmp*16);
+	}
+		
 	tSteps = GAMESTATE->m_pCurSteps[PLAYER_2];
 	if ((tSteps!=NULL) && (GAMESTATE->IsPlayerEnabled(PLAYER_2)))
-		ctr = uint8_t(ctr+tSteps->GetMeter());
-
+	{
+		int tmp = tSteps->GetMeter();
+		if(tmp>0 && tmp%16==0)tmp = 1;
+		ctr = uint8_t(ctr+tmp);
+	}
+		
 	m_packet.Write1(ctr);
 
 	ctr=0;
