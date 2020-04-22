@@ -70,6 +70,10 @@ GameState::GameState()
 			m_PlayerGraph[p][i]=0;
 		}
 	}
+	for(int i=0; i<48; i++)
+	{
+		m_fBeatNormalization.push_back((float)i/48);
+	}
 }
 
 GameState::~GameState()

@@ -7,7 +7,7 @@
 #include "RageUtil.h"
 #include "SongManager.h"
 #include "RageFileManager.h"
-
+#include "GameState.h"
 #define MAX_EDIT_SIZE_BYTES  20*1024	// 20 KB
 
 void SMLoader::LoadFromSMTokens( 
@@ -78,7 +78,53 @@ bool SMLoader::LoadTimingFromFile( const CString &fn, TimingData &out )
 	LoadTimingFromSMFile( msd, out );
 	return true;
 }
-
+float binarySearch(float find)
+{ 
+	int MAX = GAMESTATE->m_fBeatNormalization.size();
+    int low = 0; 
+    int upper = MAX - 1;
+	vector<float> number;
+	number.assign(GAMESTATE->m_fBeatNormalization.begin(), GAMESTATE->m_fBeatNormalization.end());
+    while(low <= upper) { 
+		int mid = (low + upper) / 2;
+		//===========
+		if((mid+1)<=upper)
+		{
+			if(number[mid] < find && number[mid+1] > find)
+			{
+				if(abs(number[mid]-find)<abs(number[mid+1]-find))
+				{
+					return number[mid];
+				}else
+				{
+					return number[mid+1];
+				}
+			}
+		}
+		if((mid-1)>=low)
+		{
+			if(number[mid-1] < find && number[mid] > find)
+			{
+				if(abs(number[mid-1]-find)<abs(number[mid]-find))
+				{
+					return number[mid-1];
+				}else
+				{
+					return number[mid];
+				}
+			}
+		}
+		//===========
+        
+        if(number[mid] < find) 
+            low = mid+1; 
+        else if(number[mid] > find) 
+            upper = mid - 1; 
+        else //mid = find
+            return number[mid]; 
+    } 
+    return 999; 
+} 
 void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 {
 	out.m_fBeat0OffsetInSeconds = 0;
@@ -112,9 +158,22 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 
 				const float fFreezeBeat = strtof( arrayFreezeValues[0], NULL );
 				const float fFreezeSeconds = strtof( arrayFreezeValues[1], NULL );
-				
+				float stop_beat_temp = fFreezeBeat;
+				float tmp = binarySearch((float)(fFreezeBeat -(int)fFreezeBeat));
+				if(tmp!=999)
+				{
+					stop_beat_temp = (float)((int)fFreezeBeat + tmp);
+				}
 				StopSegment new_seg;
-				new_seg.m_fStartBeat = fFreezeBeat;
+				if (tmp != 999) 
+				{
+					new_seg.m_fStartBeat = stop_beat_temp;
+				}
+				else 
+				{
+					new_seg.m_fStartBeat = fFreezeBeat;
+				}
+				
 				new_seg.m_fStopSeconds = fFreezeSeconds;
 
 //				LOG->Trace( "Adding a freeze segment: beat: %f, seconds = %f", new_seg.m_fStartBeat, new_seg.m_fStopSeconds );
@@ -144,7 +203,23 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 				const float fBeat = strtof( arrayBPMChangeValues[0], NULL );
 				const float fNewBPM = strtof( arrayBPMChangeValues[1], NULL );
 				
+
+				float bpm_beat_temp = fBeat;
+				float tmp = binarySearch((float)(fBeat - (int)fBeat));
+				if (tmp != 999)
+				{
+					bpm_beat_temp = (float)((int)fBeat + tmp);
+				}
+
 				BPMSegment new_seg;
+				if (tmp != 999)
+				{
+					new_seg.m_fStartBeat = bpm_beat_temp;
+				}
+				else
+				{
+					new_seg.m_fStartBeat = fBeat;
+				}
 				new_seg.m_fStartBeat = fBeat;
 				new_seg.m_fBPM = fNewBPM;
 				
