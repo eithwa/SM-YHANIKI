@@ -158,24 +158,28 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 
 				const float fFreezeBeat = strtof( arrayFreezeValues[0], NULL );
 				const float fFreezeSeconds = strtof( arrayFreezeValues[1], NULL );
-				float stop_beat_temp = fFreezeBeat;
-				float tmp = binarySearch((float)(fFreezeBeat -(int)fFreezeBeat));
-				if(tmp!=999)
-				{
-					stop_beat_temp = (float)((int)fFreezeBeat + tmp);
-				}
-				StopSegment new_seg;
-				if (tmp != 999) 
-				{
-					new_seg.m_fStartBeat = stop_beat_temp;
-				}
-				else 
-				{
-					new_seg.m_fStartBeat = fFreezeBeat;
-				}
-				
-				new_seg.m_fStopSeconds = fFreezeSeconds;
 
+				StopSegment new_seg;
+
+				// float stop_beat_temp = fFreezeBeat;
+				// float tmp = binarySearch((float)(fFreezeBeat -(int)fFreezeBeat));
+				// if(tmp!=999)
+				// {
+				// 	stop_beat_temp = (float)((int)fFreezeBeat + tmp);
+				// }
+				
+				// if (tmp != 999) 
+				// {
+				// 	new_seg.m_fStartBeat = stop_beat_temp;
+				// 	LOG->Info("normalization %f", new_seg.m_fStartBeat);
+				// }
+				// else 
+				// {
+				// 	new_seg.m_fStartBeat = fFreezeBeat;
+				// }
+				new_seg.m_fStartBeat = fFreezeBeat;
+				new_seg.m_fStopSeconds = fFreezeSeconds;
+				// LOG->Info("get stop %f", new_seg.m_fStartBeat);
 //				LOG->Trace( "Adding a freeze segment: beat: %f, seconds = %f", new_seg.m_fStartBeat, new_seg.m_fStopSeconds );
 
 				out.AddStopSegment( new_seg );
@@ -201,25 +205,25 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 				}
 
 				const float fBeat = strtof( arrayBPMChangeValues[0], NULL );
-				const float fNewBPM = strtof( arrayBPMChangeValues[1], NULL );
-				
-
-				float bpm_beat_temp = fBeat;
-				float tmp = binarySearch((float)(fBeat - (int)fBeat));
-				if (tmp != 999)
-				{
-					bpm_beat_temp = (float)((int)fBeat + tmp);
-				}
+				const float fNewBPM = strtof( arrayBPMChangeValues[1], NULL );			
 
 				BPMSegment new_seg;
-				if (tmp != 999)
-				{
-					new_seg.m_fStartBeat = bpm_beat_temp;
-				}
-				else
-				{
-					new_seg.m_fStartBeat = fBeat;
-				}
+				
+				// float bpm_beat_temp = fBeat;
+				// float tmp = binarySearch((float)(fBeat - (int)fBeat));
+				// if (tmp != 999)
+				// {
+				// 	bpm_beat_temp = (float)((int)fBeat + tmp);
+				// }
+	
+				// if (tmp != 999)
+				// {
+				// 	new_seg.m_fStartBeat = bpm_beat_temp;
+				// }
+				// else
+				// {
+				// 	new_seg.m_fStartBeat = fBeat;
+				// }
 				new_seg.m_fStartBeat = fBeat;
 				new_seg.m_fBPM = fNewBPM;
 				

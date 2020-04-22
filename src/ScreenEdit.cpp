@@ -1276,7 +1276,10 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			{
 				// create a new StopSegment
 				if( fStopDelta != 0)
+				{
+					// LOG->Info("edit stop %f", GAMESTATE->m_fSongBeat);
 					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStopDelta) );
+				}
 			}
 			else	// StopSegment being modified is m_Timing.m_StopSegments[i]
 			{
@@ -2089,6 +2092,7 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			{
 				GAMESTATE->m_bClearText = true;
 				unsigned i;
+				
 				for( i=0; i<m_pSong->m_Timing.m_StopSegments.size(); i++ )
 				{
 					if( m_pSong->m_Timing.m_StopSegments[i].m_fStartBeat == GAMESTATE->m_fSongBeat )
