@@ -927,7 +927,7 @@ void ScreenGameplay::LoadNextSong()
 		// 			s.erase(s.GetLength()-1);
 		// 		player_options += s + "xMusic  ";
 		// }
-		player_options += GAMESTATE->m_PlayerOptions[p].GetString();
+		player_options += GAMESTATE->m_PlayerOptions[p].GetString2();
 		// m_textPlayerOptions[p].SetText( GAMESTATE->m_PlayerOptions[p].GetString() );
 		m_textPlayerOptions[p].SetText( player_options );
 		m_ActiveAttackList[p].Refresh();

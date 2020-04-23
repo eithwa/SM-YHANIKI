@@ -516,7 +516,53 @@ void ScreenEdit::AutoSave()
 		start_time = now;
 	}
 }
-
+float binarySearch2(float find)
+{ 
+	int MAX = GAMESTATE->m_fBeatNormalization.size();
+    int low = 0; 
+    int upper = MAX - 1;
+	vector<float> number;
+	number.assign(GAMESTATE->m_fBeatNormalization.begin(), GAMESTATE->m_fBeatNormalization.end());
+    while(low <= upper) { 
+		int mid = (low + upper) / 2;
+		//===========
+		if((mid+1)<=upper)
+		{
+			if(number[mid] < find && number[mid+1] > find)
+			{
+				if(abs(number[mid]-find)<abs(number[mid+1]-find))
+				{
+					return number[mid];
+				}else
+				{
+					return number[mid+1];
+				}
+			}
+		}
+		if((mid-1)>=low)
+		{
+			if(number[mid-1] < find && number[mid] > find)
+			{
+				if(abs(number[mid-1]-find)<abs(number[mid]-find))
+				{
+					return number[mid-1];
+				}else
+				{
+					return number[mid];
+				}
+			}
+		}
+		//===========
+        
+        if(number[mid] < find) 
+            low = mid+1; 
+        else if(number[mid] > find) 
+            upper = mid - 1; 
+        else //mid = find
+            return number[mid]; 
+    } 
+    return 999; 
+}
 void ScreenEdit::Update( float fDeltaTime )
 {
 	if( m_soundMusic.IsPlaying() )
@@ -631,7 +677,7 @@ void ScreenEdit::Update( float fDeltaTime )
 			m_fTrailingBeat += fMoveDelta;
 		}
 	}
-
+	
 	m_NoteFieldEdit.Update( fDeltaTime );
 	UpdateAutoPlayText();
 	PlayTicks();
@@ -665,6 +711,22 @@ void ScreenEdit::UpdateTextInfo()
 	 * more precision here, add it.  I doubt there's a need for precise preview output,
 	 * though (it'd be nearly inaudible at the millisecond level, and it's approximate
 	 * anyway). */
+	float bpm_beat_temp = GAMESTATE->m_fSongBeat;
+	float tmp = binarySearch2((float)(bpm_beat_temp - (int)bpm_beat_temp));
+	if (tmp != 999)
+	{
+		bpm_beat_temp = (float)((int)bpm_beat_temp + tmp);
+	}
+
+	if (tmp != 999)
+	{
+		GAMESTATE->m_fSongBeat = bpm_beat_temp;
+	}
+	else
+	{
+		// m_fTrailingBeat = m_fTrailingBeat;
+	}
+	// LOG->Info("test %f", GAMESTATE->m_fSongBeat);
 	sText += ssprintf( "Current Beat:\n     %.6f\n",		GAMESTATE->m_fSongBeat );
 	sText += ssprintf( "Current Second:\n     %.6f\n",		m_pSong->GetElapsedTimeFromBeat(GAMESTATE->m_fSongBeat) );
 	sText += ssprintf( "Snap to:\n     %s\n",				sNoteType.c_str() );

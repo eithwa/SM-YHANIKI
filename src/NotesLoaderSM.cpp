@@ -161,23 +161,23 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 
 				StopSegment new_seg;
 
-				// float stop_beat_temp = fFreezeBeat;
-				// float tmp = binarySearch((float)(fFreezeBeat -(int)fFreezeBeat));
-				// if(tmp!=999)
-				// {
-				// 	stop_beat_temp = (float)((int)fFreezeBeat + tmp);
-				// }
+				float stop_beat_temp = fFreezeBeat;
+				float tmp = binarySearch((float)(fFreezeBeat -(int)fFreezeBeat));
+				if(tmp!=999)
+				{
+					stop_beat_temp = (float)((int)fFreezeBeat + tmp);
+				}
 				
-				// if (tmp != 999) 
-				// {
-				// 	new_seg.m_fStartBeat = stop_beat_temp;
-				// 	LOG->Info("normalization %f", new_seg.m_fStartBeat);
-				// }
-				// else 
-				// {
-				// 	new_seg.m_fStartBeat = fFreezeBeat;
-				// }
-				new_seg.m_fStartBeat = fFreezeBeat;
+				if (tmp != 999) 
+				{
+					new_seg.m_fStartBeat = stop_beat_temp;
+					// LOG->Info("normalization %f", new_seg.m_fStartBeat);
+				}
+				else 
+				{
+					new_seg.m_fStartBeat = fFreezeBeat;
+				}
+				// new_seg.m_fStartBeat = fFreezeBeat;
 				new_seg.m_fStopSeconds = fFreezeSeconds;
 				// LOG->Info("get stop %f", new_seg.m_fStartBeat);
 //				LOG->Trace( "Adding a freeze segment: beat: %f, seconds = %f", new_seg.m_fStartBeat, new_seg.m_fStopSeconds );
@@ -209,22 +209,22 @@ void SMLoader::LoadTimingFromSMFile( const MsdFile &msd, TimingData &out )
 
 				BPMSegment new_seg;
 				
-				// float bpm_beat_temp = fBeat;
-				// float tmp = binarySearch((float)(fBeat - (int)fBeat));
-				// if (tmp != 999)
-				// {
-				// 	bpm_beat_temp = (float)((int)fBeat + tmp);
-				// }
+				float bpm_beat_temp = fBeat;
+				float tmp = binarySearch((float)(fBeat - (int)fBeat));
+				if (tmp != 999)
+				{
+					bpm_beat_temp = (float)((int)fBeat + tmp);
+				}
 	
-				// if (tmp != 999)
-				// {
-				// 	new_seg.m_fStartBeat = bpm_beat_temp;
-				// }
-				// else
-				// {
-				// 	new_seg.m_fStartBeat = fBeat;
-				// }
-				new_seg.m_fStartBeat = fBeat;
+				if (tmp != 999)
+				{
+					new_seg.m_fStartBeat = bpm_beat_temp;
+				}
+				else
+				{
+					new_seg.m_fStartBeat = fBeat;
+				}
+				// new_seg.m_fStartBeat = fBeat;
 				new_seg.m_fBPM = fNewBPM;
 				
 				out.AddBPMSegment( new_seg );
