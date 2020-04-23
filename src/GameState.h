@@ -237,7 +237,7 @@ public:
 	bool IsDisqualified( PlayerNumber pn );
 
 	void AdjustFailType();
-
+	vector<float> m_fBeatNormalization;
 	// character stuff
 // private:
 // 	vector<Character*> m_pCharacters;

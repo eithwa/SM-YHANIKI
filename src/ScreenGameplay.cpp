@@ -929,7 +929,7 @@ void ScreenGameplay::LoadNextSong()
 		// 			s.erase(s.GetLength()-1);
 		// 		player_options += s + "xMusic  ";
 		// }
-		player_options += GAMESTATE->m_PlayerOptions[p].GetString();
+		player_options += GAMESTATE->m_PlayerOptions[p].GetString2();
 		// m_textPlayerOptions[p].SetText( GAMESTATE->m_PlayerOptions[p].GetString() );
 		m_textPlayerOptions[p].SetText( player_options );
 		m_ActiveAttackList[p].Refresh();
@@ -1168,7 +1168,7 @@ void ScreenGameplay::PlayTicks()
 	 * ahead.  This is just to make sure that we request the sound early enough for it to
 	 * come out on time; the actual precise timing is handled by SetStartTime. */
 	float fPositionSeconds = GAMESTATE->m_fMusicSeconds;
-	fPositionSeconds += SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f;
+	fPositionSeconds += SOUND->GetPlayLatency();// + (float)TICK_EARLY_SECONDS + 0.250f;
 	const float fSongBeat = GAMESTATE->m_pCurSong->GetBeatFromElapsedTime( fPositionSeconds );
 
 	const int iSongRow = max( 0, BeatToNoteRowNotRounded( fSongBeat ) );

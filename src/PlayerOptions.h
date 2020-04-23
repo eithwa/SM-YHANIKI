@@ -16,6 +16,7 @@ struct PlayerOptions
 	void Init();
 	void Approach( const PlayerOptions& other, float fDeltaSeconds );
 	CString GetString() const;
+	CString GetString2() const;
 	CString GetSavedPrefsString() const;	// only the basic options that players would want for every song
 	static CString ThemeMod( CString sOneMod );
 	CString GetThemedString() const;
