@@ -681,6 +681,10 @@ void ScreenEdit::Update( float fDeltaTime )
 	m_NoteFieldEdit.Update( fDeltaTime );
 	UpdateAutoPlayText();
 	PlayTicks();
+	if( m_EditMode == MODE_EDITING)
+	{
+		m_soundAssistTick.Stop();
+	}
 }
 
 void ScreenEdit::UpdateTextInfo()
