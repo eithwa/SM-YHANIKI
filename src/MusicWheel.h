@@ -61,6 +61,7 @@ public:
 	void SetItemPosition( Actor &item, float fPosOffsetsFromMiddle );
 
 	bool Select();	// return true if this selection ends the screen
+	int HeadofSection();
 	void GroupSwitch();
 	WheelItemType	GetSelectedType()	{ return m_CurWheelItemData[m_iSelection]->m_Type; }
 	Song*			GetSelectedSong();

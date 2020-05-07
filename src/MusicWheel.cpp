@@ -1301,23 +1301,46 @@ bool MusicWheel::Select()	// return true if this selection ends the screen
 		return false;
 	}
 }
+int MusicWheel::HeadofSection() { 
+    int low = 0; 
+    int upper = m_iSelection-1;
+	CString sThisItemSectionName = m_CurWheelItemData[m_iSelection]->m_sSectionName;
+    while(low <= upper) { 
+        int mid = (low+upper) / 2; 
+        if(m_CurWheelItemData[mid]->m_sSectionName!=sThisItemSectionName)
+            low = mid+1; 
+        else if(mid>0 && 
+				m_CurWheelItemData[mid-1]->m_sSectionName==sThisItemSectionName &&
+				m_CurWheelItemData[mid]->m_sSectionName==sThisItemSectionName )
+            upper = mid - 1; 
+        else 
+            return mid; 
+    } 
+    return -1; 
+}
 void MusicWheel::GroupSwitch()
 {
 	CString sThisItemSectionName = m_CurWheelItemData[m_iSelection]->m_sSectionName;
-	bool change_music = false;
+
+	if(m_CurWheelItemData[m_iSelection]->m_Type==TYPE_SONG) //jump to the group
+	{
+		// m_sExpandedSectionName="";
+		m_CurWheelItemData.size();
+		int n = HeadofSection();
+		if(n>-1)
+		{
+			Move(n-m_iSelection);
+			Move(0);
+		}
+	}
 	if( m_sExpandedSectionName == sThisItemSectionName )	// already expanded
 		m_sExpandedSectionName = "";		// collapse it
 	else				// already collapsed
 		m_sExpandedSectionName = sThisItemSectionName;	// expand it
-	if(m_CurWheelItemData[m_iSelection]->m_Type==TYPE_SONG) //close this group
-	{
-		m_sExpandedSectionName="";
-		change_music = true;
-	}	
+	
 	m_soundExpand.Play();
+
 	SetOpenGroup(m_sExpandedSectionName);
-	if(change_music)
-		ChangeMusic(m_Moving);
 } 
 void MusicWheel::StartRoulette() 
 {
