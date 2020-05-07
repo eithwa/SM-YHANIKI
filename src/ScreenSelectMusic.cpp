@@ -877,6 +877,24 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 
 	if( m_bMadeChoice )		return;		// ignore
 
+	if( MenuI.button == MENU_BUTTON_UP || MenuI.button == MENU_BUTTON_DOWN )
+	{
+
+		/* If we're rouletting, hands off. */
+		if(m_MusicWheel.IsRouletting())
+			return;
+
+		// TRICKY:  There's lots of weirdness that can happen here when tapping 
+		// Left and Right quickly, like when changing sort.
+		bool bUpPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_UP) );
+		bool bDownPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_DOWN) );
+		bool bUpAndDownPressed = bUpPressed && bDownPressed;
+		if(bUpAndDownPressed && type==IET_FIRST_PRESS)
+		{
+			m_MusicWheel.GroupSwitch();
+			type=IET_RELEASE;
+		}
+	}
 	if( MenuI.button == MENU_BUTTON_RIGHT || MenuI.button == MENU_BUTTON_LEFT )
 	{
 

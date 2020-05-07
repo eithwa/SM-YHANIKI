@@ -571,9 +571,14 @@ void ScreenEdit::Update( float fDeltaTime )
 		const float fSeconds = m_soundMusic.GetPositionSeconds( NULL, &tm );
 		GAMESTATE->UpdateSongPosition( fSeconds, GAMESTATE->m_pCurSong->m_Timing, tm );
 	}
-	if( m_EditMode == MODE_EDITING && PREFSMAN->m_bEditorAutosaveMinute>0 )
+	if( m_EditMode == MODE_EDITING  )
 	{
-		AutoSave();
+		if(PREFSMAN->m_bEditorAutosaveMinute>0)
+		{
+			AutoSave();
+		}
+		m_LyricDisplay.SetZoom(0);
+		
 	}
 	if( m_EditMode == MODE_RECORDING  )	
 	{
@@ -605,6 +610,7 @@ void ScreenEdit::Update( float fDeltaTime )
 
 	if( m_EditMode == MODE_RECORDING  ||  m_EditMode == MODE_PLAYING )
 	{
+		m_LyricDisplay.SetZoom(1);
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.Update( fDeltaTime );
@@ -683,7 +689,7 @@ void ScreenEdit::Update( float fDeltaTime )
 	PlayTicks();
 	if( m_EditMode == MODE_EDITING)
 	{
-		m_soundAssistTick.Stop();
+		m_soundAssistTick.Stop(); 
 	}
 }
 
