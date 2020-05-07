@@ -1304,15 +1304,20 @@ bool MusicWheel::Select()	// return true if this selection ends the screen
 void MusicWheel::GroupSwitch()
 {
 	CString sThisItemSectionName = m_CurWheelItemData[m_iSelection]->m_sSectionName;
+	bool change_music = false;
 	if( m_sExpandedSectionName == sThisItemSectionName )	// already expanded
 		m_sExpandedSectionName = "";		// collapse it
 	else				// already collapsed
 		m_sExpandedSectionName = sThisItemSectionName;	// expand it
 	if(m_CurWheelItemData[m_iSelection]->m_Type==TYPE_SONG) //close this group
+	{
 		m_sExpandedSectionName="";
+		change_music = true;
+	}	
 	m_soundExpand.Play();
-
 	SetOpenGroup(m_sExpandedSectionName);
+	if(change_music)
+		ChangeMusic(m_Moving);
 } 
 void MusicWheel::StartRoulette() 
 {
