@@ -25,6 +25,7 @@
 #include "Foreach.h"
 #include "Style.h"
 #include "NetworkSyncManager.h"
+#include <ctime>
 
 const int NUM_SCORE_DIGITS	=	9;
 const ScreenMessage SM_BackFromSelectSongs	        = ScreenMessage(SM_User+8);
@@ -725,7 +726,7 @@ void ScreenSelectMusic::Update( float fDeltaTime )
 
 	CheckBackgroundRequests();
 }
-
+static time_t start_time = time(0);
 void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, const GameInput &GameI, const MenuInput &MenuI, const StyleInput &StyleI )
 {
 //	LOG->Trace( "ScreenSelectMusic::Input()" );
@@ -876,10 +877,9 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		return;		// ignore
 
 	if( m_bMadeChoice )		return;		// ignore
-
+	
 	if( MenuI.button == MENU_BUTTON_UP || MenuI.button == MENU_BUTTON_DOWN )
 	{
-
 		/* If we're rouletting, hands off. */
 		if(m_MusicWheel.IsRouletting())
 			return;
@@ -889,10 +889,17 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		bool bUpPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_UP) );
 		bool bDownPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_DOWN) );
 		bool bUpAndDownPressed = bUpPressed && bDownPressed;
-		if(bUpAndDownPressed && type==IET_FIRST_PRESS)
+
+		time_t now = time(0);
+		
+		if(bUpAndDownPressed)
 		{
-			m_MusicWheel.GroupSwitch();
-			type=IET_RELEASE;
+			if(now-start_time>0.5)
+			{
+				m_MusicWheel.GroupSwitch();
+				type=IET_RELEASE;
+				start_time = now;
+			}
 		}
 	}
 	if( MenuI.button == MENU_BUTTON_RIGHT || MenuI.button == MENU_BUTTON_LEFT )

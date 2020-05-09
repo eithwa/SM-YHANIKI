@@ -832,6 +832,7 @@ void StepManiaLanServer::ShareSong(unsigned int ShareSongServerNum, unsigned int
 	CString host_ip = ServerIp;
 	if(Client[clientNum]->hasSong == true//the player have song and another doesn't
 	&& Client[clientNum]->usingShareSongSystem == false
+	&& Client[clientNum]->inNetMusicSelect == true
 	&& clientNum!=client_index 
 	&& client_index<Client.size())
 	{
@@ -862,6 +863,7 @@ void StepManiaLanServer::ShareAll(unsigned int ShareSongServerNum, CString Serve
 		if(i!=0&&
 		   Client[i]->hasSong==false&&
 		   Client[i]->usingShareSongSystem==false&&
+		   Client[i]->inNetMusicSelect == true&&
 		   i!=ShareSongServerNum)
 		   {
 			   ShareSong(ShareSongServerNum, i, ServerIp);

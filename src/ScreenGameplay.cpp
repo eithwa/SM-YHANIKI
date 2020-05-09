@@ -319,7 +319,9 @@ void ScreenGameplay::Init()
 			GAMESTATE->m_PlayMode != PLAY_MODE_BATTLE &&
 			GAMESTATE->m_PlayMode != PLAY_MODE_RAVE &&
 			GAMESTATE->GetCurrentStyle()->m_StyleType == Style::ONE_PLAYER_ONE_CREDIT )
+		{
 			fPlayerX = SCREEN_WIDTH/2;
+		}
 
 		m_Player[p].SetName( ssprintf("Player%i", p+1) );
 		m_Player[p].SetX( fPlayerX );
