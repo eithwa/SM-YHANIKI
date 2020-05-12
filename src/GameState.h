@@ -108,6 +108,7 @@ public:
 	Difficulty		m_PreferredDifficulty[NUM_PLAYERS];
 	SortOrder	m_SortOrder;			// used by MusicWheel
 	bool			m_bEditing;			// NoteField does special stuff when this is true
+	bool            m_bMute;
 	bool			m_bLoadPackConnect;
 	bool			m_bfastLoadInScreenSelectMusic;
 	bool            m_bUsingAutoPlay;
