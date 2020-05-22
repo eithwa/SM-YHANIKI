@@ -518,7 +518,7 @@ void MusicWheel::BuildWheelItemDatas( vector<WheelItemData> &arrayWheelItemDatas
 			if( (int) arraySongs.size() > MOST_PLAYED_SONGS_TO_SHOW )
 				arraySongs.erase( arraySongs.begin()+MOST_PLAYED_SONGS_TO_SHOW, arraySongs.end() );
 			if(index+1 > MOST_PLAYED_SONGS_TO_SHOW ){
-				arraySongs.push_back(GAMESTATE->m_pPreferredSong);
+					arraySongs.push_back(GAMESTATE->m_pPreferredSong);
 				// LOG->Info("psuh %d %d, %s", index, MOST_PLAYED_SONGS_TO_SHOW, GAMESTATE->m_pPreferredSong->GetTranslitMainTitle().c_str());
 			}
 			bUseSections = false;

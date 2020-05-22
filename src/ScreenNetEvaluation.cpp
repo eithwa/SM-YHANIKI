@@ -129,12 +129,14 @@ void ScreenNetEvaluation::HandleScreenMessage( const ScreenMessage SM )
 		{
 			if(i==m_iCurrentPlayer)
 			{
+				COMMAND( m_textUsers[i], "Sel" );
 				CString CurPlayer = "> ";
 				CurPlayer +=PlayerNames_temp[NSMAN->m_EvalPlayerData[m_iCurrentPlayer].name];
 				CurPlayer +=" <";
 				m_textUsers[i].SetText( CurPlayer );
 			}else
 			{
+				COMMAND( m_textUsers[i], "DeSel" );
 				m_textUsers[i].SetText( PlayerNames_temp[NSMAN->m_EvalPlayerData[i].name] );
 			}
 			if ( NSMAN->m_EvalPlayerData[i].grade < GRADE_TIER_3 )	//Yes, hardcoded (I'd like to leave it that way)
