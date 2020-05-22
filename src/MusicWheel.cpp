@@ -227,6 +227,7 @@ void MusicWheel::Load()
 
 	// rebuild the WheelItems that appear on screen
 	RebuildMusicWheelItems();
+	
 }
 
 MusicWheel::~MusicWheel()
@@ -511,10 +512,18 @@ void MusicWheel::BuildWheelItemDatas( vector<WheelItemData> &arrayWheelItemDatas
 			SongUtil::SortSongPointerArrayByBPM( arraySongs );
 			break;
 		case SORT_MOST_PLAYED:
+		{
+			int index = FindIndex( arraySongs.begin(), arraySongs.end(), GAMESTATE->m_pPreferredSong );
+			// LOG->Info("GetNumStagesForSong %d %d, %s", index, MOST_PLAYED_SONGS_TO_SHOW, GAMESTATE->m_pPreferredSong->GetTranslitMainTitle().c_str());
 			if( (int) arraySongs.size() > MOST_PLAYED_SONGS_TO_SHOW )
 				arraySongs.erase( arraySongs.begin()+MOST_PLAYED_SONGS_TO_SHOW, arraySongs.end() );
+			if(index+1 > MOST_PLAYED_SONGS_TO_SHOW ){
+				arraySongs.push_back(GAMESTATE->m_pPreferredSong);
+				// LOG->Info("psuh %d %d, %s", index, MOST_PLAYED_SONGS_TO_SHOW, GAMESTATE->m_pPreferredSong->GetTranslitMainTitle().c_str());
+			}
 			bUseSections = false;
 			break;
+		}
 		case SORT_GRADE:
 			SongUtil::SortSongPointerArrayByGrade( arraySongs );
 			break;
@@ -780,6 +789,7 @@ void MusicWheel::SetItemPosition( Actor &item, float fPosOffsetsFromMiddle )
 void MusicWheel::RebuildMusicWheelItems()
 {
 	// rewind to first index that will be displayed;
+	
 	int iIndex = m_iSelection;
 	if( m_iSelection > int(m_CurWheelItemData.size()-1) )
 		m_iSelection = 0;
@@ -803,7 +813,10 @@ void MusicWheel::RebuildMusicWheelItems()
 		if( iIndex > int(m_CurWheelItemData.size()-1) )
 			iIndex = 0;
 	}
-
+	if(GAMESTATE->m_SortOrder!=SORT_MOST_PLAYED)
+	{
+		BuildWheelItemDatas( m_WheelItemDatas[SORT_MOST_PLAYED], SortOrder(SORT_MOST_PLAYED) );
+	}
 }
 
 void MusicWheel::NotesOrTrailChanged( PlayerNumber pn )	// update grade graphics and top score
