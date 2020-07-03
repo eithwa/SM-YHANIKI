@@ -1713,13 +1713,13 @@ void ScreenGameplay::MoveSpeed(PlayerNumber n, int move)
 {
 	PlayerSpeed[n]+=move;
 
-	if(PlayerSpeed[n] == GAMESTATE->m_SpeedList.size() )
-	{
-		PlayerSpeed[n] = 0;
-	}
 	if(PlayerSpeed[n] < 0)
 	{
 		PlayerSpeed[n] = GAMESTATE->m_SpeedList.size() - 1;
+	}
+	if(PlayerSpeed[n] >= GAMESTATE->m_SpeedList.size() )
+	{
+		PlayerSpeed[n] = 0;
 	}
 
 	CString sBit = GAMESTATE->m_SpeedList[PlayerSpeed[n]];
@@ -1746,8 +1746,8 @@ void ScreenGameplay::MoveSpeed(PlayerNumber n, int move)
 
 		CString m_sModifiers;
 		m_sModifiers += GAMESTATE->m_SpeedList[PlayerSpeed[n]];
-		// m_sModifiers += ",";
-		// m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
+		m_sModifiers += ", ";
+		m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
 		// GAMESTATE->m_StoredPlayerOptions[n].FromString(m_sModifiers);
 		m_textPlayerOptions[n].SetText( m_sModifiers );
 		m_ActiveAttackList[n].Refresh();
@@ -1773,8 +1773,8 @@ void ScreenGameplay::MoveSpeed(PlayerNumber n, int move)
 
 		CString m_sModifiers;
 		m_sModifiers += GAMESTATE->m_SpeedList[PlayerSpeed[n]];
-		// m_sModifiers += ",";
-		// m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
+		m_sModifiers += ", ";
+		m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
 		// GAMESTATE->m_StoredPlayerOptions[n].FromString(m_sModifiers);
 		m_textPlayerOptions[n].SetText( m_sModifiers );
 		m_ActiveAttackList[n].Refresh();
