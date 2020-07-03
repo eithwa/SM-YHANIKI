@@ -12,12 +12,13 @@ public:
 	virtual void DrawPrimitives();
 	virtual void Input( const DeviceInput& DeviceI, const InputEventType type, const GameInput &GameI, const MenuInput &MenuI, const StyleInput &StyleI );
 	virtual void HandleScreenMessage( const ScreenMessage SM );
-
+	void UpdateDisqualified();
+	
 private:
 	void GoToNextState();
 	void GoToPrevState();
 
-	void UpdateDisqualified();
+	// void UpdateDisqualified();
 
 	bool        m_bAcceptedChoices;
 	bool        m_bGoToOptions;

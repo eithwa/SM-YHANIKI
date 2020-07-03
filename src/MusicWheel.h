@@ -72,7 +72,7 @@ public:
 	void RebuildMusicWheelItems();
 
 	Song *GetPreferredSelectionForRandomOrPortal();
-
+	Song* GetGroupSong(CString group, SortOrder so = SORT_INVALID, int number = 0);
 protected:
 	void GetSongList(vector<Song*> &arraySongs, SortOrder so, CString sPreferredGroup );
 	void BuildWheelItemDatas( vector<WheelItemData> &arrayWheelItems, SortOrder so );

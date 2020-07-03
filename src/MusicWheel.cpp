@@ -1338,7 +1338,7 @@ void MusicWheel::GroupSwitch()
 	if(m_CurWheelItemData[m_iSelection]->m_Type==TYPE_SONG) //jump to the group
 	{
 		// m_sExpandedSectionName="";
-		m_CurWheelItemData.size();
+		// m_CurWheelItemData.size();
 		int n = HeadofSection();
 		if(n>-1)
 		{
@@ -1383,7 +1383,39 @@ void MusicWheel::StartRandom()
 	this->Select();
 	RebuildMusicWheelItems();
 }
+Song* MusicWheel::GetGroupSong(CString group, SortOrder so, int number)
+{
+	if( so == SORT_INVALID)
+		so = GAMESTATE->m_SortOrder;
 
+	vector<WheelItemData> &from = m_WheelItemDatas[so];
+
+	int n = 0;
+	for( unsigned i = 0; i < from.size(); ++i )
+	{
+		WheelItemData &d = from[i];
+		if( (d.m_Type == TYPE_SONG || d.m_Type == TYPE_COURSE) &&
+		     !d.m_sSectionName.empty() &&
+			 d.m_sSectionName != group )
+			 continue;
+
+		/* Only show tutorial songs in arcade */
+		if( GAMESTATE->m_PlayMode!=PLAY_MODE_REGULAR && 
+			d.m_pSong &&
+			d.m_pSong->IsTutorial() )
+			continue;
+		
+		if(n==number&&d.m_pSong)
+		{
+			return d.m_pSong;
+		}
+		if(d.m_pSong)
+		{
+			n++;
+		}
+	}
+	return NULL;
+}
 void MusicWheel::SetOpenGroup(CString group, SortOrder so)
 {
 	if( so == SORT_INVALID)
@@ -1593,7 +1625,6 @@ Song* MusicWheel::GetSelectedSong()
 	case TYPE_PORTAL:
 		return GetPreferredSelectionForRandomOrPortal();
 	}
-
 	return m_CurWheelItemData[m_iSelection]->m_pSong;
 }
 

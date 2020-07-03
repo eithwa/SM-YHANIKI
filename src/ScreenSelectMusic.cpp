@@ -767,30 +767,39 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 	   && bHoldingCtrl
 	   )
 	{
-		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
+		if(GAMESTATE->m_SortOrder == SORT_GROUP && m_MusicWheel.GetSelectedType()!=TYPE_RANDOM)
 		{
-			Song* pSong = m_MusicWheel.GetSelectedSong();
-			GAMESTATE->m_pCurSong=pSong;
-			GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
-			GAMESTATE->m_pPreferredSong=pSong;
-			FOREACH_HumanPlayer( pn )
+			Song* pSong = NULL;
+			if(m_MusicWheel.GetSelectedType() == TYPE_SONG)
 			{
-				Profile* pProfile = PROFILEMAN->GetProfile(pn);
-				if( GAMESTATE->m_pPreferredSong )
-					pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
-				if( GAMESTATE->m_pPreferredCourse )
-					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+				pSong = m_MusicWheel.GetSelectedSong();
+			}
+			else if(m_MusicWheel.GetSelectedType() == TYPE_SECTION)
+			{
+				//get group first song
+				pSong = m_MusicWheel.GetGroupSong(m_MusicWheel.GetSelectedSection());
+				// CString test = m_MusicWheel.GetSelectedSection();
+				// LOG->Info("GetSelectedSection %s", test.c_str());
+				// GAMESTATE->m_pCurSongGroup=m_MusicWheel.GetSelectedSection();
+			}
+			if(pSong!=NULL)
+			{
+				GAMESTATE->m_pCurSong=pSong;
+				GAMESTATE->m_pPreferredSong=pSong;
+				GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
+				FOREACH_HumanPlayer( pn )
+				{
+					Profile* pProfile = PROFILEMAN->GetProfile(pn);
+					if( GAMESTATE->m_pPreferredSong )
+						pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
+					if( GAMESTATE->m_pPreferredCourse )
+						pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+				}
+				GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
+				// LOG->Info("Reload package group");
+				SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 			}
 		}
-		else
-		{
-			GAMESTATE->m_pCurSong = NULL;
-			GAMESTATE->m_pPreferredSong = NULL;
-		}
-
-		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
-		LOG->Info("Reload package group");
-		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 		return;
 	}
 	if(bHoldingF5 && !bHoldingCtrl)
@@ -810,11 +819,11 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
 			}
 		}
-		else
-		{
-			GAMESTATE->m_pCurSong = NULL;
-			GAMESTATE->m_pPreferredSong = NULL;
-		}
+		// else
+		// {
+		// 	GAMESTATE->m_pCurSong = NULL;
+		// 	GAMESTATE->m_pPreferredSong = NULL;
+		// }
 		// LOG->Info("GAMESTATE->m_pCurSongGroup %s",GAMESTATE->m_pCurSongGroup.c_str());
 		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
 		LOG->Info("fast Reload music");

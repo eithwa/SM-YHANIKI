@@ -83,11 +83,64 @@ const ScreenMessage	SM_StopHereWeGo			= ScreenMessage(SM_User+41);
 
 ScreenGameplay::ScreenGameplay( CString sName, bool bDemonstration ) : Screen(sName)
 {
+	ScreenOptionsMaster LoadSpeedData("ScreenPlayerOptions");
+	PlayerSpeed[0]=0;
+	PlayerSpeed[1]=0;
+	CheckSpeed();
 	GAMESTATE->m_bUsingAutoPlay = false;
 	m_bDemonstration = bDemonstration;
 	Init(); // work around horrible gcc bug 3187
 }
+void ScreenGameplay::CheckSpeed()
+{
+	for(int i=0; i<GAMESTATE->m_SpeedList.size(); i++)
+	{
+		CString sBit = GAMESTATE->m_SpeedList[i];
+		// LOG->Info("test %s", sBit.c_str());
+		TrimLeft(sBit);
+		TrimRight(sBit);
 
+		int i1;
+
+		Regex mult("^([0-9]+(\\.[0-9]+)?)x$");
+		vector<CString> matches;
+		if( mult.Compare(sBit, matches) )
+		{
+			float m_fTimeSpacing = 0.0f;
+			char *p = NULL;
+			float m_fScrollSpeed = strtof( matches[0], &p );
+			// head.ListEntries.push_back(OptionRowHandlers[i].ListEntries[j]);
+			FOREACH_EnabledPlayer(p)
+			{
+				if(GAMESTATE->m_PlayerOptions[p].m_fTimeSpacing == m_fTimeSpacing &&
+				   GAMESTATE->m_PlayerOptions[p].m_fScrollSpeed == m_fScrollSpeed
+				)
+				{
+					PlayerSpeed[p]=i;
+				}
+			}
+			// ASSERT( p != matches[0] );
+			continue;
+		}
+
+		else if( sscanf( sBit, "C%d", &i1 ) == 1 )
+		{
+			float m_fTimeSpacing = 1.0f;
+			float m_fScrollBPM = (float) i1;
+			// head.ListEntries.push_back(OptionRowHandlers[i].ListEntries[j]);
+			FOREACH_EnabledPlayer(p)
+			{
+				if(GAMESTATE->m_PlayerOptions[p].m_fTimeSpacing == m_fTimeSpacing &&
+				GAMESTATE->m_PlayerOptions[p].m_fScrollBPM == m_fScrollBPM
+				)
+				{
+					PlayerSpeed[p]=i;
+				}
+			}
+			continue;
+		}
+	}
+}
 void ScreenGameplay::Init()
 {
 	if( m_bDemonstration )
@@ -1656,6 +1709,77 @@ void ScreenGameplay::DrawPrimitives()
 	Screen::DrawPrimitives();
 }
 
+void ScreenGameplay::MoveSpeed(PlayerNumber n, int move) 
+{
+	PlayerSpeed[n]+=move;
+
+	if(PlayerSpeed[n] == GAMESTATE->m_SpeedList.size() )
+	{
+		PlayerSpeed[n] = 0;
+	}
+	if(PlayerSpeed[n] < 0)
+	{
+		PlayerSpeed[n] = GAMESTATE->m_SpeedList.size() - 1;
+	}
+
+	CString sBit = GAMESTATE->m_SpeedList[PlayerSpeed[n]];
+	// LOG->Info("test %s", sBit.c_str());
+	TrimLeft(sBit);
+	TrimRight(sBit);
+
+	int i1;
+
+	Regex mult("^([0-9]+(\\.[0-9]+)?)x$");
+	vector<CString> matches;
+	if( mult.Compare(sBit, matches) )
+	{
+		//float m_fTimeSpacing = 0.0f;
+		char *p = NULL;
+		float m_fScrollSpeed = strtof( matches[0], &p );
+
+		GAMESTATE->m_CurrentPlayerOptions[n].m_fTimeSpacing = 0.0f;
+		GAMESTATE->m_CurrentPlayerOptions[n].m_fScrollSpeed = m_fScrollSpeed;
+		GAMESTATE->m_PlayerOptions[n].m_fTimeSpacing = 0.0f;
+		GAMESTATE->m_PlayerOptions[n].m_fScrollSpeed = m_fScrollSpeed;
+		GAMESTATE->m_StoredPlayerOptions[n].m_fTimeSpacing = 0.0f;
+		GAMESTATE->m_StoredPlayerOptions[n].m_fScrollSpeed = m_fScrollSpeed;
+
+		CString m_sModifiers;
+		m_sModifiers += GAMESTATE->m_SpeedList[PlayerSpeed[n]];
+		// m_sModifiers += ",";
+		// m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
+		// GAMESTATE->m_StoredPlayerOptions[n].FromString(m_sModifiers);
+		m_textPlayerOptions[n].SetText( m_sModifiers );
+		m_ActiveAttackList[n].Refresh();
+		// GAMESTATE->ApplyModifiers( PLAYER_1, m_sModifiers );
+
+		ASSERT( p != matches[0] );
+	}
+
+	else if( sscanf( sBit, "C%d", &i1 ) == 1 )
+	{
+		//float m_fTimeSpacing = 1.0f;
+		float m_fScrollBPM = (float) i1;
+		
+		GAMESTATE->m_CurrentPlayerOptions[n].m_fTimeSpacing = 1.0f;
+		GAMESTATE->m_CurrentPlayerOptions[n].m_fScrollSpeed = 1.0f;
+		GAMESTATE->m_CurrentPlayerOptions[n].m_fScrollBPM = m_fScrollBPM;
+		GAMESTATE->m_PlayerOptions[n].m_fTimeSpacing = 1.0f;
+		GAMESTATE->m_PlayerOptions[n].m_fScrollSpeed = 1.0f;
+		GAMESTATE->m_PlayerOptions[n].m_fScrollBPM = m_fScrollBPM;
+		GAMESTATE->m_StoredPlayerOptions[n].m_fTimeSpacing = 1.0f;
+		GAMESTATE->m_StoredPlayerOptions[n].m_fScrollSpeed = 1.0f;
+		GAMESTATE->m_StoredPlayerOptions[n].m_fScrollBPM = m_fScrollBPM;
+
+		CString m_sModifiers;
+		m_sModifiers += GAMESTATE->m_SpeedList[PlayerSpeed[n]];
+		// m_sModifiers += ",";
+		// m_sModifiers += GAMESTATE->m_StoredPlayerOptions[n].GetString3();
+		// GAMESTATE->m_StoredPlayerOptions[n].FromString(m_sModifiers);
+		m_textPlayerOptions[n].SetText( m_sModifiers );
+		m_ActiveAttackList[n].Refresh();
+	}
+}
 
 void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType type, const GameInput &GameI, const MenuInput &MenuI, const StyleInput &StyleI )
 {
@@ -1748,6 +1872,30 @@ void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType typ
 	{
 		switch( DeviceI.button )
 		{
+		case KEY_F3:
+			if( GAMESTATE->m_PlayMode != PLAY_MODE_BATTLE &&
+				GAMESTATE->m_PlayMode != PLAY_MODE_RAVE &&
+				GAMESTATE->GetCurrentStyle()->m_StyleType == Style::ONE_PLAYER_ONE_CREDIT )
+			{
+				FOREACH_EnabledPlayer(p)
+				{
+					MoveSpeed(p, -1);
+					SCREENMAN->SystemMessage2( ssprintf("%s", GAMESTATE->m_SpeedList[PlayerSpeed[p]].c_str()));
+				}
+			}
+			break;
+		case KEY_F4:
+			if( GAMESTATE->m_PlayMode != PLAY_MODE_BATTLE &&
+				GAMESTATE->m_PlayMode != PLAY_MODE_RAVE &&
+				GAMESTATE->GetCurrentStyle()->m_StyleType == Style::ONE_PLAYER_ONE_CREDIT )
+			{
+				FOREACH_EnabledPlayer(p)
+				{
+					MoveSpeed(p, +1);
+					SCREENMAN->SystemMessage2( ssprintf("%s", GAMESTATE->m_SpeedList[PlayerSpeed[p]].c_str()));
+				}
+			}
+			break;
 		case KEY_F5:
 			this->HandleScreenMessage( SM_NotesEnded );
 			break;
@@ -1761,7 +1909,7 @@ void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType typ
 
 			/* Store this change, so it sticks if we change songs: */
 			GAMESTATE->m_StoredSongOptions.m_bAssistTick = GAMESTATE->m_SongOptions.m_bAssistTick;
-			
+			// SCREENMAN->SystemMessage( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 			m_textDebug.SetText( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 			m_textDebug.StopTweening();
 			m_textDebug.SetDiffuse( RageColor(1,1,1,1) );
