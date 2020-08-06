@@ -258,6 +258,14 @@ void PlayerMinus::Update( float fDeltaTime )
 	if( life != -1 )//without this function ,if use autoplay or simfiles no note will crash
 		g_CurStageStats.SetLifeRecordAt( m_PlayerNumber, life, g_CurStageStats.fAliveSeconds[m_PlayerNumber] );
 	//================
+	// if(GAMESTATE->m_pCurSong->GetFullDisplayTitle()=="666")
+	// {
+	// 	if(GAMESTATE->m_fMusicSeconds>85.87)
+	// 	{
+	// 		m_pNoteField->Cut666();
+	// 	}
+	// }
+	
 	//LOG->Trace( "PlayerMinus::Update(%f)", fDeltaTime );
 
 	if( GAMESTATE->m_pCurSong==NULL )

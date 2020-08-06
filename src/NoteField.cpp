@@ -403,6 +403,13 @@ float FindLastDisplayedBeat( PlayerNumber pn, int iLastPixelToDraw )
 	return fLastBeatToDraw;
 }
 
+void NoteField::Cut666()
+{
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[0].SetX(-116);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[1].SetX(-52);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[2].SetX(52);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[3].SetX(116);
+}
 
 void NoteField::DrawPrimitives()
 {
@@ -434,6 +441,7 @@ void NoteField::DrawPrimitives()
 	
 	float fFirstDrawScale = g_NoteFieldMode[m_PlayerNumber].m_fFirstPixelToDrawScale;
 	float fLastDrawScale = g_NoteFieldMode[m_PlayerNumber].m_fLastPixelToDrawScale;
+
 
 	iFirstPixelToDraw = (int)(iFirstPixelToDraw * fFirstDrawScale * fDrawScale);
 	iLastPixelToDraw = (int)(iLastPixelToDraw * fLastDrawScale * fDrawScale);
