@@ -70,6 +70,10 @@ GameState::GameState()
 			m_PlayerGraph[p][i]=0;
 		}
 	}
+	for(int i=0; i<48; i++)
+	{
+		m_fBeatNormalization.push_back(froundf( (float)i/48, NoteTypeToBeat(NOTE_TYPE_192ND) ));
+	}
 }
 
 GameState::~GameState()
@@ -133,6 +137,7 @@ void GameState::Reset()
 	m_SortOrder = SORT_INVALID;
 	m_PlayMode = PLAY_MODE_INVALID;
 	m_bEditing = false;
+	m_bMute = false;
 	m_bLoadPackConnect=false;
 	m_bfastLoadInScreenSelectMusic=false;
 	m_pCurSongGroup="";

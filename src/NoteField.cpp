@@ -273,6 +273,10 @@ void NoteField::DrawBPMText( const float fBeat, const float fBPM )
 	m_textMeasureNumber.SetHorizAlign( Actor::align_right );
 	m_textMeasureNumber.SetDiffuse( RageColor(1,0,0,1) );
 	m_textMeasureNumber.SetGlow( RageColor(1,1,1,cosf(RageTimer::GetTimeSinceStart()*2)/2+0.5f) );
+	if(GAMESTATE->m_bEditing)
+	{
+		m_textMeasureNumber.SetGlow( RageColor(1,1,1,0 ));
+	}
 	m_textMeasureNumber.SetText( ssprintf("%.3f", fBPM) );
 	m_textMeasureNumber.SetXY( -GetWidth()/2.f - 60, fYPos );
 	m_textMeasureNumber.Draw();
@@ -286,6 +290,10 @@ void NoteField::DrawFreezeText( const float fBeat, const float fSecs )
 	m_textMeasureNumber.SetHorizAlign( Actor::align_right );
 	m_textMeasureNumber.SetDiffuse( RageColor(0.8f,0.8f,0,1) );
 	m_textMeasureNumber.SetGlow( RageColor(1,1,1,cosf(RageTimer::GetTimeSinceStart()*2)/2+0.5f) );
+	if(GAMESTATE->m_bEditing)
+	{
+		m_textMeasureNumber.SetGlow( RageColor(1,1,1,0 ));
+	}
 	m_textMeasureNumber.SetText( ssprintf("%.3f", fSecs) );
 	m_textMeasureNumber.SetXY( -GetWidth()/2.f - 10, fYPos );
 	m_textMeasureNumber.Draw();
@@ -299,6 +307,10 @@ void NoteField::DrawBGChangeText( const float fBeat, const CString sNewBGName )
 	m_textMeasureNumber.SetHorizAlign( Actor::align_left );
 	m_textMeasureNumber.SetDiffuse( RageColor(0,1,0,1) );
 	m_textMeasureNumber.SetGlow( RageColor(1,1,1,cosf(RageTimer::GetTimeSinceStart()*2)/2+0.5f) );
+	if(GAMESTATE->m_bEditing)
+	{
+		m_textMeasureNumber.SetGlow( RageColor(1,1,1,0 ));
+	}
 	m_textMeasureNumber.SetText( sNewBGName );
 	m_textMeasureNumber.SetXY( +GetWidth()/2.f, fYPos );
 	m_textMeasureNumber.Draw();
@@ -391,6 +403,13 @@ float FindLastDisplayedBeat( PlayerNumber pn, int iLastPixelToDraw )
 	return fLastBeatToDraw;
 }
 
+void NoteField::Cut666()
+{
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[0].SetX(-116);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[1].SetX(-52);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[2].SetX(52);
+	g_NoteFieldMode[m_PlayerNumber].m_PositionTrack[3].SetX(116);
+}
 
 void NoteField::DrawPrimitives()
 {
@@ -422,6 +441,7 @@ void NoteField::DrawPrimitives()
 	
 	float fFirstDrawScale = g_NoteFieldMode[m_PlayerNumber].m_fFirstPixelToDrawScale;
 	float fLastDrawScale = g_NoteFieldMode[m_PlayerNumber].m_fLastPixelToDrawScale;
+
 
 	iFirstPixelToDraw = (int)(iFirstPixelToDraw * fFirstDrawScale * fDrawScale);
 	iLastPixelToDraw = (int)(iLastPixelToDraw * fLastDrawScale * fDrawScale);

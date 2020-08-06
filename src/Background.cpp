@@ -18,6 +18,8 @@
 #include "arch/arch.h"
 #include "BeginnerHelper.h"
 #include "StageStats.h"
+#include "GameState.h"
+#include "Style.h"
 
 #include <set>
 
@@ -357,6 +359,25 @@ void Background::LoadFromSong( const Song* pSong )
 						sBGName = STATIC_BACKGROUND;
 				}
 			}
+			if(GAMESTATE->GetCurrentStyle()->m_StyleType == Style::ONE_PLAYER_ONE_CREDIT)
+			{
+				float fLeftBrightness = 1-GAMESTATE->m_PlayerOptions[PLAYER_1].m_fCover;
+				float fRightBrightness = 1-GAMESTATE->m_PlayerOptions[PLAYER_2].m_fCover;
+				if(fLeftBrightness==0||fRightBrightness==0)
+				{
+					//========close video======
+					CString sExt = GetExtension(change.m_sBGName);
+					// LOG->Info("sExt %s %s", change.m_sBGName.c_str(), sExt.c_str());
+					if( sExt.CompareNoCase("avi")==0 ||
+						sExt.CompareNoCase("mpg")==0 ||
+						sExt.CompareNoCase("mpeg")==0 || 
+					 sExt.CompareNoCase("")==0) //for animation
+					{
+						continue;
+					}
+					//========================
+				}
+			}
 			
 			m_aBGChanges.push_back( change );
 		}
@@ -677,7 +698,7 @@ void BrightnessOverlay::SetActualBrightness()
 
 	fLeftBrightness *= PREFSMAN->m_fBGBrightness;
 	fRightBrightness *= PREFSMAN->m_fBGBrightness;
-
+	
 	if( !GAMESTATE->IsHumanPlayer(PLAYER_1) )
 		fLeftBrightness = fRightBrightness;
 	if( !GAMESTATE->IsHumanPlayer(PLAYER_2) )

@@ -378,6 +378,14 @@ void RageSoundManager::SetPrefs(float MixVol)
 {
 	g_SoundManMutex.Lock(); /* lock for access to MixVolume */
 	MixVolume = MixVol;
+	//===============
+	for (std::set<RageSound *>::iterator it=playing_sounds.begin(); it!=playing_sounds.end(); ++it)
+	{
+		RageSoundParams tmp= (*it)->GetParams();
+		tmp.m_Volume = MixVolume;
+		(*it)->SetParams(tmp);
+	}
+    //===============	
 	g_SoundManMutex.Unlock(); /* finished with MixVolume */
 }
 

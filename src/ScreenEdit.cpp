@@ -472,7 +472,7 @@ void ScreenEdit::PlayTicks()
 	fPositionSeconds += SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f;
 	const float fSongBeat = GAMESTATE->m_pCurSong->GetBeatFromElapsedTime( fPositionSeconds );
 
-	const int iSongRow = max( 0, BeatToNoteRowNotRounded( fSongBeat ) );
+	const int iSongRow = max( -1, BeatToNoteRowNotRounded( fSongBeat ) );
 	static int iRowLastCrossed = -1;
 	if( iSongRow < iRowLastCrossed )
 		iRowLastCrossed = iSongRow;
@@ -516,7 +516,53 @@ void ScreenEdit::AutoSave()
 		start_time = now;
 	}
 }
-
+float binarySearch2(float find)
+{ 
+	int MAX = GAMESTATE->m_fBeatNormalization.size();
+    int low = 0; 
+    int upper = MAX - 1;
+	vector<float> number;
+	number.assign(GAMESTATE->m_fBeatNormalization.begin(), GAMESTATE->m_fBeatNormalization.end());
+    while(low <= upper) { 
+		int mid = (low + upper) / 2;
+		//===========
+		if((mid+1)<=upper)
+		{
+			if(number[mid] < find && number[mid+1] > find)
+			{
+				if(abs(number[mid]-find)<abs(number[mid+1]-find))
+				{
+					return number[mid];
+				}else
+				{
+					return number[mid+1];
+				}
+			}
+		}
+		if((mid-1)>=low)
+		{
+			if(number[mid-1] < find && number[mid] > find)
+			{
+				if(abs(number[mid-1]-find)<abs(number[mid]-find))
+				{
+					return number[mid-1];
+				}else
+				{
+					return number[mid];
+				}
+			}
+		}
+		//===========
+        
+        if(number[mid] < find) 
+            low = mid+1; 
+        else if(number[mid] > find) 
+            upper = mid - 1; 
+        else //mid = find
+            return number[mid]; 
+    } 
+    return 999; 
+}
 void ScreenEdit::Update( float fDeltaTime )
 {
 	if( m_soundMusic.IsPlaying() )
@@ -525,9 +571,14 @@ void ScreenEdit::Update( float fDeltaTime )
 		const float fSeconds = m_soundMusic.GetPositionSeconds( NULL, &tm );
 		GAMESTATE->UpdateSongPosition( fSeconds, GAMESTATE->m_pCurSong->m_Timing, tm );
 	}
-	if( m_EditMode == MODE_EDITING && PREFSMAN->m_bEditorAutosaveMinute>0 )
+	if( m_EditMode == MODE_EDITING  )
 	{
-		AutoSave();
+		if(PREFSMAN->m_bEditorAutosaveMinute>0)
+		{
+			AutoSave();
+		}
+		m_LyricDisplay.SetZoom(0);
+		
 	}
 	if( m_EditMode == MODE_RECORDING  )	
 	{
@@ -559,6 +610,7 @@ void ScreenEdit::Update( float fDeltaTime )
 
 	if( m_EditMode == MODE_RECORDING  ||  m_EditMode == MODE_PLAYING )
 	{
+		m_LyricDisplay.SetZoom(1);
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.Update( fDeltaTime );
@@ -631,10 +683,14 @@ void ScreenEdit::Update( float fDeltaTime )
 			m_fTrailingBeat += fMoveDelta;
 		}
 	}
-
+	
 	m_NoteFieldEdit.Update( fDeltaTime );
 	UpdateAutoPlayText();
 	PlayTicks();
+	if( m_EditMode == MODE_EDITING)
+	{
+		m_soundAssistTick.Stop(); 
+	}
 }
 
 void ScreenEdit::UpdateTextInfo()
@@ -665,6 +721,22 @@ void ScreenEdit::UpdateTextInfo()
 	 * more precision here, add it.  I doubt there's a need for precise preview output,
 	 * though (it'd be nearly inaudible at the millisecond level, and it's approximate
 	 * anyway). */
+	float bpm_beat_temp = GAMESTATE->m_fSongBeat;
+	float tmp = binarySearch2((float)(bpm_beat_temp - (int)bpm_beat_temp));
+	if (tmp != 999)
+	{
+		bpm_beat_temp = (float)((int)bpm_beat_temp + tmp);
+	}
+
+	if (tmp != 999)
+	{
+		GAMESTATE->m_fSongBeat = bpm_beat_temp;
+	}
+	else
+	{
+		// m_fTrailingBeat = m_fTrailingBeat;
+	}
+	// LOG->Info("test %f", GAMESTATE->m_fSongBeat);
 	sText += ssprintf( "Current Beat:\n     %.6f\n",		GAMESTATE->m_fSongBeat );
 	sText += ssprintf( "Current Second:\n     %.6f\n",		m_pSong->GetElapsedTimeFromBeat(GAMESTATE->m_fSongBeat) );
 	sText += ssprintf( "Snap to:\n     %s\n",				sNoteType.c_str() );
@@ -1163,6 +1235,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		SCREENMAN->MiniMenu( &g_KeyboardShortcuts, SM_None );
 		break;
 	case KEY_F4:
+		// SCREENMAN->SystemMessage( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 		GAMESTATE->m_SongOptions.m_bAssistTick ^= 1;
 		break;
 	case KEY_F5:
@@ -1276,7 +1349,10 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			{
 				// create a new StopSegment
 				if( fStopDelta != 0)
+				{
+					// LOG->Info("edit stop %f", GAMESTATE->m_fSongBeat);
 					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStopDelta) );
+				}
 			}
 			else	// StopSegment being modified is m_Timing.m_StopSegments[i]
 			{
@@ -1502,6 +1578,7 @@ void ScreenEdit::InputPlay( const DeviceInput& DeviceI, const InputEventType typ
 			TransitionToEdit();
 			break;
 		case KEY_F4:
+			// SCREENMAN->SystemMessage( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 			GAMESTATE->m_SongOptions.m_bAssistTick ^= 1;
 			break;
 		case KEY_F8:
@@ -1746,6 +1823,9 @@ void ScreenEdit::HandleScreenMessage( const ScreenMessage SM )
 		m_pSteps = GAMESTATE->m_pCurSteps[PLAYER_1] = pSteps;
 		m_pSteps->GetNoteData( &m_NoteFieldEdit );
 
+		LyricsLoader LL;
+		if( GAMESTATE->m_pCurSong->HasLyrics()  )
+			LL.LoadFromLRCFile(GAMESTATE->m_pCurSong->GetLyricsPath(), *GAMESTATE->m_pCurSong);
 		break;
 	}
 	case SM_DoUpdateTextInfo:
@@ -2084,7 +2164,9 @@ void ScreenEdit::HandleMainMenuChoice( MainMenuChoice c, int* iAnswers )
 			break;
 		case edit_stop:
 			{
+				GAMESTATE->m_bClearText = true;
 				unsigned i;
+				
 				for( i=0; i<m_pSong->m_Timing.m_StopSegments.size(); i++ )
 				{
 					if( m_pSong->m_Timing.m_StopSegments[i].m_fStartBeat == GAMESTATE->m_fSongBeat )

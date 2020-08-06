@@ -20,6 +20,7 @@
 #include "RageLog.h"
 
 #include "SongUtil.h"
+#include "InputMapper.h"
 //==========
 #include "NoteField.h"
 #include <iostream>
@@ -369,125 +370,129 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 								  const GameInput& GameI, const MenuInput& MenuI,
 								  const StyleInput& StyleI )
 {
-	if( m_In.IsTransitioning() || m_Out.IsTransitioning() )
+	if (m_In.IsTransitioning() || m_Out.IsTransitioning())
 		return;
 
-	if( (type != IET_FIRST_PRESS) && (type != IET_SLOW_REPEAT) && (type != IET_FAST_REPEAT ) )
+	if ((type != IET_FIRST_PRESS) && (type != IET_SLOW_REPEAT) && (type != IET_FAST_REPEAT))
 		return;
 
-	if( DeviceI.button == KEY_RIGHT || DeviceI.button == KEY_LEFT )
+	if ((DeviceI.button == KEY_RIGHT || DeviceI.button == KEY_LEFT) ||
+		(MenuI.button == MENU_BUTTON_RIGHT || MenuI.button == MENU_BUTTON_LEFT))
 	{
 		// TRICKY:  There's lots of weirdness that can happen here when tapping 
 		// Left and Right quickly, like when changing sort.
-		bool bLeftAndRightPressed = 
-			INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LEFT)) &&
-			INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RIGHT));
+		bool bLeftAndRightPressed =
+			(INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LEFT)) &&
+				INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RIGHT))) ||
+				(INPUTMAPPER->IsButtonDown(MenuInput(MenuI.player, MENU_BUTTON_LEFT)) &&
+					INPUTMAPPER->IsButtonDown(MenuInput(MenuI.player, MENU_BUTTON_RIGHT)));
 
-		if(bLeftAndRightPressed)
+		if (bLeftAndRightPressed)
 		{
-			if(m_SelectMode==SelectGroup || m_SelectMode==SelectSong)
+			if (m_SelectMode == SelectGroup || m_SelectMode == SelectSong)
 			{
 				NSMAN->ReportNSSOnOff(0);
 				GAMESTATE->m_bEditing = true;
 				int j = m_iSongNum % m_vSongs.size();
 				GAMESTATE->m_pPreferredSong = m_vSongs[j];
-				SCREENMAN->AddNewScreenToTop( "ScreenSelectMusic", SM_BackFromSelectSongs );
+				SCREENMAN->AddNewScreenToTop("ScreenSelectMusic", SM_BackFromSelectSongs);
 				return;
 			}
 		}
 	}
-	if(DeviceI.button==KEY_LEFT)
+	if (DeviceI.button == KEY_LEFT)
 	{
-		MenuLeft(MenuI.player, type );
+		MenuLeft(MenuI.player, type);
 		return;
 	}
-	else if(DeviceI.button==KEY_RIGHT)
+	else if (DeviceI.button == KEY_RIGHT)
 	{
-		MenuRight(MenuI.player, type );
+		MenuRight(MenuI.player, type);
 		return;
 	}
-	else if(DeviceI.button==KEY_UP)
+	else if (DeviceI.button == KEY_UP)
 	{
-		MenuUp(MenuI.player, type );
+		MenuUp(MenuI.player, type);
 		return;
 	}
-	else if(DeviceI.button==KEY_DOWN)
+	else if (DeviceI.button == KEY_DOWN)
 	{
-		MenuDown(MenuI.player, type );
+		MenuDown(MenuI.player, type);
 		return;
 	}
-	bool bHoldingShift = 
+	bool bHoldingShift =
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT)) ||
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT));
 
-	bool bHoldingCtrl = 
+	bool bHoldingCtrl =
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)) ||
 		INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL)) ||
 		(!NSMAN->useSMserver);	//If we are disconnected, assume no chatting
 	bool input_check = false;
 
 	bool bHoldingF1 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F1));
-	if(bHoldingF1)
+	if (bHoldingF1)
 	{
-		GAMESTATE->m_bLoadPackConnect=true;
+		GAMESTATE->m_bLoadPackConnect = true;
 		NSMAN->ReportNSSOnOff(2);
 		GAMESTATE->m_bEditing = true;
 		// SCREENMAN->PopTopScreen();
-		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+		SCREENMAN->AddNewScreenToTop("ScreenReloadSongs", SM_BackFromReloadSongs);
 		return;
 	}
 	bool bHoldingF5 = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_F5));
-	if(bHoldingF5)
+	if (bHoldingF5)
 	{
 		NSMAN->ReportNSSOnOff(2);
 		GAMESTATE->m_bEditing = true;
 		// SCREENMAN->PopTopScreen();
-		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+		SCREENMAN->AddNewScreenToTop("ScreenReloadSongs", SM_BackFromReloadSongs);
 	}
 	// bool bHoldingtab = INPUTFILTER->IsBeingPressed(DeviceInput(DEVICE_KEYBOARD, KEY_TAB));
 
-	if(DeviceI.button==KEY_F8)
+	if (DeviceI.button == KEY_F8)
 	{
-		if(GAMESTATE->ScreenNetSelectMusicAlpha){
-			GAMESTATE->ScreenNetSelectMusicAlpha=false;
-		}else
+		if (GAMESTATE->ScreenNetSelectMusicAlpha) {
+			GAMESTATE->ScreenNetSelectMusicAlpha = false;
+		}
+		else
 		{
-			GAMESTATE->ScreenNetSelectMusicAlpha=true;
+			GAMESTATE->ScreenNetSelectMusicAlpha = true;
 		}
 	}
-	switch( DeviceI.button )
+	switch (DeviceI.button)
 	{
 	case KEY_ENTER:
 	case KEY_KP_ENTER:
 		if (!bHoldingCtrl)
 		{
-			if ( m_sTextInput != "" )
-				NSMAN->SendChat( m_sTextInput );
-			m_sTextInput="";
+			if (m_sTextInput != "")
+				NSMAN->SendChat(m_sTextInput);
+			m_sTextInput = "";
 			UpdateTextInput();
 			return;
 		}
 		break;
 	case KEY_BACK:
-		if(!m_sTextInput.empty())
-			m_sTextInput = m_sTextInput.erase( m_sTextInput.size()-1 );
+		if (!m_sTextInput.empty())
+			m_sTextInput = m_sTextInput.erase(m_sTextInput.size() - 1);
 		UpdateTextInput();
 		break;
-		
-	// case KEY_F1:
-	// 	{
-	// 		GAMESTATE->m_bLoadPackConnect=true;
-	// 	    NSMAN->ReportNSSOnOff(2);
-	// 		GAMESTATE->m_bEditing = true;
-	// 		// SCREENMAN->PopTopScreen();
-	// 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
-	// 	}
-	// 	break;
+
+		// case KEY_F1:
+		// 	{
+		// 		GAMESTATE->m_bLoadPackConnect=true;
+		// 	    NSMAN->ReportNSSOnOff(2);
+		// 		GAMESTATE->m_bEditing = true;
+		// 		// SCREENMAN->PopTopScreen();
+		// 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
+		// 	}
+		// 	break;
 	case KEY_F4:
-		{
-		    CheckChangeSong();
-		}
-		break;
+	{
+		CheckChangeSong();
+	}
+	break;
 	// case KEY_F5:
 	// 	{
 	// 	    NSMAN->ReportNSSOnOff(2);
@@ -495,50 +500,50 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 	// 		// SCREENMAN->PopTopScreen();
 	// 		SCREENMAN->AddNewScreenToTop( "ScreenReloadSongs", SM_BackFromReloadSongs );
 	// 	}
-		break;
+	break;
 	default:
 		char c;
 		c = DeviceI.ToChar();
-		if((int)DeviceI.button>0 && (int)DeviceI.button<127 )
+		if ((int)DeviceI.button > 0 && (int)DeviceI.button < 127)
 		{
-			input_check=true;
+			input_check = true;
 		}
-		if( bHoldingShift && !bHoldingCtrl )
+		if (bHoldingShift && !bHoldingCtrl)
 		{
 			c = (char)toupper(c);
 
-			switch( c )
+			switch (c)
 			{
-			case '`':	c='~';	break;
-			case '1':	c='!';	break;
-			case '2':	c='@';	break;
-			case '3':	c='#';	break;
-			case '4':	c='$';	break;
-			case '5':	c='%';	break;
-			case '6':	c='^';	break;
-			case '7':	c='&';	break;
-			case '8':	c='*';	break;
-			case '9':	c='(';	break;
-			case '0':	c=')';	break;
-			case '-':	c='_';	break;
-			case '=':	c='+';	break;
-			case '[':	c='{';	break;
-			case ']':	c='}';	break;
-			case '\'':	c='"';	break;
-			case '\\':	c='|';	break;
-			case ';':	c=':';	break;
-			case ',':	c='<';	break;
-			case '.':	c='>';	break;
-			case '/':	c='?';	break;
+			case '`':	c = '~';	break;
+			case '1':	c = '!';	break;
+			case '2':	c = '@';	break;
+			case '3':	c = '#';	break;
+			case '4':	c = '$';	break;
+			case '5':	c = '%';	break;
+			case '6':	c = '^';	break;
+			case '7':	c = '&';	break;
+			case '8':	c = '*';	break;
+			case '9':	c = '(';	break;
+			case '0':	c = ')';	break;
+			case '-':	c = '_';	break;
+			case '=':	c = '+';	break;
+			case '[':	c = '{';	break;
+			case ']':	c = '}';	break;
+			case '\'':	c = '"';	break;
+			case '\\':	c = '|';	break;
+			case ';':	c = ':';	break;
+			case ',':	c = '<';	break;
+			case '.':	c = '>';	break;
+			case '/':	c = '?';	break;
 			}
 		}
 
 		//Search list for given letter (to aide in searching)
-		if( bHoldingCtrl )
+		if (bHoldingCtrl)
 		{
 			c = (char)toupper(c);
-			for (int i=0; i<(int)m_vSongs.size(); ++i)
-				if ( (char) toupper(m_vSongs[i]->GetTranslitMainTitle().c_str()[0]) == (char) c )
+			for (int i = 0; i < (int)m_vSongs.size(); ++i)
+				if ((char)toupper(m_vSongs[i]->GetTranslitMainTitle().c_str()[0]) == (char)c)
 				{
 					m_iSongNum = i;
 					UpdateSongsListPos();
@@ -546,16 +551,16 @@ void ScreenNetSelectMusic::Input( const DeviceInput& DeviceI, const InputEventTy
 				}
 		}
 
-		if( (c >= ' ') && (!bHoldingCtrl) )
+		if ((c >= ' ') && (!bHoldingCtrl))
 		{
 			m_sTextInput += c;
 			UpdateTextInput();
 		}
 		break;
 	}
-	if(!input_check && DeviceI.button!=KEY_F1)
+	if (!input_check && DeviceI.button != KEY_F1)
 	{
-		Screen::Input( DeviceI, type, GameI, MenuI, StyleI );	// default input handler
+		Screen::Input(DeviceI, type, GameI, MenuI, StyleI);	// default input handler
 	}
 }
 bool ScreenNetSelectMusic::CheckHash(Song * temp_song)
@@ -1239,7 +1244,7 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 	for (i=m_iSongNum-m_iShowSongs; i<=m_iSongNum+m_iShowSongs; ++i)
 	{
 		j= i % m_vSongs.size();
-		SongsDisplay+=m_vSongs.at(j)->GetTranslitMainTitle();
+		SongsDisplay+=m_vSongs.at(j)->GetDisplayMainTitle();
 		if (i<m_iSongNum+m_iShowSongs)
 			SongsDisplay+='\n';
 	}
@@ -1247,8 +1252,8 @@ void ScreenNetSelectMusic::UpdateSongsListPos()
 
 	j= m_iSongNum % m_vSongs.size();
 
-	m_textArtist.SetText( m_vSongs[j]->GetTranslitArtist() );
-	m_textSubtitle.SetText( m_vSongs[j]->GetTranslitSubTitle() );
+	m_textArtist.SetText( m_vSongs[j]->GetDisplayArtist() );
+	m_textSubtitle.SetText( m_vSongs[j]->GetDisplaySubTitle() );
 	GAMESTATE->m_pCurSong = m_vSongs[j];
 
 	//Update the difficulty Icons

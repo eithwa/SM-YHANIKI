@@ -85,7 +85,7 @@ const ScreenMessage SM_PlayCheer				=	ScreenMessage(SM_User+6);
 
 ScreenEvaluation::ScreenEvaluation( CString sClassName ) : ScreenWithMenuElements(sClassName)
 {
-  LOG->Trace( "ScreenEvaluation::ScreenEvaluation" );
+	LOG->Trace( "ScreenEvaluation::ScreenEvaluation" );
 	Init(); // work around horrible gcc bug 3187
 	LOG->Trace( "exiting ScreenEvaluation::ScreenEvalaution" );
 }
@@ -410,13 +410,13 @@ void ScreenEvaluation::Init()
 					
 					m_textPlayerOptions[p].LoadFromFont( THEME->GetPathToF("Common normal") );
 					CString sPO;
-					if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
-					{
-						CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
-						if( s[s.GetLength()-1] == '0' )
-							s.erase(s.GetLength()-1);
-						sPO += s + "xMusic ";
-					}
+					// if(GAMESTATE->m_SongOptions.m_fMusicRate!=1)
+					// {
+					// 	CString s = ssprintf( "%2.2f", GAMESTATE->m_SongOptions.m_fMusicRate );
+					// 	if( s[s.GetLength()-1] == '0' )
+					// 		s.erase(s.GetLength()-1);
+					// 	sPO += s + "xMusic ";
+					// }
 					sPO += GAMESTATE->m_PlayerOptions[p].GetThemedString();
 					sPO.Replace( ", ", PLAYER_OPTIONS_SEPARATOR );
 					m_textPlayerOptions[p].SetName( ssprintf("PlayerOptionsP%d",p+1) );
@@ -950,7 +950,7 @@ void ScreenEvaluation::CommitScores(
 			hs.iScore = stageStats.iScore[p];
 			hs.fPercentDP = stageStats.GetPercentDancePoints( p );
 			hs.fSurviveSeconds = stageStats.fAliveSeconds[p];
-			hs.sModifiers = GAMESTATE->m_PlayerOptions[p].GetString();
+			hs.sModifiers = GAMESTATE->m_PlayerOptions[p].GetString2();
 			hs.dateTime = DateTime::GetNowDateTime();
 			hs.sPlayerGuid = PROFILEMAN->IsUsingProfile(p) ? PROFILEMAN->GetProfile(p)->m_sGuid : CString("");
 			hs.sMachineGuid = PROFILEMAN->GetMachineProfile()->m_sGuid;

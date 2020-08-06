@@ -57,7 +57,7 @@ const ScreenMessage SM_GoToAttractLoop		=	ScreenMessage(SM_User+13);
 ScreenTitleMenu::ScreenTitleMenu( CString sClassName ) : ScreenSelect( sClassName )
 {
 	LOG->Trace( "ScreenTitleMenu::ScreenTitleMenu()" );
-
+	SONGMAN->SortSongs();
 	// Don't show screen title menu (says "Press Start") 
 	// if there are 0 credits and inserted and CoinMode is pay.
 	if( PREFSMAN->GetCoinMode() == COIN_PAY  &&

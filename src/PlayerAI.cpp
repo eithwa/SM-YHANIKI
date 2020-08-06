@@ -18,6 +18,8 @@ struct TapScoreDistribution
 		float fCumulativePercent = 0;
 		for( int i=0; i<=TNS_MARVELOUS; i++ )
 		{
+			if(fPercent[i] >= 1.0)
+				return (TapNoteScore)i;
 			fCumulativePercent += fPercent[i];
 			if( fRand <= fCumulativePercent+1e-4 ) /* rounding error */
 				return (TapNoteScore)i;

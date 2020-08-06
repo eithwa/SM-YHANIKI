@@ -25,6 +25,7 @@
 #include "Foreach.h"
 #include "Style.h"
 #include "NetworkSyncManager.h"
+#include <ctime>
 
 const int NUM_SCORE_DIGITS	=	9;
 const ScreenMessage SM_BackFromSelectSongs	        = ScreenMessage(SM_User+8);
@@ -725,7 +726,7 @@ void ScreenSelectMusic::Update( float fDeltaTime )
 
 	CheckBackgroundRequests();
 }
-
+static time_t start_time = time(0);
 void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, const GameInput &GameI, const MenuInput &MenuI, const StyleInput &StyleI )
 {
 //	LOG->Trace( "ScreenSelectMusic::Input()" );
@@ -766,30 +767,39 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 	   && bHoldingCtrl
 	   )
 	{
-		if(m_MusicWheel.GetSelectedType()==TYPE_SONG)
+		if(GAMESTATE->m_SortOrder == SORT_GROUP && m_MusicWheel.GetSelectedType()!=TYPE_RANDOM)
 		{
-			Song* pSong = m_MusicWheel.GetSelectedSong();
-			GAMESTATE->m_pCurSong=pSong;
-			GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
-			GAMESTATE->m_pPreferredSong=pSong;
-			FOREACH_HumanPlayer( pn )
+			Song* pSong = NULL;
+			if(m_MusicWheel.GetSelectedType() == TYPE_SONG)
 			{
-				Profile* pProfile = PROFILEMAN->GetProfile(pn);
-				if( GAMESTATE->m_pPreferredSong )
-					pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
-				if( GAMESTATE->m_pPreferredCourse )
-					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+				pSong = m_MusicWheel.GetSelectedSong();
+			}
+			else if(m_MusicWheel.GetSelectedType() == TYPE_SECTION)
+			{
+				//get group first song
+				pSong = m_MusicWheel.GetGroupSong(m_MusicWheel.GetSelectedSection());
+				// CString test = m_MusicWheel.GetSelectedSection();
+				// LOG->Info("GetSelectedSection %s", test.c_str());
+				// GAMESTATE->m_pCurSongGroup=m_MusicWheel.GetSelectedSection();
+			}
+			if(pSong!=NULL)
+			{
+				GAMESTATE->m_pCurSong=pSong;
+				GAMESTATE->m_pPreferredSong=pSong;
+				GAMESTATE->m_pCurSongGroup=pSong->m_sGroupName;//only reload this group it will more faster
+				FOREACH_HumanPlayer( pn )
+				{
+					Profile* pProfile = PROFILEMAN->GetProfile(pn);
+					if( GAMESTATE->m_pPreferredSong )
+						pProfile->m_lastSong.FromSong( GAMESTATE->m_pPreferredSong );
+					if( GAMESTATE->m_pPreferredCourse )
+						pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
+				}
+				GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
+				// LOG->Info("Reload package group");
+				SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 			}
 		}
-		else
-		{
-			GAMESTATE->m_pCurSong = NULL;
-			GAMESTATE->m_pPreferredSong = NULL;
-		}
-
-		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
-		LOG->Info("Reload package group");
-		SCREENMAN->SetNewScreen( "ScreenReloadSongs" );
 		return;
 	}
 	if(bHoldingF5 && !bHoldingCtrl)
@@ -809,11 +819,11 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 					pProfile->m_lastCourse.FromCourse( GAMESTATE->m_pPreferredCourse );
 			}
 		}
-		else
-		{
-			GAMESTATE->m_pCurSong = NULL;
-			GAMESTATE->m_pPreferredSong = NULL;
-		}
+		// else
+		// {
+		// 	GAMESTATE->m_pCurSong = NULL;
+		// 	GAMESTATE->m_pPreferredSong = NULL;
+		// }
 		// LOG->Info("GAMESTATE->m_pCurSongGroup %s",GAMESTATE->m_pCurSongGroup.c_str());
 		GAMESTATE->m_bfastLoadInScreenSelectMusic=true;
 		LOG->Info("fast Reload music");
@@ -876,7 +886,31 @@ void ScreenSelectMusic::Input( const DeviceInput& DeviceI, InputEventType type, 
 		return;		// ignore
 
 	if( m_bMadeChoice )		return;		// ignore
+	
+	if( MenuI.button == MENU_BUTTON_UP || MenuI.button == MENU_BUTTON_DOWN )
+	{
+		/* If we're rouletting, hands off. */
+		if(m_MusicWheel.IsRouletting())
+			return;
 
+		// TRICKY:  There's lots of weirdness that can happen here when tapping 
+		// Left and Right quickly, like when changing sort.
+		bool bUpPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_UP) );
+		bool bDownPressed = INPUTMAPPER->IsButtonDown( MenuInput(MenuI.player, MENU_BUTTON_DOWN) );
+		bool bUpAndDownPressed = bUpPressed && bDownPressed;
+
+		time_t now = time(0);
+		
+		if(bUpAndDownPressed)
+		{
+			if(now-start_time>0.5)
+			{
+				m_MusicWheel.GroupSwitch();
+				type=IET_RELEASE;
+				start_time = now;
+			}
+		}
+	}
 	if( MenuI.button == MENU_BUTTON_RIGHT || MenuI.button == MENU_BUTTON_LEFT )
 	{
 

@@ -180,7 +180,216 @@ CString PlayerOptions::GetString() const
 		sReturn.erase( sReturn.GetLength()-2 );	// delete the trailing ", "
 	return sReturn;
 }
+CString PlayerOptions::GetString2() const
+{
+	CString sReturn;
 
+	if( !m_fTimeSpacing )
+	{
+		if( m_fScrollSpeed != 1 )
+		{
+			/* -> 1.00 */
+			CString s = ssprintf( "%2.2f", m_fScrollSpeed );
+			if( s[s.GetLength()-1] == '0' ) {
+				/* -> 1.0 */
+				s.erase(s.GetLength()-1);	// delete last char
+				if( s[s.GetLength()-1] == '0' ) {
+					/* -> 1 */
+					s.erase(s.GetLength()-2);	// delete last 2 chars
+				}
+			}
+			sReturn += s + "x, ";
+		}
+	}
+	else
+	{
+		CString s = ssprintf( "C%.0f", m_fScrollBPM );
+		sReturn += s + ", ";
+	}
+
+	sReturn += AddPart( m_fAccels[ACCEL_BOOST],		"Boost" );
+	sReturn += AddPart( m_fAccels[ACCEL_BRAKE],		"Brake" );
+	sReturn += AddPart( m_fAccels[ACCEL_WAVE],		"Wave" );
+	sReturn += AddPart( m_fAccels[ACCEL_EXPAND],	"Expand" );
+	sReturn += AddPart( m_fAccels[ACCEL_BOOMERANG],	"Boomerang" );
+
+	sReturn += AddPart( m_fEffects[EFFECT_DRUNK],	"Drunk" );
+	sReturn += AddPart( m_fEffects[EFFECT_DIZZY],	"Dizzy" );
+	sReturn += AddPart( m_fEffects[EFFECT_MINI],	"Mini" );
+	sReturn += AddPart( m_fEffects[EFFECT_FLIP],	"Flip" );
+	sReturn += AddPart( m_fEffects[EFFECT_TORNADO],	"Tornado" );
+	sReturn += AddPart( m_fEffects[EFFECT_TIPSY],	"Tipsy" );
+	sReturn += AddPart( m_fEffects[EFFECT_BUMPY],	"Bumpy" );
+	sReturn += AddPart( m_fEffects[EFFECT_BEAT],	"Beat" );
+
+	sReturn += AddPart( m_fAppearances[APPEARANCE_HIDDEN],	"Hidden" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_SUDDEN],	"Sudden" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_STEALTH],	"Stealth" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_BLINK],	"Blink" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_RANDOMVANISH],	"RandomVanish" );
+
+	sReturn += AddPart( m_fScrolls[SCROLL_REVERSE],		"Reverse" );
+	sReturn += AddPart( m_fScrolls[SCROLL_SPLIT],		"Split" );
+	sReturn += AddPart( m_fScrolls[SCROLL_ALTERNATE],	"Alternate" );
+	sReturn += AddPart( m_fScrolls[SCROLL_CROSS],		"Cross" );
+	sReturn += AddPart( m_fScrolls[SCROLL_CENTERED],	"Centered" );
+
+	sReturn += AddPart( m_fDark, "Dark");
+
+	sReturn += AddPart( m_fBlind,	"Blind");
+	sReturn += AddPart( m_fCover,	"Cover");
+
+	sReturn += AddPart( m_fPassmark, "Passmark");
+
+	if( m_bTurns[TURN_MIRROR] )			sReturn += "Mirror, ";
+	if( m_bTurns[TURN_LEFT] )			sReturn += "Left, ";
+	if( m_bTurns[TURN_RIGHT] )			sReturn += "Right, ";
+	if( m_bTurns[TURN_SHUFFLE] )		sReturn += "Shuffle, ";
+	if( m_bTurns[TURN_SUPER_SHUFFLE] )	sReturn += "SuperShuffle, ";
+
+	if( m_bTransforms[TRANSFORM_NOHOLDS] )	sReturn += "NoHolds, ";
+	if( m_bTransforms[TRANSFORM_NOMINES] )	sReturn += "NoMines, ";
+	if( m_bTransforms[TRANSFORM_LITTLE] )	sReturn += "Little, ";
+	if( m_bTransforms[TRANSFORM_WIDE] )		sReturn += "Wide, ";
+	if( m_bTransforms[TRANSFORM_BIG] )		sReturn += "Big, ";
+	if( m_bTransforms[TRANSFORM_QUICK] )	sReturn += "Quick, ";
+	if( m_bTransforms[TRANSFORM_BMRIZE] )	sReturn += "BMRize, ";
+	if( m_bTransforms[TRANSFORM_SKIPPY] )	sReturn += "Skippy, ";
+	if( m_bTransforms[TRANSFORM_MINES] )	sReturn += "Mines, ";
+	if( m_bTransforms[TRANSFORM_ECHO] )		sReturn += "Echo, ";
+	if( m_bTransforms[TRANSFORM_STOMP] )	sReturn += "Stomp, ";
+	if( m_bTransforms[TRANSFORM_PLANTED] )	sReturn += "Planted, ";
+	if( m_bTransforms[TRANSFORM_FLOORED] )	sReturn += "Floored, ";
+	if( m_bTransforms[TRANSFORM_TWISTER] )	sReturn += "Twister, ";
+	if( m_bTransforms[TRANSFORM_NOJUMPS] )	sReturn += "NoJumps, ";
+	if( m_bTransforms[TRANSFORM_NOHANDS] )	sReturn += "NoHands, ";
+	if( m_bTransforms[TRANSFORM_NOQUADS] )	sReturn += "NoQuads, ";
+
+	if( m_bProTiming )		sReturn += "ProTiming, ";
+
+	if( m_fSkew==1 && m_fPerspectiveTilt==-1 )
+		sReturn += "Incoming, ";
+	else if( m_fSkew==1 && m_fPerspectiveTilt==+1 )
+		sReturn += "Space, ";
+	else if( m_fSkew==0 && m_fPerspectiveTilt==-1 )
+		sReturn += "Hallway, ";
+	else if( m_fSkew==0 && m_fPerspectiveTilt==+1 )
+		sReturn += "Distant, ";
+
+	if( !m_sPositioning.empty() )
+		sReturn += m_sPositioning + ", ";
+	if( !m_sNoteSkin.empty()  &&  m_sNoteSkin.CompareNoCase("default")!=0 ){}
+		sReturn += m_sNoteSkin + ", ";
+
+	if( sReturn.GetLength() > 2 )
+		sReturn.erase( sReturn.GetLength()-2 );	// delete the trailing ", "
+	return sReturn;
+}
+CString PlayerOptions::GetString3() const
+{
+	CString sReturn;
+
+	// if( !m_fTimeSpacing )
+	// {
+	// 	if( m_fScrollSpeed != 1 )
+	// 	{
+	// 		/* -> 1.00 */
+	// 		CString s = ssprintf( "%2.2f", m_fScrollSpeed );
+	// 		if( s[s.GetLength()-1] == '0' ) {
+	// 			/* -> 1.0 */
+	// 			s.erase(s.GetLength()-1);	// delete last char
+	// 			if( s[s.GetLength()-1] == '0' ) {
+	// 				/* -> 1 */
+	// 				s.erase(s.GetLength()-2);	// delete last 2 chars
+	// 			}
+	// 		}
+	// 		sReturn += s + "x, ";
+	// 	}
+	// }
+	// else
+	// {
+	// 	CString s = ssprintf( "C%.0f", m_fScrollBPM );
+	// 	sReturn += s + ", ";
+	// }
+
+	sReturn += AddPart( m_fAccels[ACCEL_BOOST],		"Boost" );
+	sReturn += AddPart( m_fAccels[ACCEL_BRAKE],		"Brake" );
+	sReturn += AddPart( m_fAccels[ACCEL_WAVE],		"Wave" );
+	sReturn += AddPart( m_fAccels[ACCEL_EXPAND],	"Expand" );
+	sReturn += AddPart( m_fAccels[ACCEL_BOOMERANG],	"Boomerang" );
+
+	sReturn += AddPart( m_fEffects[EFFECT_DRUNK],	"Drunk" );
+	sReturn += AddPart( m_fEffects[EFFECT_DIZZY],	"Dizzy" );
+	sReturn += AddPart( m_fEffects[EFFECT_MINI],	"Mini" );
+	sReturn += AddPart( m_fEffects[EFFECT_FLIP],	"Flip" );
+	sReturn += AddPart( m_fEffects[EFFECT_TORNADO],	"Tornado" );
+	sReturn += AddPart( m_fEffects[EFFECT_TIPSY],	"Tipsy" );
+	sReturn += AddPart( m_fEffects[EFFECT_BUMPY],	"Bumpy" );
+	sReturn += AddPart( m_fEffects[EFFECT_BEAT],	"Beat" );
+
+	sReturn += AddPart( m_fAppearances[APPEARANCE_HIDDEN],	"Hidden" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_SUDDEN],	"Sudden" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_STEALTH],	"Stealth" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_BLINK],	"Blink" );
+	sReturn += AddPart( m_fAppearances[APPEARANCE_RANDOMVANISH],	"RandomVanish" );
+
+	sReturn += AddPart( m_fScrolls[SCROLL_REVERSE],		"Reverse" );
+	sReturn += AddPart( m_fScrolls[SCROLL_SPLIT],		"Split" );
+	sReturn += AddPart( m_fScrolls[SCROLL_ALTERNATE],	"Alternate" );
+	sReturn += AddPart( m_fScrolls[SCROLL_CROSS],		"Cross" );
+	sReturn += AddPart( m_fScrolls[SCROLL_CENTERED],	"Centered" );
+
+	sReturn += AddPart( m_fDark, "Dark");
+
+	sReturn += AddPart( m_fBlind,	"Blind");
+	sReturn += AddPart( m_fCover,	"Cover");
+
+	sReturn += AddPart( m_fPassmark, "Passmark");
+
+	if( m_bTurns[TURN_MIRROR] )			sReturn += "Mirror, ";
+	if( m_bTurns[TURN_LEFT] )			sReturn += "Left, ";
+	if( m_bTurns[TURN_RIGHT] )			sReturn += "Right, ";
+	if( m_bTurns[TURN_SHUFFLE] )		sReturn += "Shuffle, ";
+	if( m_bTurns[TURN_SUPER_SHUFFLE] )	sReturn += "SuperShuffle, ";
+
+	if( m_bTransforms[TRANSFORM_NOHOLDS] )	sReturn += "NoHolds, ";
+	if( m_bTransforms[TRANSFORM_NOMINES] )	sReturn += "NoMines, ";
+	if( m_bTransforms[TRANSFORM_LITTLE] )	sReturn += "Little, ";
+	if( m_bTransforms[TRANSFORM_WIDE] )		sReturn += "Wide, ";
+	if( m_bTransforms[TRANSFORM_BIG] )		sReturn += "Big, ";
+	if( m_bTransforms[TRANSFORM_QUICK] )	sReturn += "Quick, ";
+	if( m_bTransforms[TRANSFORM_BMRIZE] )	sReturn += "BMRize, ";
+	if( m_bTransforms[TRANSFORM_SKIPPY] )	sReturn += "Skippy, ";
+	if( m_bTransforms[TRANSFORM_MINES] )	sReturn += "Mines, ";
+	if( m_bTransforms[TRANSFORM_ECHO] )		sReturn += "Echo, ";
+	if( m_bTransforms[TRANSFORM_STOMP] )	sReturn += "Stomp, ";
+	if( m_bTransforms[TRANSFORM_PLANTED] )	sReturn += "Planted, ";
+	if( m_bTransforms[TRANSFORM_FLOORED] )	sReturn += "Floored, ";
+	if( m_bTransforms[TRANSFORM_TWISTER] )	sReturn += "Twister, ";
+	if( m_bTransforms[TRANSFORM_NOJUMPS] )	sReturn += "NoJumps, ";
+	if( m_bTransforms[TRANSFORM_NOHANDS] )	sReturn += "NoHands, ";
+	if( m_bTransforms[TRANSFORM_NOQUADS] )	sReturn += "NoQuads, ";
+
+	if( m_bProTiming )		sReturn += "ProTiming, ";
+
+	if( m_fSkew==1 && m_fPerspectiveTilt==-1 )
+		sReturn += "Incoming, ";
+	else if( m_fSkew==1 && m_fPerspectiveTilt==+1 )
+		sReturn += "Space, ";
+	else if( m_fSkew==0 && m_fPerspectiveTilt==-1 )
+		sReturn += "Hallway, ";
+	else if( m_fSkew==0 && m_fPerspectiveTilt==+1 )
+		sReturn += "Distant, ";
+
+	if( !m_sPositioning.empty() )
+		sReturn += m_sPositioning + ", ";
+	if( !m_sNoteSkin.empty()  &&  m_sNoteSkin.CompareNoCase("default")!=0 ){}
+		sReturn += m_sNoteSkin + ", ";
+
+	if( sReturn.GetLength() > 2 )
+		sReturn.erase( sReturn.GetLength()-2 );	// delete the trailing ", "
+	return sReturn;
+}
 /* Options are added to the current settings; call Init() beforehand if
  * you don't want this. */
 void PlayerOptions::FromString( CString sOptions )
@@ -625,7 +834,7 @@ CString PlayerOptions::ThemeMod( CString sOneMod )
 
 CString PlayerOptions::GetThemedString() const
 {
-	CString sMods = GetString();
+	CString sMods = GetString2();
 
 	CStringArray asMods;
 	split( sMods, ", ", asMods );

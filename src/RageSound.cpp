@@ -32,6 +32,7 @@
 #include "RageSoundReader_Preload.h"
 #include "RageSoundReader_Resample.h"
 #include "RageSoundReader_FileReader.h"
+#include "GameState.h"
 
 const int channels = 2;
 const int framesize = 2 * channels; /* 16-bit */
@@ -608,8 +609,9 @@ int RageSound::GetPCM( char *buffer, int size, int64_t frameno )
 void RageSound::StartPlaying()
 {
 	// If no volume is set, use the default.
-	if( m_Param.m_Volume == -1 )
-		m_Param.m_Volume = SOUNDMAN->GetMixVolume();
+	// if( m_Param.m_Volume == -1)
+	// 	m_Param.m_Volume = SOUNDMAN->GetMixVolume();
+	m_Param.m_Volume = SOUNDMAN->GetMixVolume();
 
 	ASSERT(!playing);
 

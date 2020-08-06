@@ -295,7 +295,7 @@ ScreenOptionsMaster::ScreenOptionsMaster( CString sClassName ):
 
 		OptionRowHandlers.push_back( hand );
 	}
-
+	SetSpeedList();
 	ASSERT( OptionRowHandlers.size() == asLineNames.size() );
 
 	Init( im, m_OptionRowAlloc, asLineNames.size() );
@@ -312,6 +312,52 @@ void SelectExactlyOne( int iSelection, vector<bool> &vbSelectedOut )
 		vbSelectedOut[i] = i==iSelection;
 }
 
+void ScreenOptionsMaster::SetSpeedList()
+{
+	if(OptionRowHandlers.size()==0) return;
+	OptionRowHandler head;
+	
+	for(int i=0; i<OptionRowHandlers.size(); i++)
+	{
+		if(OptionRowHandlers[i].type != ROW_LIST)continue;
+
+		for(int j=0; j<OptionRowHandlers[i].ListEntries.size(); j++)
+		{
+			CString sBit = OptionRowHandlers[i].ListEntries[j].m_sModifiers;
+			// LOG->Info("test %s", sBit.c_str());
+			TrimLeft(sBit);
+			TrimRight(sBit);
+	
+			int i1;
+
+			Regex mult("^([0-9]+(\\.[0-9]+)?)x$");
+			vector<CString> matches;
+			if( mult.Compare(sBit, matches) )
+			{
+				// m_fTimeSpacing = 0.0f;
+				//char *p = NULL;
+				//float m_fScrollSpeed = strtof( matches[0], &p );
+				head.ListEntries.push_back(OptionRowHandlers[i].ListEntries[j]);
+				//ASSERT( p != matches[0] );
+				continue;
+			}
+
+			else if( sscanf( sBit, "C%d", &i1 ) == 1 )
+			{
+				// m_fTimeSpacing = 1.0f;
+				//float m_fScrollBPM = (float) i1;
+				head.ListEntries.push_back(OptionRowHandlers[i].ListEntries[j]);
+				continue;
+			}
+		}
+	}
+	GAMESTATE->m_SpeedList.clear();
+	for(int i=0; i<head.ListEntries.size(); i++)
+	{
+		GAMESTATE->m_SpeedList.push_back(head.ListEntries[i].m_sModifiers);
+	}
+	// GAMESTATE->m_SpeedList = head;
+}
 void ScreenOptionsMaster::ImportOption( const OptionRowData &row, const OptionRowHandler &hand, PlayerNumber pn, int rowno, vector<bool> &vbSelectedOut )
 {
 	/* Figure out which selection is the default. */

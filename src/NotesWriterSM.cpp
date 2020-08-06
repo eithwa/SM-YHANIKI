@@ -74,7 +74,13 @@ void NotesWriterSM::WriteGlobalTags( RageFile &f, const Song &out )
 	{
 		const StopSegment &fs = out.m_Timing.m_StopSegments[i];
 
-		f.PutLine( ssprintf( "%.3f=%.3f", fs.m_fStartBeat, fs.m_fStopSeconds ) );
+		// f.PutLine( ssprintf( "%.3f=%.3f", fs.m_fStartBeat, fs.m_fStopSeconds ) );
+		//-----------------
+		float tmp = fs.m_fStartBeat;
+		if((int)(tmp*10000)%10>0)tmp = (tmp*1000/10*10+1)/1000;//exp:1.333->1.334
+		// LOG->Info("%f", tmp);
+		f.PutLine( ssprintf( "%.3f=%.3f", tmp, fs.m_fStopSeconds ) );
+		//-----------------
 		if( i != out.m_Timing.m_StopSegments.size()-1 )
 			f.Write( "," );
 	}
