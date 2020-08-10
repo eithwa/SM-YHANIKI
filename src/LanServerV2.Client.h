@@ -41,6 +41,7 @@ namespace Yhaniki {
 
         unique_ptr<CmdPortal<IClientCmd, IServerCmd>> portal_;
         queue<unique_ptr<IClientCmd>> cmds_;
+        CString name;
     };
 }
 
