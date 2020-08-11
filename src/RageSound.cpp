@@ -55,6 +55,7 @@ RageSoundParams::RageSoundParams():
 	speed_input_samples = speed_output_samples = 1;
 	AccurateSync = false;
 	StopMode = M_AUTO;
+	FromZero = false;
 }
 
 RageSound::RageSound():
