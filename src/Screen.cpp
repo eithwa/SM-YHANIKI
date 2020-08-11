@@ -8,6 +8,7 @@
 #include "ScreenManager.h"
 #include "GameSoundManager.h"
 #include "ProfileManager.h"
+#include "NetworkSyncManager.h"
 
 #define NEXT_SCREEN					THEME->GetMetric (m_sName,"NextScreen")
 #define PREV_SCREEN					THEME->GetMetric (m_sName,"PrevScreen")
@@ -185,6 +186,10 @@ bool Screen::ChangeCoinModeInput( const DeviceInput& DeviceI, const InputEventTy
 
 bool Screen::JoinInput( const DeviceInput& DeviceI, const InputEventType type, const GameInput &GameI, const MenuInput &MenuI, const StyleInput &StyleI )
 {
+	if(NSMAN->useSMserver && GAMESTATE->GetNumPlayersEnabled()>0)
+	{
+		return false;
+	}
 	if( !GAMESTATE->PlayersCanJoin() )
 		return false;
 

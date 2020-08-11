@@ -148,7 +148,7 @@ void NetworkSyncManager::PostStartUp(const CString& ServerIP)
 	m_packet.ClearPacket();
 	if( isLanServer )
 		LANserver->ServerUpdate();
-	// TODO: ¬O¦b«¢Åo?
+	// TODO: ï¿½Oï¿½bï¿½ï¿½ï¿½o?
 	{
 		//m_packet.ClearPacket();
 
@@ -981,8 +981,16 @@ void NetworkSyncManager::SendChat(const CString& message)
 	m_packet.Write1( NSCCM );
 	m_packet.WriteNT( message );
 	//NetPlayerClient->SendPack((char*)&m_packet.Data, m_packet.Position);
+	CString message_;
+	FOREACH_EnabledPlayer( pn ) 
+	{
+		message_+=GAMESTATE->GetPlayerDisplayName(pn);
+		break;
+	}
+	message_+=": ";
+	message_+=message;
 	NetPlayerClient->SendCmd(
-		make_unique<Yhaniki::ClientCmd::Chat>(message));
+		make_unique<Yhaniki::ClientCmd::Chat>(message_));
 }
 
 void NetworkSyncManager::ReportPlayerOptions()

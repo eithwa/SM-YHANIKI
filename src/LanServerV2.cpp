@@ -120,7 +120,8 @@ namespace Yhaniki {
 
         if (const auto message = client.Chatted()) {
             for (const auto& other : clients_)
-                other.SomeoneChat("123 " + *message);
+                // other.SomeoneChat("123 " + *message);
+                other.SomeoneChat(*message);
             return;
         }
     }
