@@ -23,7 +23,8 @@
 #include "CommonMetrics.h"
 #include "Game.h"
 #include "ScreenOptionsMasterPrefs.h"
-
+#include "RageSoundManager.h"
+#include "GameSoundManager.h"
 
 #define LOGO_ON_COMMAND				THEME->GetMetric("ScreenTitleMenu","LogoOnCommand")
 #define LOGO_HOME_ON_COMMAND		THEME->GetMetric("ScreenTitleMenu","LogoHomeOnCommand")
@@ -58,6 +59,7 @@ ScreenTitleMenu::ScreenTitleMenu( CString sClassName ) : ScreenSelect( sClassNam
 {
 	LOG->Trace( "ScreenTitleMenu::ScreenTitleMenu()" );
 	SONGMAN->SortSongs();
+	
 	// Don't show screen title menu (says "Press Start") 
 	// if there are 0 credits and inserted and CoinMode is pay.
 	if( PREFSMAN->GetCoinMode() == COIN_PAY  &&
@@ -194,6 +196,7 @@ ScreenTitleMenu::ScreenTitleMenu( CString sClassName ) : ScreenSelect( sClassNam
 	this->SortByDrawOrder();
 
 //	this->MoveToTail( &m_AttractOut );	// put it in the back so it covers up the stuff we just added
+	SOUNDMAN->SetPrefs( GAMESTATE->m_bMute ? 0 : PREFSMAN->m_fSoundVolume );
 }
 
 ScreenTitleMenu::~ScreenTitleMenu()
