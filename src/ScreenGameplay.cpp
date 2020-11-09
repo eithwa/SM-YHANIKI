@@ -1919,23 +1919,31 @@ void ScreenGameplay::Input( const DeviceInput& DeviceI, const InputEventType typ
 			break;
 		case KEY_F8:
 			{
-				PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
+				// PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
 				bool bIsHoldingShift = 
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT));
-                if(PREFSMAN->m_bAutoPlay)
+                if(PREFSMAN->m_iPlayerControllerType==1 && bIsHoldingShift)
 				{
-					if(bIsHoldingShift)
+					PREFSMAN->m_iPlayerControllerType = 2;
+				}
+				else
+				{
+					PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
+					if(PREFSMAN->m_bAutoPlay)
 					{
-						PREFSMAN->m_iPlayerControllerType = 2;
+						if(bIsHoldingShift)
+						{
+							PREFSMAN->m_iPlayerControllerType = 2;
+						}else
+						{
+							PREFSMAN->m_iPlayerControllerType = 1;
+						}
+						
 					}else
 					{
-						PREFSMAN->m_iPlayerControllerType = 1;
+						PREFSMAN->m_iPlayerControllerType = 0;
 					}
-					
-				}else
-				{
-					PREFSMAN->m_iPlayerControllerType = 0;
 				}
 				UpdateAutoPlayText();
 				// LOG->Info("PREFSMAN->m_iPlayerControllerType %d", PREFSMAN->m_iPlayerControllerType);
