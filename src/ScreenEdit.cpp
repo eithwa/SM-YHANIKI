@@ -421,7 +421,9 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	LyricsLoader LL;
 	if( GAMESTATE->m_pCurSong->HasLyrics()  )
 		LL.LoadFromLRCFile(GAMESTATE->m_pCurSong->GetLyricsPath(), *GAMESTATE->m_pCurSong);
-	
+
+	m_Foreground.SetDrawOrder( DRAW_ORDER_AFTER_EVERYTHING );	// on top of everything else, including transitions
+	this->AddChild( &m_Foreground );
 
 	start_time = time(0);
 }
@@ -1427,6 +1429,16 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			}
 		}
 		break;
+	case KEY_Cs:
+		{
+			if(INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)))
+			{
+				HandleMainMenuChoice( save, NULL );
+				time_t now = time(0);
+				start_time = now;
+			}
+		}
+		break;
 	case KEY_Cn:
 		{
 			if( INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RALT)) ||
@@ -1443,14 +1455,67 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 					}
 				}
 			}
+			else if(INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
+				    INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT)) )
+			{
+				unsigned i;
+				float fStop = 0.02;
+				bool sentinel = false;		//Tricky, we can't break out of this loop safely
+				for( i=0; (i<m_pSong->m_Timing.m_StopSegments.size()) && (!sentinel); i++ )
+				{
+					if( m_pSong->m_Timing.m_StopSegments[i].m_fStartBeat == GAMESTATE->m_fSongBeat )
+						sentinel = true;
+				}
+
+				if ( sentinel )
+					i--;
+
+				if(m_pSong->m_Timing.m_StopSegments.size()==0)
+				{
+					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStop ) );
+				}
+
+				else if( i == m_pSong->m_Timing.m_StopSegments.size())	// there is no BPMSegment at the current beat
+				{
+					// if ( fStop > 0 )
+					// 	m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStop ) );
+					float last_stop=m_pSong->m_Timing.m_StopSegments[m_pSong->m_Timing.m_StopSegments.size()-1].m_fStopSeconds;
+					for(int j=0; j<m_pSong->m_Timing.m_StopSegments.size()-1; j++)
+					{
+						if(m_pSong->m_Timing.m_StopSegments[j].m_fStartBeat<GAMESTATE->m_fSongBeat &&
+						   m_pSong->m_Timing.m_StopSegments[j+1].m_fStartBeat>GAMESTATE->m_fSongBeat)
+						   {
+							   last_stop=m_pSong->m_Timing.m_StopSegments[j].m_fStopSeconds;
+							   break;
+						   }
+					}
+					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, last_stop ) );
+				}
+				else if(m_pSong->m_Timing.m_StopSegments.size()!=0)	// StopSegment being modified is m_Timing.m_StopSegments[i]
+				{
+					m_pSong->m_Timing.m_StopSegments[i].m_fStopSeconds = 0;
+					if( m_pSong->m_Timing.m_StopSegments[i].m_fStopSeconds <= 0 )
+						m_pSong->m_Timing.m_StopSegments.erase( m_pSong->m_Timing.m_StopSegments.begin()+i,
+														m_pSong->m_Timing.m_StopSegments.begin()+i+1);
+				}
+			}
 			else if( INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL)) ||
 					 INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)) )
 			{			
 				float fBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
 				m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (-fBPM) );
 			} else {
-			float fMBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
-			m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (fMBPM+0.000001f) ); // make a BPMsegment label
+				if(!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RALT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LALT)) )
+				{
+					float fMBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
+					m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (fMBPM+0.000001f) ); // make a BPMsegment label
+				}	
+				
 			}
 		}
 		break;

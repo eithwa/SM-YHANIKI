@@ -519,6 +519,7 @@ void ScreenGameplay::Init()
 				m_Scoreboard[i2].SetText(NSMAN->m_Scoreboard[i2]);
 				m_Scoreboard[i2].SetVertAlign(align_top);
 				m_ShowScoreboard = true;
+				
 			}
 	}
 
@@ -2624,7 +2625,9 @@ void ScreenGameplay::TweenOnScreen()
 	if (m_ShowScoreboard)
 		FOREACH_NSScoreBoardColumn( sc )
 			ON_COMMAND( m_Scoreboard[sc] );
-
+	
+	// ON_COMMAND(m_LyricDisplay);
+	m_LyricDisplay.SetDrawOrder(1);
 	m_Overlay.PlayCommand("On");
 }
 
