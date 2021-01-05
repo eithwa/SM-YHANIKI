@@ -14,6 +14,7 @@
 #include "ThemeManager.h"
 #include "LightsManager.h"
 #include "song.h"
+#include "NetworkSyncManager.h"
 
 #define NEXT_SCREEN				THEME->GetMetric (m_sName,"NextScreen")
 #define MINIMUM_DELAY			THEME->GetMetricF(m_sName,"MinimumDelay")
@@ -131,7 +132,15 @@ void ScreenStage::HandleScreenMessage( const ScreenMessage SM )
 		break;
 	case SM_GoToPrevScreen:
 		SCREENMAN->DeletePreppedScreen();
-		SCREENMAN->SetNewScreen( "ScreenSelectMusic" );
+		if(NSMAN->useSMserver)
+		{
+			SCREENMAN->SetNewScreen( "ScreenNetSelectMusic" );
+		}
+		else
+		{
+			SCREENMAN->SetNewScreen( "ScreenSelectMusic" );
+		}
+		
 		break;
 	}
 }

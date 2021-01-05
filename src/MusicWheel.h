@@ -61,6 +61,8 @@ public:
 	void SetItemPosition( Actor &item, float fPosOffsetsFromMiddle );
 
 	bool Select();	// return true if this selection ends the screen
+	int HeadofSection();
+	void GroupSwitch();
 	WheelItemType	GetSelectedType()	{ return m_CurWheelItemData[m_iSelection]->m_Type; }
 	Song*			GetSelectedSong();
 	Course*			GetSelectedCourse()	{ return m_CurWheelItemData[m_iSelection]->m_pCourse; }
@@ -70,7 +72,7 @@ public:
 	void RebuildMusicWheelItems();
 
 	Song *GetPreferredSelectionForRandomOrPortal();
-
+	Song* GetGroupSong(CString group, SortOrder so = SORT_INVALID, int number = 0);
 protected:
 	void GetSongList(vector<Song*> &arraySongs, SortOrder so, CString sPreferredGroup );
 	void BuildWheelItemDatas( vector<WheelItemData> &arrayWheelItems, SortOrder so );

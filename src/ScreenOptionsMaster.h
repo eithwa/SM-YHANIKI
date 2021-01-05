@@ -48,6 +48,7 @@ private:
 	void SetStep( OptionRowData &row, OptionRowHandler &hand );
 	void SetConf( OptionRowData &row, OptionRowHandler &hand, CString param, CString &TitleOut );
 	void SetCharacter( OptionRowData &row, OptionRowHandler &hand );
+	void SetSpeedList();
 
 protected:
 	virtual void ImportOptions();

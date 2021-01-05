@@ -227,6 +227,7 @@ void MusicWheel::Load()
 
 	// rebuild the WheelItems that appear on screen
 	RebuildMusicWheelItems();
+	
 }
 
 MusicWheel::~MusicWheel()
@@ -511,10 +512,18 @@ void MusicWheel::BuildWheelItemDatas( vector<WheelItemData> &arrayWheelItemDatas
 			SongUtil::SortSongPointerArrayByBPM( arraySongs );
 			break;
 		case SORT_MOST_PLAYED:
+		{
+			int index = FindIndex( arraySongs.begin(), arraySongs.end(), GAMESTATE->m_pPreferredSong );
+			// LOG->Info("GetNumStagesForSong %d %d, %s", index, MOST_PLAYED_SONGS_TO_SHOW, GAMESTATE->m_pPreferredSong->GetTranslitMainTitle().c_str());
 			if( (int) arraySongs.size() > MOST_PLAYED_SONGS_TO_SHOW )
 				arraySongs.erase( arraySongs.begin()+MOST_PLAYED_SONGS_TO_SHOW, arraySongs.end() );
+			if(index+1 > MOST_PLAYED_SONGS_TO_SHOW ){
+					arraySongs.push_back(GAMESTATE->m_pPreferredSong);
+				// LOG->Info("psuh %d %d, %s", index, MOST_PLAYED_SONGS_TO_SHOW, GAMESTATE->m_pPreferredSong->GetTranslitMainTitle().c_str());
+			}
 			bUseSections = false;
 			break;
+		}
 		case SORT_GRADE:
 			SongUtil::SortSongPointerArrayByGrade( arraySongs );
 			break;
@@ -780,6 +789,7 @@ void MusicWheel::SetItemPosition( Actor &item, float fPosOffsetsFromMiddle )
 void MusicWheel::RebuildMusicWheelItems()
 {
 	// rewind to first index that will be displayed;
+	
 	int iIndex = m_iSelection;
 	if( m_iSelection > int(m_CurWheelItemData.size()-1) )
 		m_iSelection = 0;
@@ -803,7 +813,10 @@ void MusicWheel::RebuildMusicWheelItems()
 		if( iIndex > int(m_CurWheelItemData.size()-1) )
 			iIndex = 0;
 	}
-
+	if(GAMESTATE->m_SortOrder!=SORT_MOST_PLAYED)
+	{
+		BuildWheelItemDatas( m_WheelItemDatas[SORT_MOST_PLAYED], SortOrder(SORT_MOST_PLAYED) );
+	}
 }
 
 void MusicWheel::NotesOrTrailChanged( PlayerNumber pn )	// update grade graphics and top score
@@ -1301,7 +1314,47 @@ bool MusicWheel::Select()	// return true if this selection ends the screen
 		return false;
 	}
 }
+int MusicWheel::HeadofSection() { 
+    int low = 0; 
+    int upper = m_iSelection-1;
+	CString sThisItemSectionName = m_CurWheelItemData[m_iSelection]->m_sSectionName;
+    while(low <= upper) { 
+        int mid = (low+upper) / 2; 
+        if(m_CurWheelItemData[mid]->m_sSectionName!=sThisItemSectionName)
+            low = mid+1; 
+        else if(mid>0 && 
+				m_CurWheelItemData[mid-1]->m_sSectionName==sThisItemSectionName &&
+				m_CurWheelItemData[mid]->m_sSectionName==sThisItemSectionName )
+            upper = mid - 1; 
+        else 
+            return mid; 
+    } 
+    return -1; 
+}
+void MusicWheel::GroupSwitch()
+{
+	CString sThisItemSectionName = m_CurWheelItemData[m_iSelection]->m_sSectionName;
 
+	if(m_CurWheelItemData[m_iSelection]->m_Type==TYPE_SONG) //jump to the group
+	{
+		// m_sExpandedSectionName="";
+		// m_CurWheelItemData.size();
+		int n = HeadofSection();
+		if(n>-1)
+		{
+			Move(n-m_iSelection);
+			Move(0);
+		}
+	}
+	if( m_sExpandedSectionName == sThisItemSectionName )	// already expanded
+		m_sExpandedSectionName = "";		// collapse it
+	else				// already collapsed
+		m_sExpandedSectionName = sThisItemSectionName;	// expand it
+	
+	m_soundExpand.Play();
+
+	SetOpenGroup(m_sExpandedSectionName);
+} 
 void MusicWheel::StartRoulette() 
 {
 	m_WheelState = STATE_ROULETTE_SPINNING;
@@ -1330,7 +1383,39 @@ void MusicWheel::StartRandom()
 	this->Select();
 	RebuildMusicWheelItems();
 }
+Song* MusicWheel::GetGroupSong(CString group, SortOrder so, int number)
+{
+	if( so == SORT_INVALID)
+		so = GAMESTATE->m_SortOrder;
 
+	vector<WheelItemData> &from = m_WheelItemDatas[so];
+
+	int n = 0;
+	for( unsigned i = 0; i < from.size(); ++i )
+	{
+		WheelItemData &d = from[i];
+		if( (d.m_Type == TYPE_SONG || d.m_Type == TYPE_COURSE) &&
+		     !d.m_sSectionName.empty() &&
+			 d.m_sSectionName != group )
+			 continue;
+
+		/* Only show tutorial songs in arcade */
+		if( GAMESTATE->m_PlayMode!=PLAY_MODE_REGULAR && 
+			d.m_pSong &&
+			d.m_pSong->IsTutorial() )
+			continue;
+		
+		if(n==number&&d.m_pSong)
+		{
+			return d.m_pSong;
+		}
+		if(d.m_pSong)
+		{
+			n++;
+		}
+	}
+	return NULL;
+}
 void MusicWheel::SetOpenGroup(CString group, SortOrder so)
 {
 	if( so == SORT_INVALID)
@@ -1540,7 +1625,6 @@ Song* MusicWheel::GetSelectedSong()
 	case TYPE_PORTAL:
 		return GetPreferredSelectionForRandomOrPortal();
 	}
-
 	return m_CurWheelItemData[m_iSelection]->m_pSong;
 }
 

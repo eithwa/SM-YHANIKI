@@ -426,7 +426,9 @@ ScreenEdit::ScreenEdit( CString sName ) : Screen( sName )
 	LyricsLoader LL;
 	if( GAMESTATE->m_pCurSong->HasLyrics()  )
 		LL.LoadFromLRCFile(GAMESTATE->m_pCurSong->GetLyricsPath(), *GAMESTATE->m_pCurSong);
-	
+
+	m_Foreground.SetDrawOrder( DRAW_ORDER_AFTER_EVERYTHING );	// on top of everything else, including transitions
+	this->AddChild( &m_Foreground );
 
 	start_time = time(0);
 }
@@ -474,7 +476,14 @@ void ScreenEdit::PlayTicks()
 	 * ahead.  This is just to make sure that we request the sound early enough for it to
 	 * come out on time; the actual precise timing is handled by SetStartTime. */
 	float fPositionSeconds = GAMESTATE->m_fMusicSeconds;
-	fPositionSeconds += SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f;
+	if (m_soundMusic.GetPlaybackRate() < 1) 
+	{
+		fPositionSeconds += (SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f) * m_soundMusic.GetPlaybackRate();
+	}
+	else 
+	{
+		fPositionSeconds += (SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f);
+	}
 	const float fSongBeat = GAMESTATE->m_pCurSong->GetBeatFromElapsedTime( fPositionSeconds );
 
 	const int iSongRow = max( -1, BeatToNoteRowNotRounded( fSongBeat ) );
@@ -576,9 +585,14 @@ void ScreenEdit::Update( float fDeltaTime )
 		const float fSeconds = m_soundMusic.GetPositionSeconds( NULL, &tm );
 		GAMESTATE->UpdateSongPosition( fSeconds, GAMESTATE->m_pCurSong->m_Timing, tm );
 	}
-	if( m_EditMode == MODE_EDITING && PREFSMAN->m_bEditorAutosaveMinute>0 )
+	if( m_EditMode == MODE_EDITING  )
 	{
-		AutoSave();
+		if(PREFSMAN->m_bEditorAutosaveMinute>0)
+		{
+			AutoSave();
+		}
+		m_LyricDisplay.SetZoom(0);
+		
 	}
 	if( m_EditMode == MODE_RECORDING  )	
 	{
@@ -610,6 +624,7 @@ void ScreenEdit::Update( float fDeltaTime )
 
 	if( m_EditMode == MODE_RECORDING  ||  m_EditMode == MODE_PLAYING )
 	{
+		m_LyricDisplay.SetZoom(1);
 		if( PREFSMAN->m_bEditorShowBGChangesPlay )
 		{
 			m_Background.Update( fDeltaTime );
@@ -687,6 +702,10 @@ void ScreenEdit::Update( float fDeltaTime )
 	m_NoteFieldEdit.Update( fDeltaTime );
 	UpdateAutoPlayText();
 	PlayTicks();
+	if( m_EditMode == MODE_EDITING)
+	{
+		m_soundAssistTick.Stop(); 
+	}
 }
 
 void ScreenEdit::UpdateTextInfo()
@@ -1230,6 +1249,7 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 		SCREENMAN->MiniMenu( &g_KeyboardShortcuts, SM_None );
 		break;
 	case KEY_F4:
+		// SCREENMAN->SystemMessage( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 		GAMESTATE->m_SongOptions.m_bAssistTick ^= 1;
 		break;
 	case KEY_F5:
@@ -1414,6 +1434,16 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 			}
 		}
 		break;
+	case KEY_Cs:
+		{
+			if(INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)))
+			{
+				HandleMainMenuChoice( save, NULL );
+				time_t now = time(0);
+				start_time = now;
+			}
+		}
+		break;
 	case KEY_Cn:
 		{
 			if( INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RALT)) ||
@@ -1430,14 +1460,67 @@ void ScreenEdit::InputEdit( const DeviceInput& DeviceI, const InputEventType typ
 					}
 				}
 			}
+			else if(INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
+				    INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT)) )
+			{
+				unsigned i;
+				float fStop = 0.02;
+				bool sentinel = false;		//Tricky, we can't break out of this loop safely
+				for( i=0; (i<m_pSong->m_Timing.m_StopSegments.size()) && (!sentinel); i++ )
+				{
+					if( m_pSong->m_Timing.m_StopSegments[i].m_fStartBeat == GAMESTATE->m_fSongBeat )
+						sentinel = true;
+				}
+
+				if ( sentinel )
+					i--;
+
+				if(m_pSong->m_Timing.m_StopSegments.size()==0)
+				{
+					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStop ) );
+				}
+
+				else if( i == m_pSong->m_Timing.m_StopSegments.size())	// there is no BPMSegment at the current beat
+				{
+					// if ( fStop > 0 )
+					// 	m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, fStop ) );
+					float last_stop=m_pSong->m_Timing.m_StopSegments[m_pSong->m_Timing.m_StopSegments.size()-1].m_fStopSeconds;
+					for(int j=0; j<m_pSong->m_Timing.m_StopSegments.size()-1; j++)
+					{
+						if(m_pSong->m_Timing.m_StopSegments[j].m_fStartBeat<GAMESTATE->m_fSongBeat &&
+						   m_pSong->m_Timing.m_StopSegments[j+1].m_fStartBeat>GAMESTATE->m_fSongBeat)
+						   {
+							   last_stop=m_pSong->m_Timing.m_StopSegments[j].m_fStopSeconds;
+							   break;
+						   }
+					}
+					m_pSong->AddStopSegment( StopSegment(GAMESTATE->m_fSongBeat, last_stop ) );
+				}
+				else if(m_pSong->m_Timing.m_StopSegments.size()!=0)	// StopSegment being modified is m_Timing.m_StopSegments[i]
+				{
+					m_pSong->m_Timing.m_StopSegments[i].m_fStopSeconds = 0;
+					if( m_pSong->m_Timing.m_StopSegments[i].m_fStopSeconds <= 0 )
+						m_pSong->m_Timing.m_StopSegments.erase( m_pSong->m_Timing.m_StopSegments.begin()+i,
+														m_pSong->m_Timing.m_StopSegments.begin()+i+1);
+				}
+			}
 			else if( INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL)) ||
 					 INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL)) )
 			{			
 				float fBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
 				m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (-fBPM) );
 			} else {
-			float fMBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
-			m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (fMBPM+0.000001f) ); // make a BPMsegment label
+				if(!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RCTRL))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LCTRL))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RALT))&&
+					!INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LALT)) )
+				{
+					float fMBPM = m_pSong->GetBPMAtBeat( GAMESTATE->m_fSongBeat );
+					m_pSong->SetBPMAtBeat( GAMESTATE->m_fSongBeat, (fMBPM+0.000001f) ); // make a BPMsegment label
+				}	
+				
 			}
 		}
 		break;
@@ -1572,6 +1655,7 @@ void ScreenEdit::InputPlay( const DeviceInput& DeviceI, const InputEventType typ
 			TransitionToEdit();
 			break;
 		case KEY_F4:
+			// SCREENMAN->SystemMessage( ssprintf("Assist Tick is %s", GAMESTATE->m_SongOptions.m_bAssistTick?"ON":"OFF") );
 			GAMESTATE->m_SongOptions.m_bAssistTick ^= 1;
 			break;
 		case KEY_F8:
@@ -1579,20 +1663,27 @@ void ScreenEdit::InputPlay( const DeviceInput& DeviceI, const InputEventType typ
 				bool bIsHoldingShift = 
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_RSHIFT)) ||
 					INPUTFILTER->IsBeingPressed( DeviceInput(DEVICE_KEYBOARD, KEY_LSHIFT));
-				PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
-				 if(PREFSMAN->m_bAutoPlay)
+				if(PREFSMAN->m_iPlayerControllerType==1 && bIsHoldingShift)
 				{
-					if(bIsHoldingShift)
+					PREFSMAN->m_iPlayerControllerType = 2;
+				}
+				else
+				{
+					PREFSMAN->m_bAutoPlay = !PREFSMAN->m_bAutoPlay;
+					if(PREFSMAN->m_bAutoPlay)
 					{
-						PREFSMAN->m_iPlayerControllerType = 2;
+						if(bIsHoldingShift)
+						{
+							PREFSMAN->m_iPlayerControllerType = 2;
+						}else
+						{
+							PREFSMAN->m_iPlayerControllerType = 1;
+						}
+						
 					}else
 					{
-						PREFSMAN->m_iPlayerControllerType = 1;
+						PREFSMAN->m_iPlayerControllerType = 0;
 					}
-					
-				}else
-				{
-					PREFSMAN->m_iPlayerControllerType = 0;
 				}
 				UpdateAutoPlayText();
 				FOREACH_PlayerNumber( p )

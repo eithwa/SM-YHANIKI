@@ -75,6 +75,7 @@ class ScreenSystemLayer: public Screen
 public:
 	ScreenSystemLayer();
 	void SystemMessage( CString sMessage );
+	void SystemMessage2( CString sMessage );
 	void SystemMessageNoAnimate( CString sMessage );
 	void ReloadCreditsText();
 	void RefreshCreditsMessages();
@@ -161,7 +162,18 @@ void ScreenSystemLayer::SystemMessage( CString sMessage )
 	m_textMessage.BeginTweening( 0.5f );
 	m_textMessage.SetDiffuse( RageColor(1,1,1,0) );
 }
-
+void ScreenSystemLayer::SystemMessage2( CString sMessage )
+{
+	m_textMessage.FinishTweening();
+	m_textMessage.SetText( sMessage );
+	m_textMessage.SetDiffuseAlpha( 1 );
+	m_textMessage.SetX( -640 );
+	// m_textMessage.BeginTweening( 0.5f );
+	m_textMessage.SetX( 4 );
+	m_textMessage.BeginTweening( 5 );
+	m_textMessage.BeginTweening( 0.5f );
+	m_textMessage.SetDiffuse( RageColor(1,1,1,0) );
+}
 void ScreenSystemLayer::SystemMessageNoAnimate( CString sMessage )
 {
 	m_textMessage.FinishTweening();
@@ -725,6 +737,12 @@ void ScreenManager::SystemMessage( CString sMessage )
 {
 	LOG->Trace( "%s", sMessage.c_str() );
 	m_SystemLayer->SystemMessage( sMessage );
+}
+
+void ScreenManager::SystemMessage2( CString sMessage )
+{
+	LOG->Trace( "%s", sMessage.c_str() );
+	m_SystemLayer->SystemMessage2( sMessage );
 }
 
 void ScreenManager::SystemMessageNoAnimate( CString sMessage )

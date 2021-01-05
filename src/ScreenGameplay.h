@@ -25,6 +25,7 @@ class Inventory;
 #include "MeterDisplay.h"
 #include "ActiveAttackList.h"
 #include "NetworkSyncManager.h"
+#include "ScreenPlayerOptions.h"
 
 // messages sent by Combo
 const ScreenMessage SM_PlayToasty			= ScreenMessage(SM_User+104);
@@ -179,6 +180,9 @@ protected:
 	BeginnerHelper	m_BeginnerHelper;
 
 	NoteData		m_CabinetLightsNoteData;
+	int             PlayerSpeed[2];
+	void            CheckSpeed();
+	void            MoveSpeed(PlayerNumber n, int move);    
 };
 
 

@@ -207,7 +207,7 @@ BEGIN
             VALUE "FileDescription", "StepMania"
             VALUE "FileVersion", "1, 0, 0, 1"
             VALUE "InternalName", "StepMania"
-            VALUE "LegalCopyright", "Copyright © 2001-2002"
+            VALUE "LegalCopyright", "Copyright ?2001-2002"
             VALUE "OriginalFilename", "StepMania.exe"
             VALUE "ProductName", "  StepMania"
             VALUE "ProductVersion", "1, 0, 0, 1"

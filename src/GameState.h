@@ -63,6 +63,8 @@ public:
 	RageTimer			m_timeGameStarted;	// from the moment the first player pressed Start
 	map<CString,CString> m_mapEnv;
 
+	vector<CString>    m_SpeedList;
+
 	/* This is set to a random number per-game/round; it can be used for a random seed. */
 	int				m_iGameSeed, m_iRoundSeed;
 
@@ -108,6 +110,7 @@ public:
 	Difficulty		m_PreferredDifficulty[NUM_PLAYERS];
 	SortOrder	m_SortOrder;			// used by MusicWheel
 	bool			m_bEditing;			// NoteField does special stuff when this is true
+	bool            m_bMute;
 	bool			m_bLoadPackConnect;
 	bool			m_bfastLoadInScreenSelectMusic;
 	bool            m_bUsingAutoPlay;

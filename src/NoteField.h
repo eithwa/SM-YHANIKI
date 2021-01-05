@@ -41,7 +41,7 @@ public:
 	void SetPressed( int iCol );
 	void DidTapNote( int iCol, TapNoteScore score, bool bBright );
 	void DidHoldNote( int iCol );
-
+	void Cut666();
 
 protected:
 	void DrawBeatBar( const float fBeat );
