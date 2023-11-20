@@ -470,15 +470,7 @@ void ScreenEdit::PlayTicks()
 	 * will start coming out the speaker.  Compensate for this by boosting fPositionSeconds
 	 * ahead.  This is just to make sure that we request the sound early enough for it to
 	 * come out on time; the actual precise timing is handled by SetStartTime. */
-	float fPositionSeconds = GAMESTATE->m_fMusicSeconds;
-	if (m_soundMusic.GetPlaybackRate() < 1) 
-	{
-		fPositionSeconds += (SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f) * m_soundMusic.GetPlaybackRate();
-	}
-	else 
-	{
-		fPositionSeconds += (SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f);
-	}
+	const float fPositionSeconds = GAMESTATE->m_fMusicSeconds + (SOUND->GetPlayLatency() + (float)TICK_EARLY_SECONDS + 0.250f) * m_soundMusic.GetPlaybackRate();
 	const float fSongBeat = GAMESTATE->m_pCurSong->GetBeatFromElapsedTime( fPositionSeconds );
 
 	const int iSongRow = max( -1, BeatToNoteRowNotRounded( fSongBeat ) );

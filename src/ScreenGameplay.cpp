@@ -1320,14 +1320,10 @@ void ScreenGameplay::Update( float fDeltaTime )
 		}
 		else
 		{
-			float scale =1;
-			if(GAMESTATE->m_SongOptions.m_fMusicRate<1)
-			{
-				scale = GAMESTATE->m_SongOptions.m_fMusicRate;
-			}
+			const float scale = GAMESTATE->m_SongOptions.m_fMusicRate;
 			float fMinTimeToMusic = m_In.GetLengthSeconds();	// start of m_Ready
 			float fMinTimeToNotes = fMinTimeToMusic + m_Ready.GetLengthSeconds() + m_Go.GetLengthSeconds()+2;	// end of Go
-			fMinTimeToNotes = fMinTimeToNotes*scale; 
+			fMinTimeToNotes = fMinTimeToNotes * scale;
 			/*
 			 * Tell the music to start, but don't actually make any noise for
 			 * at least 2.5 (or 1.5) seconds.  (This is so we scroll on screen smoothly.)
