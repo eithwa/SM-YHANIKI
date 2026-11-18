@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **本專案已搬移至 [Yhaniki/SM-YHANIKI](https://github.com/Yhaniki/SM-YHANIKI)，此 repo 已封存、不再更新。**
+> 最新程式碼、issue 與 release 請到新位置。
+
 # StepMania 3.9 永和金城武版(YHANIKI)
   + fork from [stepmania](https://github.com/stepmania/stepmania)
     - [tag v390release](https://github.com/stepmania/stepmania/releases/tag/v390release)
